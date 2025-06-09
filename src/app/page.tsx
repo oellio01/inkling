@@ -16,7 +16,7 @@ interface State {
 export default function Game() {
   const [isShowingInfoPopup, setIsShowingInfoPopup] = useState(false);
 
-  const solution = "solution";
+  const solution = "Century";
 
   const isCorrectSolution = useCallback(
     (guess: string) => {
@@ -51,7 +51,8 @@ export default function Game() {
   }, [onChangeCurrentGuess]);
 
   const commitGuess = useCallback(() => {
-    console.log({ currentGuess });
+    const isCorrect = isCorrectSolution(currentGuess);
+    console.log({ currentGuess, isCorrect });
   }, [currentGuess]);
 
   return (

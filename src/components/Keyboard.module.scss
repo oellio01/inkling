@@ -1,0 +1,17 @@
+.keyboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+}
+
+.keyboardRow {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.keyWide {
+  min-width: 64px;
+} 

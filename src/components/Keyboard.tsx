@@ -4,6 +4,7 @@ import { KeyboardCharacterKey } from "../components/KeyboardCharacterKey";
 import { KeyboardKey } from "../components/KeyboardKey";
 import { KeyboardLine } from "../components/KeyboardLine";
 import classNames from "classnames";
+import styles from "./Keyboard.module.scss";
 
 export interface KeyboardProps {
   onPressCharacter: ((char: string) => void) | undefined;
@@ -20,11 +21,8 @@ export const Keyboard = React.memo(function KeyboardImpl({
   onPressEnter,
 }: KeyboardProps) {
   const renderCharacter = (character: string) => {
-    const color = "faded-black";
-    const customBackgroundColor = getBackgroundColor(color);
     return (
       <KeyboardCharacterKey
-        className={classNames(customBackgroundColor)}
         character={character}
         onClick={
           onPressCharacter
@@ -38,8 +36,8 @@ export const Keyboard = React.memo(function KeyboardImpl({
   };
 
   return (
-    <div className="flex flex-col min-w-0">
-      <KeyboardLine>
+    <div className={styles.keyboard}>
+      <KeyboardLine className={styles.keyboardRow}>
         {renderCharacter("Q")}
         {renderCharacter("W")}
         {renderCharacter("E")}
@@ -51,10 +49,7 @@ export const Keyboard = React.memo(function KeyboardImpl({
         {renderCharacter("O")}
         {renderCharacter("P")}
       </KeyboardLine>
-      <KeyboardLine
-        // max-width 95% so the middle line is always a little less wide then the top/bottom rows
-        className="max-w-[95%] mx-auto w-full"
-      >
+      <KeyboardLine className={styles.keyboardRow}>
         {renderCharacter("A")}
         {renderCharacter("S")}
         {renderCharacter("D")}
@@ -65,10 +60,9 @@ export const Keyboard = React.memo(function KeyboardImpl({
         {renderCharacter("K")}
         {renderCharacter("L")}
       </KeyboardLine>
-      <KeyboardLine>
+      <KeyboardLine className={styles.keyboardRow}>
         <KeyboardKey
-          containerClassName={classNames(DEFAULT_TEXT_COLOR, "basis-24")}
-          className={getBackgroundColor(undefined)}
+          containerClassName={classNames(DEFAULT_TEXT_COLOR, styles.keyWide)}
           text="ENTER"
           onClick={onPressEnter}
         />
@@ -80,8 +74,7 @@ export const Keyboard = React.memo(function KeyboardImpl({
         {renderCharacter("N")}
         {renderCharacter("M")}
         <KeyboardKey
-          containerClassName={classNames(DEFAULT_TEXT_COLOR, "basis-14")}
-          className={getBackgroundColor(undefined)}
+          containerClassName={classNames(DEFAULT_TEXT_COLOR, styles.keyWide)}
           text={<IconBackspace size={32} />}
           onClick={onPressBackspace}
         />
@@ -89,16 +82,3 @@ export const Keyboard = React.memo(function KeyboardImpl({
     </div>
   );
 });
-
-function getBackgroundColor(color: string | undefined) {
-  switch (color) {
-    case "green":
-      return "bg-char-green/5 text-char-green border border-[2px] border-char-green/50";
-    case "yellow":
-      return "bg-char-yellow/5 text-char-yellow border border-[2px] border-char-yellow/50";
-    case "faded-black":
-      return "bg-[#0f0f0f] text-gray-500 border border-[2px] border-gray-900";
-    default:
-      return "bg-[#1a1a1a] border border-[2px] border-[#292929]";
-  }
-}
