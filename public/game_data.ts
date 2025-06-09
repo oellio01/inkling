@@ -1,5 +1,5 @@
 export const GAME = {
-  image: './image.jpg',
+  image: "/image.jpg",
   answer: 'CENTURY',
 };
   

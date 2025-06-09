@@ -1,28 +1,17 @@
-:root {
-    --key-bg:   #818384;
-    --key-fg:   #ffffff;
-    --absent:   #3a3a3c;
-    --present:  #b59f3b;
-    --correct:  #538d4e;
-    --key-height:     58px;
-    --key-min-width:  43px;
-    --key-wide-width: 64px;
-    --key-radius:     4px;
-    --row-gap:        8px;
-    --col-gap:        6px;
-  }
+
   
   .keyboard {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--row-gap);
+    gap: 8px;
     padding: 10px 0;
   }
   
   .keyboard-row {
     display: flex;
-    gap: var(--col-gap);
+    justify-content: center;
+    gap: 6px;
   }
   
   .key {
@@ -47,9 +36,5 @@
   .key.key-wide {
     min-width: var(--key-wide-width);
   }
-  
-  /* colored states */
-  .key.absent  { background-color: var(--absent);  }
-  .key.present { background-color: var(--present); }
-  .key.correct { background-color: var(--correct); }
+
   

@@ -2,12 +2,19 @@
 // on desktop, margin between keys (not clickable)
 .key {
     margin: 0.25rem 0.125rem;
-  }
-  
-  // on mobile, space between keys is clickable
-  @media (pointer: coarse), (hover: none) {
-    .key {
-      margin: 0;
-      padding: 0.25rem 0.125rem;
-    }
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    background: #202121;
+    color: #fff;
+    border: 2px solid #3a3a3c;
+    border-radius: 4px;
+    min-width: 43px;
+    height: 58px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s, color 0.15s, border 0.15s;
   }

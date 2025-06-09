@@ -10,11 +10,9 @@ export interface KeyboardKeyProps {
 
 export function KeyboardKey({
   containerClassName,
-  className,
   text,
   onClick,
 }: KeyboardKeyProps) {
-  const disabled = onClick == null;
   const shouldUseTouchstart =
     typeof document !== "undefined" &&
     "ontouchstart" in document.documentElement;
@@ -29,18 +27,7 @@ export function KeyboardKey({
       onClick={shouldUseTouchstart ? undefined : onClick}
       onTouchStart={shouldUseTouchstart ? onClick : undefined}
     >
-      <div
-        className={classNames(
-          className,
-          "flex flex-1 justify-center items-center font-mono font-bold select-none rounded min-w-0 overflow-hidden",
-          "text-lg h-12 md:text-xl md:h-14",
-          {
-            "cursor-pointer hover:opacity-80 active:opacity-70": !disabled,
-          }
-        )}
-      >
-        {text}
-      </div>
+      <div>{text}</div>
     </div>
   );
 }

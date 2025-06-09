@@ -18,16 +18,13 @@ export const Keyboard = React.memo(function KeyboardImpl({
   onPressBackspace,
   onPressCharacter,
   onPressEnter,
-  letterToColor,
 }: KeyboardProps) {
   const renderCharacter = (character: string) => {
-    const color = letterToColor?.[character];
+    const color = "faded-black";
     const customBackgroundColor = getBackgroundColor(color);
     return (
       <KeyboardCharacterKey
-        className={classNames(customBackgroundColor, {
-          [DEFAULT_TEXT_COLOR]: color == null,
-        })}
+        className={classNames(customBackgroundColor)}
         character={character}
         onClick={
           onPressCharacter

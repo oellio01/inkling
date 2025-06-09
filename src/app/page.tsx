@@ -1,48 +1,62 @@
 "use client";
 
 // Game.jsx
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
+import Image from "next/image";
 import { Header } from "../components/Header";
-import { formatTimeInSeconds } from "../components/formatTimeInSeconds";
 import { Keyboard } from "../components/Keyboard";
 import { InfoPopup } from "../components/InfoPopup";
+import { GAME } from "../../public/game_data";
+import styles from "./Game.module.scss";
+
+interface State {
+  currentGuess: string;
+}
 
 export default function Game() {
-  const timeInSeconds = 0;
-  const [guess, setGuess] = useState("");
   const [isShowingInfoPopup, setIsShowingInfoPopup] = useState(false);
-  const { minutes, seconds } = formatTimeInSeconds(timeInSeconds);
 
-  // call this whenever user types or clicks a key
-  const onKeyPress = useCallback(
-    (key: string) => {
-      if (key === "Enter") {
-        // Submit guess logic here
-        console.log("Submitted guess:", guess);
-        setGuess(""); // Clear after submit
-      } else if (key === "Backspace") {
-        setGuess((g) => g.slice(0, -1));
-      } else if (/^[A-Z]$/.test(key)) {
-        setGuess((g) => g + key);
-      }
+  const solution = "solution";
+
+  const isCorrectSolution = useCallback(
+    (guess: string) => {
+      return guess.toLowerCase() === solution.toLowerCase();
     },
-    [guess]
+    [solution]
   );
 
-  // also listen to real keyboard
-  useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.key === "Enter") onKeyPress("Enter");
-      else if (e.key === "Backspace") onKeyPress("Backspace");
-      else if (/^[a-zA-Z]$/.test(e.key)) onKeyPress(e.key.toUpperCase());
-    };
-    window.addEventListener("keydown", down);
-    return () => window.removeEventListener("keydown", down);
-  }, [onKeyPress]);
+  const [{ currentGuess }, setState] = useState<State>({
+    currentGuess: "",
+  });
+
+  const onChangeCurrentGuess = useCallback(
+    (updater: (oldGuess: string) => string) => {
+      setState((existing: { currentGuess: string }) => ({
+        ...existing,
+        currentGuess: updater(existing.currentGuess),
+      }));
+    },
+    []
+  );
+
+  const onPressLetter = useCallback(
+    (letter: string) => {
+      onChangeCurrentGuess((oldGuess) => oldGuess + letter);
+    },
+    [onChangeCurrentGuess]
+  );
+
+  const onPressBackspace = useCallback(() => {
+    onChangeCurrentGuess((oldGuess) => oldGuess.slice(0, oldGuess.length - 1));
+  }, [onChangeCurrentGuess]);
+
+  const commitGuess = useCallback(() => {
+    console.log({ currentGuess });
+  }, [currentGuess]);
 
   return (
-    <>
-      <div className="flex flex-col flex-1 relative">
+    <div className={styles.game}>
+      <div className={styles.header}>
         {isShowingInfoPopup && (
           <InfoPopup
             close={() => {
@@ -58,10 +72,23 @@ export default function Game() {
           timerInSeconds={0}
         />
       </div>
-      <div className="game">
-        <div className="guess">{guess}</div>
-        <Keyboard onKeyPress={onKeyPress} />
+      <Image
+        src={GAME.image}
+        alt="rebus"
+        className={styles.image}
+        width={300}
+        height={450}
+      />
+      <div className={styles.keyboard}>
+        <div className={styles.guess}>{currentGuess}</div>
+        <Keyboard
+          onPressBackspace={
+            currentGuess.length > 0 ? onPressBackspace : undefined
+          }
+          onPressCharacter={onPressLetter}
+          onPressEnter={commitGuess}
+        />
       </div>
-    </>
+    </div>
   );
 }

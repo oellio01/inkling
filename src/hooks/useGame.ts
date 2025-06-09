@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { GAME } from '../data/game_data'
+import { GAME } from '../../public/game_data'
 
 type Status = 'correct' | 'present' | 'absent'
 
