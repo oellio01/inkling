@@ -10,7 +10,6 @@ export interface KeyboardProps {
   onPressCharacter: ((char: string) => void) | undefined;
   onPressBackspace: (() => void) | undefined;
   onPressEnter: (() => void) | undefined;
-  letterToColor?: Record<string, "yellow" | "green" | "faded-black">;
 }
 
 const DEFAULT_TEXT_COLOR = "text-gray-300";

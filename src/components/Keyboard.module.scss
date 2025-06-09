@@ -15,3 +15,13 @@
 .keyWide {
   min-width: 64px;
 } 
+
+@media (max-width: 600px) {
+  .keyboard {
+    gap: 1px;
+    padding: 1px;
+  }
+  .keyboardRow {
+    gap: 1px;
+  }
+}
