@@ -1,0 +1,13 @@
+
+// on desktop, margin between keys (not clickable)
+.key {
+    margin: 0.25rem 0.125rem;
+  }
+  
+  // on mobile, space between keys is clickable
+  @media (pointer: coarse), (hover: none) {
+    .key {
+      margin: 0;
+      padding: 0.25rem 0.125rem;
+    }
+  }

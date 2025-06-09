@@ -2,11 +2,16 @@
 
 // Game.jsx
 import React, { useState, useEffect, useCallback } from "react";
-import { Navbar, NavbarGroup, NavbarHeading } from "@blueprintjs/core";
-import Keyboard from "../components/Keyboard";
+import { Header } from "../components/Header";
+import { formatTimeInSeconds } from "../components/formatTimeInSeconds";
+import { Keyboard } from "../components/Keyboard";
+import { InfoPopup } from "../components/InfoPopup";
 
 export default function Game() {
+  const timeInSeconds = 0;
   const [guess, setGuess] = useState("");
+  const [isShowingInfoPopup, setIsShowingInfoPopup] = useState(false);
+  const { minutes, seconds } = formatTimeInSeconds(timeInSeconds);
 
   // call this whenever user types or clicks a key
   const onKeyPress = useCallback(
@@ -37,11 +42,22 @@ export default function Game() {
 
   return (
     <>
-      <Navbar>
-        <NavbarGroup>
-          <NavbarHeading>Scratch</NavbarHeading>
-        </NavbarGroup>
-      </Navbar>
+      <div className="flex flex-col flex-1 relative">
+        {isShowingInfoPopup && (
+          <InfoPopup
+            close={() => {
+              setIsShowingInfoPopup(false);
+            }}
+            yesterdaysAnswer={"Hello!"}
+          />
+        )}
+        <Header
+          onClickInfo={() => {
+            setIsShowingInfoPopup(true);
+          }}
+          timerInSeconds={0}
+        />
+      </div>
       <div className="game">
         <div className="guess">{guess}</div>
         <Keyboard onKeyPress={onKeyPress} />
