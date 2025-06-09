@@ -53,7 +53,7 @@ export default function Game() {
   const commitGuess = useCallback(() => {
     const isCorrect = isCorrectSolution(currentGuess);
     console.log({ currentGuess, isCorrect });
-  }, [currentGuess]);
+  }, [currentGuess, isCorrectSolution]);
 
   return (
     <div className={styles.game}>
