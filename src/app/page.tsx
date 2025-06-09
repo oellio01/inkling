@@ -15,6 +15,7 @@ interface State {
 
 export default function Game() {
   const [isShowingInfoPopup, setIsShowingInfoPopup] = useState(false);
+  const [isDone, setIsDone] = useState(false);
 
   const solution = "Century";
 
@@ -52,6 +53,7 @@ export default function Game() {
 
   const commitGuess = useCallback(() => {
     const isCorrect = isCorrectSolution(currentGuess);
+    setIsDone(isCorrect);
     console.log({ currentGuess, isCorrect });
   }, [currentGuess, isCorrectSolution]);
 
@@ -81,7 +83,7 @@ export default function Game() {
         height={450}
       />
       <div className={styles.keyboard}>
-        <div className={styles.guess}>{currentGuess}</div>
+        <div className={styles.guess}>{isDone ? "Correct!" : currentGuess}</div>
         <Keyboard
           onPressBackspace={
             currentGuess.length > 0 ? onPressBackspace : undefined
