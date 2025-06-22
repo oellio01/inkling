@@ -4,11 +4,13 @@ import { useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 import { Header } from "../components/Header";
 import { Keyboard } from "../components/Keyboard";
+import { ResultsPopup } from "../components/ResultsPopup";
 import { GAME } from "../../public/game_data";
 import styles from "./Game.module.scss";
 
 export default function Game() {
   const [isDone, setIsDone] = useState(false);
+  const [isResultsOpen, setIsResultsOpen] = useState(false);
   const [currentGuess, setCurrentGuess] = useState("");
   const [timer, setTimer] = useState(0);
   const solution = GAME.answer;
@@ -40,7 +42,10 @@ export default function Game() {
 
   const commitGuess = useCallback(() => {
     const isCorrect = isCorrectSolution(currentGuess);
-    setIsDone(isCorrect);
+    if (isCorrect) {
+      setIsDone(true);
+      setIsResultsOpen(true);
+    }
     console.log({ currentGuess, isCorrect });
   }, [currentGuess, isCorrectSolution]);
 
@@ -69,6 +74,12 @@ export default function Game() {
         onPressCharacter={onPressLetter}
         onPressEnter={commitGuess}
         className={styles.keyboard}
+      />
+      <ResultsPopup
+        isOpen={isResultsOpen}
+        close={() => setIsResultsOpen(false)}
+        gameNumber={GAME.id}
+        timeInSeconds={timer}
       />
     </div>
   );

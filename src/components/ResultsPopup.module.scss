@@ -1,0 +1,64 @@
+.popup {
+  background-color: #fefefe;
+  color: rgb(0, 0, 0);
+  border-radius: 8px;
+  text-align: center;
+  width: 90%;
+  max-width: 350px;
+  border: none;
+  padding: 24px;
+}
+
+.popup::backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.title {
+  font-size: 28px;
+  font-weight: bold;
+  margin: 0;
+  margin-bottom: 24px;
+}
+
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-bottom: 24px;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.statValue {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.statLabel {
+  font-size: 14px;
+  color: #555;
+}
+
+.button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s;
+}
+
+.share_button {
+  background-color: #4caf50;
+  color: white;
+}
+
+.share_button:hover {
+  background-color: #45a049;
+} 

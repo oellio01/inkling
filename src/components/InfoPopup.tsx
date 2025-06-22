@@ -55,7 +55,7 @@ export function InfoPopup({
           className={styles.image}
         />
       </div>
-      <p className={styles.answer}>{exampleAnswer.toUpperCase()}</p>
+      <p className={styles.answer}>Answer: {exampleAnswer.toUpperCase()}</p>
     </dialog>
   );
 }
