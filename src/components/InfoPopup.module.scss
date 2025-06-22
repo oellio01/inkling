@@ -1,13 +1,9 @@
 .popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #121213;
+  background-color: #fefefe;
   border-radius: 8px;
   z-index: 1001;
   text-align: center;
-  color: white;
+  color: rgb(0, 0, 0);
   width: 90%;
   max-width: 350px;
   border: none; /* Remove default dialog border */
