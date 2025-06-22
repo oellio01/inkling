@@ -1,7 +1,7 @@
 import { GAMES, GameData } from "../../public/game_data";
 
 // The release date of the very first game.
-export const EPOCH_DATE = new Date(2025, 5, 22);
+export const EPOCH_DATE = new Date(2025, 5, 19);
 
 /**
  * Calculates the difference in days between two dates, ignoring the time component.
