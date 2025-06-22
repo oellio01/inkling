@@ -15,23 +15,21 @@ export function KeyboardKey({
   onClick,
 }: KeyboardKeyProps) {
   const disabled = onClick == null;
-  const shouldUseTouchstart =
-    typeof document !== "undefined" &&
-    "ontouchstart" in document.documentElement;
 
   return (
     <div
-      className={classNames(containerClassName, styles.keyWrapper)}
-      onClick={shouldUseTouchstart ? undefined : onClick}
-      onTouchStart={shouldUseTouchstart ? onClick : undefined}
-    >
-      <div
-        className={classNames(styles.key, className, styles.keyInner, {
+      className={classNames(
+        styles.key,
+        containerClassName,
+        className,
+        styles.keyInner,
+        {
           [styles.clickable]: !disabled,
-        })}
-      >
-        {text}
-      </div>
+        }
+      )}
+      onClick={onClick}
+    >
+      {text}
     </div>
   );
 }

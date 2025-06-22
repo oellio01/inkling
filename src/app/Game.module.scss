@@ -34,8 +34,6 @@
 }
 
 .keyboard {
-  flex-shrink: 0; /* Prevent keyboard from shrinking */
-  width: 100%;
-  max-width: 400px;
+  flex-shrink: 0;
   padding-bottom: 10px;
 }

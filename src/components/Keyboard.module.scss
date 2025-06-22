@@ -13,5 +13,19 @@
 }
 
 .keyWide {
-  min-width: 64px;
+  min-width: 90px;
 } 
+
+@media (max-width: 450px) {
+  .keyboard {
+    gap: 1px;
+    padding: 1px;
+  }
+  .keyboardRow {
+    gap: 1px;
+  }
+
+  .keyWide {
+    min-width: 64px;
+  } 
+}

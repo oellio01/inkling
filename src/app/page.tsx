@@ -1,19 +1,15 @@
 "use client";
 
-// Game.jsx
-import React, { useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import Image from "next/image";
 import { Header } from "../components/Header";
 import { Keyboard } from "../components/Keyboard";
 import { GAME } from "../../public/game_data";
 import styles from "./Game.module.scss";
 
-interface State {
-  currentGuess: string;
-}
-
 export default function Game() {
   const [isDone, setIsDone] = useState(false);
+  const [currentGuess, setCurrentGuess] = useState("");
   const solution = GAME.answer;
 
   const isCorrectSolution = useCallback(
@@ -23,30 +19,13 @@ export default function Game() {
     [solution]
   );
 
-  const [{ currentGuess }, setState] = useState<State>({
-    currentGuess: "",
-  });
-
-  const onChangeCurrentGuess = useCallback(
-    (updater: (oldGuess: string) => string) => {
-      setState((existing) => ({
-        ...existing,
-        currentGuess: updater(existing.currentGuess),
-      }));
-    },
-    []
-  );
-
-  const onPressLetter = useCallback(
-    (letter: string) => {
-      onChangeCurrentGuess((oldGuess) => oldGuess + letter);
-    },
-    [onChangeCurrentGuess]
-  );
+  const onPressLetter = useCallback((letter: string) => {
+    setCurrentGuess((prev) => prev + letter);
+  }, []);
 
   const onPressBackspace = useCallback(() => {
-    onChangeCurrentGuess((oldGuess) => oldGuess.slice(0, oldGuess.length - 1));
-  }, [onChangeCurrentGuess]);
+    setCurrentGuess((prev) => prev.slice(0, -1));
+  }, []);
 
   const commitGuess = useCallback(() => {
     const isCorrect = isCorrectSolution(currentGuess);
@@ -56,13 +35,12 @@ export default function Game() {
 
   return (
     <div className={styles.game}>
-      <div className={styles.header}>
-        <Header
-          timerInSeconds={0}
-          exampleImage={GAME.image}
-          exampleAnswer={GAME.answer}
-        />
-      </div>
+      <Header
+        timerInSeconds={0}
+        exampleImage={GAME.image}
+        exampleAnswer={GAME.answer}
+        className={styles.header}
+      />
       <div className={styles.imageWrapper}>
         <Image
           src={GAME.image}
@@ -73,15 +51,14 @@ export default function Game() {
         />
       </div>
       <div className={styles.guess}>{isDone ? "Correct!" : currentGuess}</div>
-      <div className={styles.keyboard}>
-        <Keyboard
-          onPressBackspace={
-            currentGuess.length > 0 ? onPressBackspace : undefined
-          }
-          onPressCharacter={onPressLetter}
-          onPressEnter={commitGuess}
-        />
-      </div>
+      <Keyboard
+        onPressBackspace={
+          currentGuess.length > 0 ? onPressBackspace : undefined
+        }
+        onPressCharacter={onPressLetter}
+        onPressEnter={commitGuess}
+        className={styles.keyboard}
+      />
     </div>
   );
 }

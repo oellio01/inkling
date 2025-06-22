@@ -1,13 +1,3 @@
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
-}
-
 .popup {
   position: fixed;
   top: 50%;
@@ -20,6 +10,11 @@
   color: white;
   width: 90%;
   max-width: 350px;
+  border: none; /* Remove default dialog border */
+}
+
+.popup::backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .title {

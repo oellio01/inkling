@@ -1,55 +1,57 @@
-import { useEffect } from "react";
-import { createPortal } from "react-dom";
+import { useEffect, useRef } from "react";
 import styles from "./InfoPopup.module.scss";
 import Image from "next/image";
 
 export interface InfoPopupProps {
+  isOpen: boolean;
   close: () => void;
   exampleImage: string;
   exampleAnswer: string;
 }
 
 export function InfoPopup({
+  isOpen,
   close,
   exampleImage,
   exampleAnswer,
 }: InfoPopupProps) {
-  useEffect(() => {
-    const keyboardListener = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        close();
-      }
-    };
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
-    document.addEventListener("keydown", keyboardListener);
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (dialog) {
+      if (isOpen) {
+        dialog.showModal();
+      } else {
+        dialog.close();
+      }
+    }
+  }, [isOpen]);
+
+  // When the dialog is closed by the browser (e.g. with the Escape key),
+  // we need to call the `close` prop to sync the state.
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    dialog?.addEventListener("close", close);
     return () => {
-      document.removeEventListener("keydown", keyboardListener);
+      dialog?.removeEventListener("close", close);
     };
   }, [close]);
 
-  const popupContent = (
-    <>
-      <div className={styles.overlay} onClick={close} />
-      <div className={styles.popup}>
-        <h2 className={styles.title}>How To Play</h2>
-        <p className={styles.description}>Guess the word based on the image.</p>
-        <p className={styles.subtitle}>Example:</p>
-        <div className={styles.imageContainer}>
-          <Image
-            src={exampleImage}
-            alt="Example Rebus"
-            fill
-            className={styles.image}
-          />
-        </div>
-        <p className={styles.answer}>{exampleAnswer.toUpperCase()}</p>
+  return (
+    <dialog ref={dialogRef} className={styles.popup}>
+      <h2 className={styles.title}>How To Play</h2>
+      <p className={styles.description}>Guess the word based on the image.</p>
+      <p className={styles.subtitle}>Example:</p>
+      <div className={styles.imageContainer}>
+        <Image
+          src={exampleImage}
+          alt="Example Rebus"
+          fill
+          className={styles.image}
+        />
       </div>
-    </>
+      <p className={styles.answer}>{exampleAnswer.toUpperCase()}</p>
+    </dialog>
   );
-
-  if (typeof document === "undefined") {
-    return null;
-  }
-
-  return createPortal(popupContent, document.body);
 }

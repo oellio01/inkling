@@ -1,6 +1,5 @@
 import { IconBackspace } from "@tabler/icons-react";
 import React from "react";
-import { KeyboardCharacterKey } from "../components/KeyboardCharacterKey";
 import { KeyboardKey } from "../components/KeyboardKey";
 import { KeyboardLine } from "../components/KeyboardLine";
 import classNames from "classnames";
@@ -10,6 +9,7 @@ export interface KeyboardProps {
   onPressCharacter: ((char: string) => void) | undefined;
   onPressBackspace: (() => void) | undefined;
   onPressEnter: (() => void) | undefined;
+  className?: string;
 }
 
 const DEFAULT_TEXT_COLOR = "text-gray-300";
@@ -18,11 +18,13 @@ export const Keyboard = React.memo(function KeyboardImpl({
   onPressBackspace,
   onPressCharacter,
   onPressEnter,
+  className,
 }: KeyboardProps) {
   const renderCharacter = (character: string) => {
     return (
-      <KeyboardCharacterKey
-        character={character}
+      <KeyboardKey
+        containerClassName={styles.characterKey}
+        text={character}
         onClick={
           onPressCharacter
             ? () => {
@@ -35,7 +37,7 @@ export const Keyboard = React.memo(function KeyboardImpl({
   };
 
   return (
-    <div className={styles.keyboard}>
+    <div className={classNames(styles.keyboard, className)}>
       <KeyboardLine className={styles.keyboardRow}>
         {renderCharacter("Q")}
         {renderCharacter("W")}

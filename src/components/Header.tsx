@@ -2,22 +2,25 @@ import { useState } from "react";
 import { formatTimeInSeconds } from "./formatTimeInSeconds";
 import styles from "./Header.module.scss";
 import { InfoPopup } from "./InfoPopup";
+import classNames from "classnames";
 
 export function Header({
   timerInSeconds,
   exampleImage,
   exampleAnswer,
+  className,
 }: {
   timerInSeconds: number;
   exampleImage: string;
   exampleAnswer: string;
+  className?: string;
 }) {
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const { minutes, seconds } = formatTimeInSeconds(timerInSeconds);
 
   return (
     <>
-      <div className={styles.headerContainer}>
+      <div className={classNames(styles.headerContainer, className)}>
         <div className={styles.left}></div>
         <div className={styles.center}>
           <div className={styles.timer}>
@@ -35,13 +38,12 @@ export function Header({
           </button>
         </div>
       </div>
-      {isInfoOpen && (
-        <InfoPopup
-          close={() => setIsInfoOpen(false)}
-          exampleImage={exampleImage}
-          exampleAnswer={exampleAnswer}
-        />
-      )}
+      <InfoPopup
+        isOpen={isInfoOpen}
+        close={() => setIsInfoOpen(false)}
+        exampleImage={exampleImage}
+        exampleAnswer={exampleAnswer}
+      />
     </>
   );
 }

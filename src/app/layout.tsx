@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import React from "react";
 import "./globals.css";
 import { PostHogProvider } from "../providers/PostHogProvider";
 
@@ -33,9 +32,7 @@ export default function RootLayout({
         <link rel="manifest" href="/site.webmanifest" />
       </head>
       <body>
-        <PostHogProvider>
-          <>{children}</>
-        </PostHogProvider>
+        <PostHogProvider>{children}</PostHogProvider>
       </body>
     </html>
   );
