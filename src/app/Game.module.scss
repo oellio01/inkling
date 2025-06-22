@@ -30,7 +30,31 @@
   font-size: 32px;
   flex-shrink: 0;
   min-height: 40px; 
-  padding: 5px;
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+
+.guessWithDashes {
+  display: flex;
+  gap: 8px;
+  font-family: monospace;
+}
+
+.charContainer {
+  position: relative;
+  width: 20px;
+  height: 40px;
+  font-size: 32px;
+}
+
+.char {
+  position: absolute;
+  bottom: 8px;
+  font-weight: bold;
+}
+
+.dash {
+  color: #666;
 }
 
 .keyboard {

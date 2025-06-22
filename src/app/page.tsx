@@ -72,7 +72,24 @@ export default function Game() {
           priority={true}
         />
       </div>
-      <div className={styles.guess}>{isDone ? "Correct!" : currentGuess}</div>
+      <div className={styles.guess}>
+        {isDone ? (
+          "Correct!"
+        ) : (
+          <div className={styles.guessWithDashes}>
+            {Array.from({ length: gameForToday.answer.length }).map(
+              (_, index) => (
+                <div key={index} className={styles.charContainer}>
+                  <span className={styles.char}>
+                    {currentGuess[index] || " "}
+                  </span>
+                  <span className={styles.dash}>_</span>
+                </div>
+              )
+            )}
+          </div>
+        )}
+      </div>
       <Keyboard
         onPressBackspace={
           currentGuess.length > 0 ? onPressBackspace : undefined
