@@ -38,8 +38,14 @@ export function InfoPopup({
     };
   }, [close]);
 
+  const handleClick = (e: React.MouseEvent<HTMLDialogElement>) => {
+    if (e.target === dialogRef.current) {
+      close();
+    }
+  };
+
   return (
-    <dialog ref={dialogRef} className={styles.popup}>
+    <dialog ref={dialogRef} className={styles.popup} onClick={handleClick}>
       <h2 className={styles.title}>How To Play</h2>
       <p className={styles.description}>Guess the word based on the image.</p>
       <p className={styles.subtitle}>Example:</p>
