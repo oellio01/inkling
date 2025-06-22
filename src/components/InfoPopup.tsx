@@ -53,6 +53,7 @@ export function InfoPopup({
           alt="Example Rebus"
           fill
           className={styles.image}
+          sizes="(max-width: 350px) 90vw, 350px"
         />
       </div>
       <p className={styles.answer}>Answer: {exampleAnswer.toUpperCase()}</p>

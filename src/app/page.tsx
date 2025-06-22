@@ -5,15 +5,16 @@ import Image from "next/image";
 import { Header } from "../components/Header";
 import { Keyboard } from "../components/Keyboard";
 import { ResultsPopup } from "../components/ResultsPopup";
-import { GAME } from "../../public/game_data";
+import { getGameForToday } from "../hooks/game-logic";
 import styles from "./Game.module.scss";
 
 export default function Game() {
+  const gameForToday = getGameForToday();
+
   const [isDone, setIsDone] = useState(false);
   const [isResultsOpen, setIsResultsOpen] = useState(false);
   const [currentGuess, setCurrentGuess] = useState("");
   const [timer, setTimer] = useState(0);
-  const solution = GAME.answer;
 
   useEffect(() => {
     if (isDone) {
@@ -27,9 +28,10 @@ export default function Game() {
 
   const isCorrectSolution = useCallback(
     (guess: string) => {
-      return guess.toLowerCase() === solution.toLowerCase();
+      if (!gameForToday) return false;
+      return guess.toLowerCase() === gameForToday.answer.toLowerCase();
     },
-    [solution]
+    [gameForToday]
   );
 
   const onPressLetter = useCallback((letter: string) => {
@@ -49,21 +51,30 @@ export default function Game() {
     console.log({ currentGuess, isCorrect });
   }, [currentGuess, isCorrectSolution]);
 
+  if (!gameForToday) {
+    return (
+      <div className={styles.game}>
+        <p>Come back tomorrow for a new puzzle!</p>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.game}>
       <Header
         timerInSeconds={timer}
-        exampleImage={GAME.image}
-        exampleAnswer={GAME.answer}
+        exampleImage={gameForToday.image}
+        exampleAnswer={gameForToday.answer}
         className={styles.header}
       />
       <div className={styles.imageWrapper}>
         <Image
-          src={GAME.image}
+          src={gameForToday.image}
           alt="rebus"
           fill
-          sizes="(max-width: 600px) 100vw, 600px"
+          sizes="(max-width: 600px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className={styles.image}
+          priority={true}
         />
       </div>
       <div className={styles.guess}>{isDone ? "Correct!" : currentGuess}</div>
@@ -78,7 +89,7 @@ export default function Game() {
       <ResultsPopup
         isOpen={isResultsOpen}
         close={() => setIsResultsOpen(false)}
-        gameNumber={GAME.id}
+        gameNumber={gameForToday.id}
         timeInSeconds={timer}
       />
     </div>
