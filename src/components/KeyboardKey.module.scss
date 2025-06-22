@@ -1,29 +1,31 @@
-
 .key {
-    margin: 0.25rem 0.125rem;
-    font-size: 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-    background: #202121;
-    color: #fff;
-    border: 2px solid #3a3a3c;
-    border-radius: 4px;
-    min-width: 43px;
-    height: 58px;
-    cursor: pointer;
-    user-select: none;
-    transition: background 0.15s, color 0.15s, border 0.15s;
-  }
+  min-width: 24px;
+  height: 32px;
+  font-size: 20px;
+  border: 1px solid #3a3a3c;
+  border-radius: 4px;
+}
 
-@media (max-width: 600px) {
-  .key {
-    min-width: 24px;
-    height: 32px;
-    font-size: 1rem;
-    border: 1px solid #3a3a3c;
-    border-radius: 1px;
+.keyWrapper {
+  display: flex;
+  min-width: 0;
+}
+
+.keyInner {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  user-select: none;
+}
+
+.clickable {
+  cursor: pointer;
+  &:hover {
+    opacity: 0.8;
+  }
+  &:active {
+    opacity: 0.7;
   }
 }

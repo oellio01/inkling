@@ -4,7 +4,7 @@ import "./globals.css";
 import { PostHogProvider } from "../providers/PostHogProvider";
 
 export const metadata: Metadata = {
-  title: "Word in 2",
+  title: "Inkling",
 };
 
 export default function RootLayout({
@@ -29,7 +29,7 @@ export default function RootLayout({
           sizes="180x180"
           href="/apple-touch-icon.png"
         />
-        <meta name="apple-mobile-web-app-title" content="Word in 2" />
+        <meta name="apple-mobile-web-app-title" content="Inkling" />
         <link rel="manifest" href="/site.webmanifest" />
       </head>
       <body>

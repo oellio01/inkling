@@ -5,7 +5,6 @@ import React, { useState, useCallback } from "react";
 import Image from "next/image";
 import { Header } from "../components/Header";
 import { Keyboard } from "../components/Keyboard";
-import { InfoPopup } from "../components/InfoPopup";
 import { GAME } from "../../public/game_data";
 import styles from "./Game.module.scss";
 
@@ -14,10 +13,8 @@ interface State {
 }
 
 export default function Game() {
-  const [isShowingInfoPopup, setIsShowingInfoPopup] = useState(false);
   const [isDone, setIsDone] = useState(false);
-
-  const solution = "Century";
+  const solution = GAME.answer;
 
   const isCorrectSolution = useCallback(
     (guess: string) => {
@@ -32,7 +29,7 @@ export default function Game() {
 
   const onChangeCurrentGuess = useCallback(
     (updater: (oldGuess: string) => string) => {
-      setState((existing: { currentGuess: string }) => ({
+      setState((existing) => ({
         ...existing,
         currentGuess: updater(existing.currentGuess),
       }));
@@ -60,30 +57,23 @@ export default function Game() {
   return (
     <div className={styles.game}>
       <div className={styles.header}>
-        {isShowingInfoPopup && (
-          <InfoPopup
-            close={() => {
-              setIsShowingInfoPopup(false);
-            }}
-            yesterdaysAnswer={"Hello!"}
-          />
-        )}
         <Header
-          onClickInfo={() => {
-            setIsShowingInfoPopup(true);
-          }}
           timerInSeconds={0}
+          exampleImage={GAME.image}
+          exampleAnswer={GAME.answer}
         />
       </div>
-      <Image
-        src={GAME.image}
-        alt="rebus"
-        className={styles.image}
-        width={300}
-        height={450}
-      />
+      <div className={styles.imageWrapper}>
+        <Image
+          src={GAME.image}
+          alt="rebus"
+          fill
+          sizes="(max-width: 600px) 100vw, 600px"
+          className={styles.image}
+        />
+      </div>
+      <div className={styles.guess}>{isDone ? "Correct!" : currentGuess}</div>
       <div className={styles.keyboard}>
-        <div className={styles.guess}>{isDone ? "Correct!" : currentGuess}</div>
         <Keyboard
           onPressBackspace={
             currentGuess.length > 0 ? onPressBackspace : undefined

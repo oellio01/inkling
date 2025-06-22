@@ -1,29 +1,47 @@
+import { useState } from "react";
 import { formatTimeInSeconds } from "./formatTimeInSeconds";
+import styles from "./Header.module.scss";
+import { InfoPopup } from "./InfoPopup";
 
 export function Header({
-  onClickInfo,
   timerInSeconds,
+  exampleImage,
+  exampleAnswer,
 }: {
-  onClickInfo: () => void;
   timerInSeconds: number;
+  exampleImage: string;
+  exampleAnswer: string;
 }) {
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
   const { minutes, seconds } = formatTimeInSeconds(timerInSeconds);
 
   return (
-    <div className="flex flex-col">
-      <div className="flex justify-end p-4 items-center text-gray-400">
-        <div className="flex">
-          <div className="w-10 tracking-wider text-right">{minutes}</div>
-          <div className="mx-0.5">:</div>
-          <div className="w-10 tracking-wider">{seconds}</div>
+    <>
+      <div className={styles.headerContainer}>
+        <div className={styles.left}></div>
+        <div className={styles.center}>
+          <div className={styles.timer}>
+            <div>{minutes}</div>
+            <div>:</div>
+            <div>{seconds}</div>
+          </div>
         </div>
-        <button
-          className="border border-gray-500 size-5 flex justify-center items-center text-sm font-mono cursor-pointer hover:bg-gray-700/40"
-          onClick={onClickInfo}
-        >
-          i
-        </button>
+        <div className={styles.right}>
+          <button
+            className={styles.infoButton}
+            onClick={() => setIsInfoOpen(true)}
+          >
+            i
+          </button>
+        </div>
       </div>
-    </div>
+      {isInfoOpen && (
+        <InfoPopup
+          close={() => setIsInfoOpen(false)}
+          exampleImage={exampleImage}
+          exampleAnswer={exampleAnswer}
+        />
+      )}
+    </>
   );
 }

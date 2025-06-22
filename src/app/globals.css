@@ -2,9 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
 body {
-    background: #111;
-    color: #fff;
-    min-height: 100vh;
-    margin: 0;
+  height: 100%;
+}
+
+body {
+  background: #111;
+  color: #fff;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+}
+
+/* On mobile, use dynamic viewport height to avoid issues with address bars */
+@supports (height: 100dvh) {
+  html, body {
+    height: 100dvh;
   }
+}

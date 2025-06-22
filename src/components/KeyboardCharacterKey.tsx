@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import { KeyboardKey } from "./KeyboardKey";
+import styles from "./KeyboardCharacterKey.module.scss";
 
 export interface KeyboardCharacterKeyProps {
   containerClassName?: string;
@@ -16,7 +17,7 @@ export function KeyboardCharacterKey({
 }: KeyboardCharacterKeyProps) {
   return (
     <KeyboardKey
-      containerClassName={classNames(containerClassName, "basis-9 md:basis-10")}
+      containerClassName={classNames(containerClassName, styles.characterKey)}
       className={className}
       text={character}
       onClick={onClick}

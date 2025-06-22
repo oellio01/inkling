@@ -1,14 +1,11 @@
 import classNames from "classnames";
+import styles from "./KeyboardLine.module.scss";
 
 export interface KeyboardLineProps {
   className?: string;
-  children: React.JSX.Element | React.JSX.Element[];
+  children: React.ReactNode;
 }
 
 export function KeyboardLine({ className, children }: KeyboardLineProps) {
-  return (
-    <div className={classNames(className, "flex justify-center min-w-0")}>
-      {children}
-    </div>
-  );
+  return <div className={classNames(className, styles.line)}>{children}</div>;
 }
