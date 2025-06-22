@@ -41,7 +41,8 @@ export function ResultsPopup({
   }, [close]);
 
   const handleShare = () => {
-    const shareText = `Inkling #${gameNumber} - ${minutes}:${seconds}`;
+    const url = window.location.href;
+    const shareText = `Inkling #${gameNumber} - ${minutes}:${seconds}\n${url}`;
     navigator.clipboard.writeText(shareText).then(() => {
       setHasCopied(true);
     });
