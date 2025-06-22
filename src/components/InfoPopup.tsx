@@ -5,16 +5,9 @@ import Image from "next/image";
 export interface InfoPopupProps {
   isOpen: boolean;
   close: () => void;
-  exampleImage: string;
-  exampleAnswer: string;
 }
 
-export function InfoPopup({
-  isOpen,
-  close,
-  exampleImage,
-  exampleAnswer,
-}: InfoPopupProps) {
+export function InfoPopup({ isOpen, close }: InfoPopupProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -49,14 +42,14 @@ export function InfoPopup({
       <p className={styles.subtitle}>Example:</p>
       <div className={styles.imageContainer}>
         <Image
-          src={exampleImage}
+          src={"/games/1.jpg"}
           alt="Example Rebus"
           fill
           className={styles.image}
           sizes="(max-width: 350px) 90vw, 350px"
         />
       </div>
-      <p className={styles.answer}>Answer: {exampleAnswer.toUpperCase()}</p>
+      <p className={styles.answer}>Answer: CENTURY</p>
     </dialog>
   );
 }

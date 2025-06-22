@@ -6,13 +6,9 @@ import classNames from "classnames";
 
 export function Header({
   timerInSeconds,
-  exampleImage,
-  exampleAnswer,
   className,
 }: {
   timerInSeconds: number;
-  exampleImage: string;
-  exampleAnswer: string;
   className?: string;
 }) {
   const [isInfoOpen, setIsInfoOpen] = useState(false);
@@ -38,12 +34,7 @@ export function Header({
           </button>
         </div>
       </div>
-      <InfoPopup
-        isOpen={isInfoOpen}
-        close={() => setIsInfoOpen(false)}
-        exampleImage={exampleImage}
-        exampleAnswer={exampleAnswer}
-      />
+      <InfoPopup isOpen={isInfoOpen} close={() => setIsInfoOpen(false)} />
     </>
   );
 }

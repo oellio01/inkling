@@ -61,12 +61,7 @@ export default function Game() {
 
   return (
     <div className={styles.game}>
-      <Header
-        timerInSeconds={timer}
-        exampleImage={gameForToday.image}
-        exampleAnswer={gameForToday.answer}
-        className={styles.header}
-      />
+      <Header timerInSeconds={timer} className={styles.header} />
       <div className={styles.imageWrapper}>
         <Image
           src={gameForToday.image}
