@@ -28,8 +28,6 @@ export function InfoPopup({
     }
   }, [isOpen]);
 
-  // When the dialog is closed by the browser (e.g. with the Escape key),
-  // we need to call the `close` prop to sync the state.
   useEffect(() => {
     const dialog = dialogRef.current;
     dialog?.addEventListener("close", close);

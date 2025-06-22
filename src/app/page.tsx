@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 import { Header } from "../components/Header";
 import { Keyboard } from "../components/Keyboard";
@@ -10,7 +10,18 @@ import styles from "./Game.module.scss";
 export default function Game() {
   const [isDone, setIsDone] = useState(false);
   const [currentGuess, setCurrentGuess] = useState("");
+  const [timer, setTimer] = useState(0);
   const solution = GAME.answer;
+
+  useEffect(() => {
+    if (isDone) {
+      return;
+    }
+    const intervalId = setInterval(() => {
+      setTimer((t) => t + 1);
+    }, 1000);
+    return () => clearInterval(intervalId);
+  }, [isDone]);
 
   const isCorrectSolution = useCallback(
     (guess: string) => {
@@ -36,7 +47,7 @@ export default function Game() {
   return (
     <div className={styles.game}>
       <Header
-        timerInSeconds={0}
+        timerInSeconds={timer}
         exampleImage={GAME.image}
         exampleAnswer={GAME.answer}
         className={styles.header}
