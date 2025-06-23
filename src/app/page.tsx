@@ -55,6 +55,26 @@ export default function Game() {
     console.log({ currentGuess, isCorrect });
   }, [currentGuess, isCorrectSolution]);
 
+  useEffect(() => {
+    if (isDone) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (isResultsOpen) return; // Don't accept input if results are open
+
+      const key = event.key;
+      if (/^[a-zA-Z]$/.test(key)) {
+        onPressLetter(key.toUpperCase());
+      } else if (key === "Backspace") {
+        onPressBackspace();
+      } else if (key === "Enter") {
+        commitGuess();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isDone, isResultsOpen, onPressLetter, onPressBackspace, commitGuess]);
+
   if (!gameForToday) {
     return (
       <div className={styles.game}>
