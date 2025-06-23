@@ -15,6 +15,7 @@ export default function Game() {
   const [isResultsOpen, setIsResultsOpen] = useState(false);
   const [currentGuess, setCurrentGuess] = useState("");
   const [timer, setTimer] = useState(0);
+  const [showIncorrect, setShowIncorrect] = useState(false);
 
   useEffect(() => {
     if (isDone) {
@@ -47,6 +48,9 @@ export default function Game() {
     if (isCorrect) {
       setIsDone(true);
       setIsResultsOpen(true);
+    } else {
+      setShowIncorrect(true);
+      setTimeout(() => setShowIncorrect(false), 500);
     }
     console.log({ currentGuess, isCorrect });
   }, [currentGuess, isCorrectSolution]);
@@ -76,18 +80,25 @@ export default function Game() {
         {isDone ? (
           "Correct!"
         ) : (
-          <div className={styles.guessWithDashes}>
-            {Array.from({ length: gameForToday.answer.length }).map(
-              (_, index) => (
-                <div key={index} className={styles.charContainer}>
-                  <span className={styles.char}>
-                    {currentGuess[index] || " "}
-                  </span>
-                  <span className={styles.dash}>_</span>
-                </div>
-              )
-            )}
-          </div>
+          <>
+            <div
+              className={
+                styles.guessWithDashes +
+                (showIncorrect ? " " + styles.incorrectGuess : "")
+              }
+            >
+              {Array.from({ length: gameForToday.answer.length }).map(
+                (_, index) => (
+                  <div key={index} className={styles.charContainer}>
+                    <span className={styles.char}>
+                      {currentGuess[index] || " "}
+                    </span>
+                    <span className={styles.dash}>_</span>
+                  </div>
+                )
+              )}
+            </div>
+          </>
         )}
       </div>
       <Keyboard
