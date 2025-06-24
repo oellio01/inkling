@@ -17,6 +17,7 @@ export default function Game() {
   const [timer, setTimer] = useState(0);
   const [showIncorrect, setShowIncorrect] = useState(false);
   const [hintCount, setHintCount] = useState(0);
+  const [guessCount, setGuessCount] = useState(0);
 
   useEffect(() => {
     if (isDone) {
@@ -67,6 +68,7 @@ export default function Game() {
 
   const commitGuess = useCallback(() => {
     const isCorrect = isCorrectSolution(currentGuess);
+    setGuessCount((g) => g + 1);
     if (isCorrect) {
       setIsDone(true);
       setIsResultsOpen(true);
@@ -205,6 +207,8 @@ export default function Game() {
         close={() => setIsResultsOpen(false)}
         gameNumber={gameForToday.id}
         timeInSeconds={timer}
+        guessCount={guessCount}
+        hintCount={hintCount}
       />
     </div>
   );

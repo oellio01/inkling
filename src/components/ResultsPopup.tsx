@@ -8,6 +8,8 @@ export interface ResultsPopupProps {
   close: () => void;
   gameNumber: number;
   timeInSeconds: number;
+  guessCount: number;
+  hintCount: number;
 }
 
 export function ResultsPopup({
@@ -15,6 +17,8 @@ export function ResultsPopup({
   close,
   gameNumber,
   timeInSeconds,
+  guessCount,
+  hintCount,
 }: ResultsPopupProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [hasCopied, setHasCopied] = useState(false);
@@ -42,7 +46,7 @@ export function ResultsPopup({
 
   const handleShare = () => {
     const url = window.location.href;
-    const shareText = `Inkling #${gameNumber} - ${minutes}:${seconds}\n${url}`;
+    const shareText = `Inkling #${gameNumber} - ${minutes}:${seconds} - ${guessCount} guesses - ${hintCount} hints\n${url}`;
     navigator.clipboard.writeText(shareText).then(() => {
       setHasCopied(true);
     });
@@ -68,6 +72,14 @@ export function ResultsPopup({
             {minutes}:{seconds}
           </div>
           <div className={styles.statLabel}>Time</div>
+        </div>
+        <div className={styles.statItem}>
+          <div className={styles.statValue}>{guessCount}</div>
+          <div className={styles.statLabel}>Guesses</div>
+        </div>
+        <div className={styles.statItem}>
+          <div className={styles.statValue}>{hintCount}</div>
+          <div className={styles.statLabel}>Hints</div>
         </div>
       </div>
 
