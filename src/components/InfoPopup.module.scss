@@ -42,4 +42,23 @@
   font-size: 24px;
   letter-spacing: 0.1em;
   text-align: center;
+}
+
+.hintRow {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+.hintEyeIcon {
+  background: #222;
+  border-radius: 50%;
+}
+
+.hintText {
+  color: #222;
+  font-size: 15px;
+  text-align: center;
 } 

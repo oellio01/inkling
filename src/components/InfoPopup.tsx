@@ -50,6 +50,10 @@ export function InfoPopup({ isOpen, close }: InfoPopupProps) {
         />
       </div>
       <p className={styles.answer}>Answer: CENTURY</p>
+      <p className={styles.hintText}>
+        Click the eye to reveal the next letter of the answer. Each hint adds{" "}
+        <b>30 seconds</b> to your time.
+      </p>
     </dialog>
   );
 }

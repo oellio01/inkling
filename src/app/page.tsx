@@ -16,6 +16,7 @@ export default function Game() {
   const [currentGuess, setCurrentGuess] = useState("");
   const [timer, setTimer] = useState(0);
   const [showIncorrect, setShowIncorrect] = useState(false);
+  const [hintCount, setHintCount] = useState(0);
 
   useEffect(() => {
     if (isDone) {
@@ -35,13 +36,34 @@ export default function Game() {
     [gameForToday]
   );
 
-  const onPressLetter = useCallback((letter: string) => {
-    setCurrentGuess((prev) => prev + letter);
-  }, []);
+  const onPressLetter = useCallback(
+    (letter: string) => {
+      setCurrentGuess((prev) => {
+        if (!gameForToday) return prev;
+        if (hintCount === undefined) return prev + letter;
+        const safePrefix = prev.slice(0, hintCount);
+        const rest = prev.slice(hintCount);
+        if (safePrefix.length < hintCount) {
+          return gameForToday.answer.slice(0, hintCount).toUpperCase() + letter;
+        }
+        if (safePrefix.length + rest.length < gameForToday.answer.length) {
+          return safePrefix + rest + letter;
+        }
+        return prev;
+      });
+    },
+    [hintCount, gameForToday]
+  );
 
   const onPressBackspace = useCallback(() => {
-    setCurrentGuess((prev) => prev.slice(0, -1));
-  }, []);
+    setCurrentGuess((prev) => {
+      if (hintCount === undefined) return prev.slice(0, -1);
+      if (prev.length > hintCount) {
+        return prev.slice(0, -1);
+      }
+      return prev;
+    });
+  }, [hintCount]);
 
   const commitGuess = useCallback(() => {
     const isCorrect = isCorrectSolution(currentGuess);
@@ -54,6 +76,24 @@ export default function Game() {
     }
     console.log({ currentGuess, isCorrect });
   }, [currentGuess, isCorrectSolution]);
+
+  const onHint = useCallback(() => {
+    if (!gameForToday) return;
+    setHintCount((prev) => {
+      if (prev < gameForToday.answer.length) {
+        setTimer((t) => t + 30);
+        const newHintCount = prev + 1;
+        setCurrentGuess(
+          gameForToday.answer
+            .slice(0, newHintCount)
+            .toUpperCase()
+            .padEnd(gameForToday.answer.length, "")
+        );
+        return newHintCount;
+      }
+      return prev;
+    });
+  }, [gameForToday]);
 
   useEffect(() => {
     if (isDone) return;
@@ -111,12 +151,46 @@ export default function Game() {
                 (_, index) => (
                   <div key={index} className={styles.charContainer}>
                     <span className={styles.char}>
-                      {currentGuess[index] || " "}
+                      {index < hintCount
+                        ? gameForToday.answer[index].toUpperCase()
+                        : currentGuess[index] || " "}
                     </span>
                     <span className={styles.dash}>_</span>
                   </div>
                 )
               )}
+              <button
+                type="button"
+                aria-label="Reveal a letter (costs +30s)"
+                onClick={onHint}
+                disabled={hintCount >= gameForToday.answer.length}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor:
+                    hintCount < gameForToday.answer.length
+                      ? "pointer"
+                      : "not-allowed",
+                  marginLeft: 12,
+                  padding: 0,
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#fff"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="12" cy="12" r="3" />
+                  <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
+                </svg>
+              </button>
             </div>
           </>
         )}
