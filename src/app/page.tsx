@@ -79,21 +79,18 @@ export default function Game() {
 
   const onHint = useCallback(() => {
     if (!gameForToday) return;
-    setHintCount((prev) => {
-      if (prev < gameForToday.answer.length) {
-        setTimer((t) => t + 30);
-        const newHintCount = prev + 1;
-        setCurrentGuess(
-          gameForToday.answer
-            .slice(0, newHintCount)
-            .toUpperCase()
-            .padEnd(gameForToday.answer.length, "")
-        );
-        return newHintCount;
-      }
-      return prev;
-    });
-  }, [gameForToday]);
+    if (hintCount < gameForToday.answer.length) {
+      setTimer((t) => t + 30);
+      const newHintCount = hintCount + 1;
+      setCurrentGuess(
+        gameForToday.answer
+          .slice(0, newHintCount)
+          .toUpperCase()
+          .padEnd(gameForToday.answer.length, "")
+      );
+      setHintCount(newHintCount);
+    }
+  }, [gameForToday, hintCount]);
 
   useEffect(() => {
     if (isDone) return;
