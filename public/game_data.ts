@@ -100,8 +100,5 @@ export const GAMES: GameData[] = [
     image: "/games/19.jpg",
     answer: "FORBIDDEN",
   },
-  
-
-
 ];
   

@@ -1,7 +1,10 @@
 .headerContainer {
   display: flex;
   align-items: center;
-  margin: 5px;
+  padding-bottom: 5px;
+  font-size: 16px;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  background: inherit;
 }
 
 .left,
@@ -18,22 +21,22 @@
 .right {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+  gap: 5px;
 }
 
 .timer {
   display: flex;
-  font-size: 20px;
   letter-spacing: 0.05em;
 }
 
 .infoButton {
   border: 1px solid #4a4a4a;
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 16px;
   cursor: pointer;
   background-color: transparent;
   color: #d7dadc;
@@ -42,4 +45,65 @@
 
 .infoButton:hover {
   background-color: #2c2c2c;
+}
+
+.hintButton {
+  border: 1px solid #4a4a4a;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+  color: #d7dadc;
+  border-radius: 4px;
+}
+
+.hintButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.leftDropdownWrapper {
+  position: relative;
+  margin-left: 8px;
+  margin-right: 8px;
+}
+
+.gameNumberButton {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: inherit;
+}
+
+.gameNumberButtonDropdownIcon {
+  margin-left: 4px;
+}
+
+.dropdownMenu {
+  position: absolute;
+  background: #222;
+  border: 1px solid #444;
+  border-radius: 4px;
+  z-index: 10;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.dropdownMenuItem {
+  padding: 6px 12px;
+  background: #222;
+  color: #ccc;
+  cursor: pointer;
+}
+
+.dropdownMenuItemActive {
+  background: #444;
+  color: #fff;
+}
+
+.left {
+  display: flex;
+  flex-direction: row;
 } 

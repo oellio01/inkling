@@ -19,14 +19,8 @@ function daysBetween(start: Date, end: Date): number {
 /**
  * Returns the game data for the current day based on the epoch date.
  */
-export function getGameForToday(): GameData | null {
+export function getTodaysGameIndex(): number {
   const today = new Date();
   const gameIndex = daysBetween(EPOCH_DATE, today);
-
-  if (gameIndex < 0 || gameIndex >= GAMES.length) {
-    // This can happen if the current date is before the epoch or after the last game.
-    return null;
-  }
-
-  return GAMES[gameIndex];
+  return gameIndex;
 } 

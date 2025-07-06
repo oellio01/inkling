@@ -5,11 +5,13 @@ import Image from "next/image";
 import { Header } from "../components/Header";
 import { Keyboard } from "../components/Keyboard";
 import { ResultsPopup } from "../components/ResultsPopup";
-import { getGameForToday } from "../hooks/game-logic";
+import { getTodaysGameIndex } from "../hooks/game-logic";
+import { GAMES } from "../../public/game_data";
 import styles from "./Game.module.scss";
 
 export default function Game() {
-  const gameForToday = getGameForToday();
+  const [gameIndex, setGameIndex] = useState(getTodaysGameIndex);
+  const gameForToday = GAMES[gameIndex];
 
   const [isDone, setIsDone] = useState(false);
   const [isResultsOpen, setIsResultsOpen] = useState(false);
@@ -31,7 +33,9 @@ export default function Game() {
 
   const isCorrectSolution = useCallback(
     (guess: string) => {
-      if (!gameForToday) return false;
+      if (!gameForToday) {
+        return false;
+      }
       return guess.toLowerCase() === gameForToday.answer.toLowerCase();
     },
     [gameForToday]
@@ -40,8 +44,12 @@ export default function Game() {
   const onPressLetter = useCallback(
     (letter: string) => {
       setCurrentGuess((prev) => {
-        if (!gameForToday) return prev;
-        if (hintCount === undefined) return prev + letter;
+        if (!gameForToday) {
+          return prev;
+        }
+        if (hintCount === undefined) {
+          return prev + letter;
+        }
         const safePrefix = prev.slice(0, hintCount);
         const rest = prev.slice(hintCount);
         if (safePrefix.length < hintCount) {
@@ -58,7 +66,9 @@ export default function Game() {
 
   const onPressBackspace = useCallback(() => {
     setCurrentGuess((prev) => {
-      if (hintCount === undefined) return prev.slice(0, -1);
+      if (hintCount === undefined) {
+        return prev.slice(0, -1);
+      }
       if (prev.length > hintCount) {
         return prev.slice(0, -1);
       }
@@ -76,7 +86,6 @@ export default function Game() {
       setShowIncorrect(true);
       setTimeout(() => setShowIncorrect(false), 500);
     }
-    console.log({ currentGuess, isCorrect });
   }, [currentGuess, isCorrectSolution]);
 
   const onHint = useCallback(() => {
@@ -95,11 +104,14 @@ export default function Game() {
   }, [gameForToday, hintCount]);
 
   useEffect(() => {
-    if (isDone) return;
-
+    if (isDone) {
+      return;
+    }
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (isResultsOpen) return; // Don't accept input if results are open
-
+      if (isResultsOpen) {
+        // Don't accept input if results are open
+        return;
+      }
       const key = event.key;
       if (/^[a-zA-Z]$/.test(key)) {
         onPressLetter(key.toUpperCase());
@@ -124,11 +136,20 @@ export default function Game() {
 
   return (
     <div className={styles.game}>
-      <Header timerInSeconds={timer} className={styles.header} />
+      <Header
+        timerInSeconds={timer}
+        className={styles.header}
+        gameIndex={gameIndex}
+        onSelectGame={setGameIndex}
+        maxGameIndex={GAMES.length}
+        onHint={onHint}
+        hintDisabled={hintCount >= gameForToday.answer.length}
+        hintAriaLabel="Reveal a letter (costs +30s)"
+      />
       <div className={styles.imageWrapper}>
         <Image
           src={gameForToday.image}
-          alt="rebus"
+          alt="inkling"
           fill
           sizes="(max-width: 600px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className={styles.image}
@@ -146,50 +167,22 @@ export default function Game() {
                 (showIncorrect ? " " + styles.incorrectGuess : "")
               }
             >
-              {Array.from({ length: gameForToday.answer.length }).map(
-                (_, index) => (
-                  <div key={index} className={styles.charContainer}>
-                    <span className={styles.char}>
-                      {index < hintCount
-                        ? gameForToday.answer[index].toUpperCase()
-                        : currentGuess[index] || " "}
-                    </span>
-                    <span className={styles.dash}>_</span>
-                  </div>
-                )
-              )}
-              <button
-                type="button"
-                aria-label="Reveal a letter (costs +30s)"
-                onClick={onHint}
-                disabled={hintCount >= gameForToday.answer.length}
-                style={{
-                  background: "none",
-                  border: "none",
-                  cursor:
-                    hintCount < gameForToday.answer.length
-                      ? "pointer"
-                      : "not-allowed",
-                  marginLeft: 12,
-                  padding: 0,
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#fff"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <circle cx="12" cy="12" r="3" />
-                  <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
-                </svg>
-              </button>
+              <span className={styles.guessWithDashesSide}></span>
+              <span className={styles.guessWithDashesContent}>
+                {Array.from({ length: gameForToday.answer.length }).map(
+                  (_, index) => (
+                    <div key={index} className={styles.charContainer}>
+                      <span className={styles.char}>
+                        {index < hintCount
+                          ? gameForToday.answer[index].toUpperCase()
+                          : currentGuess[index] || " "}
+                      </span>
+                      <span className={styles.dash}>_</span>
+                    </div>
+                  )
+                )}
+              </span>
+              <span className={styles.guessWithDashesSide}></span>
             </div>
           </>
         )}
