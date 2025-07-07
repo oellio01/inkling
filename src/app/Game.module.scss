@@ -42,11 +42,7 @@
 }
 
 .guessWithDashesSide {
-  width: 80px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  width: 70px;
 }
 
 .guessWithDashesContent {
@@ -95,3 +91,8 @@
 .hintButton:disabled {
   cursor: not-allowed;
 }
+
+.keyWide {
+  margin-left: 20px;
+  min-width: 70px;
+} 

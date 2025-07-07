@@ -4,14 +4,10 @@
   font-size: 20px;
   border: 1px solid #3a3a3c;
   border-radius: 4px;
-}
-
-.keyInner {
   display: flex;
   flex: 1;
   justify-content: center;
   align-items: center;
-  font-weight: bold;
   user-select: none;
 }
 
@@ -22,13 +18,5 @@
   }
   &:active {
     opacity: 0.7;
-  }
-}
-
-@media screen and (max-width: 450px) {
-  .key {
-    min-width: 24px;
-    height: 32px;
-    font-size: 16px;
   }
 }

@@ -12,8 +12,6 @@ export interface KeyboardProps {
   className?: string;
 }
 
-const DEFAULT_TEXT_COLOR = "text-gray-300";
-
 export const Keyboard = React.memo(function KeyboardImpl({
   onPressBackspace,
   onPressCharacter,
@@ -63,8 +61,8 @@ export const Keyboard = React.memo(function KeyboardImpl({
       </KeyboardLine>
       <KeyboardLine className={styles.keyboardRow}>
         <KeyboardKey
-          containerClassName={classNames(DEFAULT_TEXT_COLOR, styles.keyWide)}
-          text="ENTER"
+          className={styles.keyWide}
+          text="SUBMIT"
           onClick={onPressEnter}
         />
         {renderCharacter("Z")}
@@ -75,8 +73,8 @@ export const Keyboard = React.memo(function KeyboardImpl({
         {renderCharacter("N")}
         {renderCharacter("M")}
         <KeyboardKey
-          containerClassName={classNames(DEFAULT_TEXT_COLOR, styles.keyWide)}
-          text={<IconBackspace size={32} />}
+          className={styles.key}
+          text={<IconBackspace size={24} />}
           onClick={onPressBackspace}
         />
       </KeyboardLine>

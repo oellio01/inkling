@@ -167,7 +167,6 @@ export default function Game() {
                 (showIncorrect ? " " + styles.incorrectGuess : "")
               }
             >
-              <span className={styles.guessWithDashesSide}></span>
               <span className={styles.guessWithDashesContent}>
                 {Array.from({ length: gameForToday.answer.length }).map(
                   (_, index) => (
@@ -182,7 +181,6 @@ export default function Game() {
                   )
                 )}
               </span>
-              <span className={styles.guessWithDashesSide}></span>
             </div>
           </>
         )}

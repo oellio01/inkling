@@ -6,7 +6,6 @@
   color: rgb(0, 0, 0);
   width: 90%;
   max-width: 350px;
-  border: none; /* Remove default dialog border */
 }
 
 .popup::backdrop {
@@ -25,7 +24,6 @@
 .subtitle {
   font-size: 18px;
   font-style: italic;
-  text-align: center;
 }
 
 .imageContainer {
@@ -36,12 +34,6 @@
 
 .image {
   object-fit: contain;
-}
-
-.answer {
-  font-size: 24px;
-  letter-spacing: 0.1em;
-  text-align: center;
 }
 
 .hintRow {
