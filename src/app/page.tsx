@@ -126,6 +126,24 @@ export default function Game() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isDone, isResultsOpen, onPressLetter, onPressBackspace, commitGuess]);
 
+  // Add this callback to reset state on game switch
+  const handleSelectGame = (newIndex: number) => {
+    setGameIndex(newIndex);
+    setIsDone(false);
+    setIsResultsOpen(false);
+    setCurrentGuess("");
+    setTimer(0);
+    setShowIncorrect(false);
+    setHintCount(0);
+    setGuessCount(0);
+  };
+
+  // Calculate the maximum selectable game index (today or last available)
+  const maxSelectableGameIndex = Math.min(
+    getTodaysGameIndex() + 1,
+    GAMES.length
+  );
+
   if (!gameForToday) {
     return (
       <div className={styles.game}>
@@ -140,8 +158,8 @@ export default function Game() {
         timerInSeconds={timer}
         className={styles.header}
         gameIndex={gameIndex}
-        onSelectGame={setGameIndex}
-        maxGameIndex={GAMES.length}
+        onSelectGame={handleSelectGame}
+        maxGameIndex={maxSelectableGameIndex}
         onHint={onHint}
         hintDisabled={hintCount >= gameForToday.answer.length}
         hintAriaLabel="Reveal a letter (costs +30s)"
