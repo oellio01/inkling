@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Header } from "../components/Header";
 import { Keyboard } from "../components/Keyboard";
 import { ResultsPopup } from "../components/ResultsPopup";
+import { SuggestPopup } from "../components/SuggestPopup";
 import { getTodaysGameIndex } from "../hooks/game-logic";
 import { GAMES } from "../../public/game_data";
 import styles from "./Game.module.scss";
@@ -20,6 +21,7 @@ export default function Game() {
   const [showIncorrect, setShowIncorrect] = useState(false);
   const [hintCount, setHintCount] = useState(0);
   const [guessCount, setGuessCount] = useState(0);
+  const [isSuggestOpen, setIsSuggestOpen] = useState(false);
 
   useEffect(() => {
     if (isDone) {
@@ -108,6 +110,11 @@ export default function Game() {
       return;
     }
     const handleKeyDown = (event: KeyboardEvent) => {
+      // Prevent typing in currentGuess if SuggestPopup is open or a textarea is focused
+      const active = document.activeElement;
+      if (isSuggestOpen || (active && active.tagName === "TEXTAREA")) {
+        return;
+      }
       if (isResultsOpen) {
         // Don't accept input if results are open
         return;
@@ -124,7 +131,14 @@ export default function Game() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isDone, isResultsOpen, onPressLetter, onPressBackspace, commitGuess]);
+  }, [
+    isDone,
+    isResultsOpen,
+    onPressLetter,
+    onPressBackspace,
+    commitGuess,
+    isSuggestOpen,
+  ]);
 
   // Add this callback to reset state on game switch
   const handleSelectGame = (newIndex: number) => {
@@ -163,6 +177,12 @@ export default function Game() {
         onHint={onHint}
         hintDisabled={hintCount >= gameForToday.answer.length}
         hintAriaLabel="Reveal a letter (costs +30s)"
+        isSuggestOpen={isSuggestOpen}
+        setIsSuggestOpen={setIsSuggestOpen}
+      />
+      <SuggestPopup
+        isOpen={isSuggestOpen}
+        close={() => setIsSuggestOpen(false)}
       />
       <div className={styles.imageWrapper}>
         <Image

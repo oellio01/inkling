@@ -1,0 +1,65 @@
+.popup {
+  background-color: #fefefe;
+  border-radius: 8px;
+  z-index: 1001;
+  text-align: center;
+  color: rgb(0, 0, 0);
+  width: 90%;
+  max-width: 350px;
+  padding: 24px 16px;
+}
+
+.popup::backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 18px;
+}
+
+.input, .textarea {
+  width: 100%;
+  font-size: 16px;
+  margin-bottom: 14px;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  resize: none;
+}
+
+.textarea {
+  min-height: 70px;
+  font-family: inherit;
+}
+
+.submit {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  background-color: #4caf50;
+  color: white;
+  transition: background-color 0.2s;
+  margin-bottom: 8px;
+}
+
+.submit:disabled {
+  background-color: #bdbdbd;
+  cursor: not-allowed;
+}
+
+.success {
+  color: green;
+  margin-top: 1rem;
+}
+
+.error {
+  color: #e53935;
+  margin-top: 8px;
+}

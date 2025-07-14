@@ -3,6 +3,8 @@ import { formatTimeInSeconds } from "./formatTimeInSeconds";
 import styles from "./Header.module.scss";
 import { InfoPopup } from "./InfoPopup";
 import classNames from "classnames";
+import { SuggestPopup } from "./SuggestPopup";
+import { IconBulb, IconInfoCircle, IconEye } from "@tabler/icons-react";
 
 export function Header({
   timerInSeconds,
@@ -13,6 +15,8 @@ export function Header({
   onHint,
   hintDisabled,
   hintAriaLabel = "Reveal a letter (costs +30s)",
+  isSuggestOpen,
+  setIsSuggestOpen,
 }: {
   timerInSeconds: number;
   className?: string;
@@ -22,6 +26,8 @@ export function Header({
   onHint?: () => void;
   hintDisabled?: boolean;
   hintAriaLabel?: string;
+  isSuggestOpen: boolean;
+  setIsSuggestOpen: (open: boolean) => void;
 }) {
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -101,30 +107,32 @@ export function Header({
               onClick={onHint}
               disabled={hintDisabled}
             >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#fff"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="12" cy="12" r="3" />
-                <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
-              </svg>
+              <IconEye size={24} color="#fff" stroke={2} />
             </button>
           )}
+          {/* SuggestPopup trigger button */}
+          <button
+            className={styles.suggestButton}
+            onClick={() => setIsSuggestOpen(true)}
+            aria-label="Suggest an Inkling"
+            type="button"
+          >
+            <IconBulb size={22} color="#fff" stroke={2} />
+          </button>
+          {/* Info icon button */}
           <button
             className={styles.infoButton}
             onClick={() => setIsInfoOpen(true)}
           >
-            i
+            <IconInfoCircle size={22} color="#fff" stroke={2} />
           </button>
         </div>
       </div>
       <InfoPopup isOpen={isInfoOpen} close={() => setIsInfoOpen(false)} />
+      <SuggestPopup
+        isOpen={isSuggestOpen}
+        close={() => setIsSuggestOpen(false)}
+      />
     </>
   );
 }
