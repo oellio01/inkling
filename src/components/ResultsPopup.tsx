@@ -77,7 +77,9 @@ export function ResultsPopup({
 
   const handleSubmitRating = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!rating) return;
+    if (!rating) {
+      return;
+    }
     setSubmitting(true);
     setError(null);
     const { error } = await supabase
@@ -131,29 +133,24 @@ export function ResultsPopup({
       >
         <div className={styles.ratingLabel}>How was today&apos;s inkling?</div>
         <div className={styles.starsRow}>
-          {[1, 2, 3, 4, 5].map((star) =>
-            (hoverRating ?? rating ?? 0) >= star ? (
-              <IconStarFilled
-                key={star}
-                size={28}
-                color="#FFD700"
-                style={{ cursor: submitted ? "default" : "pointer" }}
-                onMouseEnter={() => !submitted && setHoverRating(star)}
-                onMouseLeave={() => !submitted && setHoverRating(null)}
-                onClick={() => !submitted && setRating(star)}
-              />
-            ) : (
-              <IconStar
-                key={star}
-                size={28}
-                color="#FFD700"
-                style={{ cursor: submitted ? "default" : "pointer" }}
-                onMouseEnter={() => !submitted && setHoverRating(star)}
-                onMouseLeave={() => !submitted && setHoverRating(null)}
-                onClick={() => !submitted && setRating(star)}
-              />
-            )
-          )}
+          {[1, 2, 3, 4, 5].map((star) => (
+            <button
+              key={star}
+              type="button"
+              className={styles.starButton}
+              aria-label={`Rate ${star} star${star > 1 ? "s" : ""}`}
+              disabled={submitted}
+              onClick={() => !submitted && setRating(star)}
+              onMouseEnter={() => !submitted && setHoverRating(star)}
+              onMouseLeave={() => !submitted && setHoverRating(null)}
+            >
+              {(hoverRating ?? rating ?? 0) >= star ? (
+                <IconStarFilled size={28} color="#FFD700" />
+              ) : (
+                <IconStar size={28} color="#FFD700" />
+              )}
+            </button>
+          ))}
         </div>
         <textarea
           value={comment}
