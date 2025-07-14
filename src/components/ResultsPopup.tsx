@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import styles from "./ResultsPopup.module.scss";
 import { formatTimeInSeconds } from "./formatTimeInSeconds";
 import classNames from "classnames";
+import { IconStar, IconStarFilled } from "@tabler/icons-react";
+import supabase from "../app/supabaseClient";
 
 export interface ResultsPopupProps {
   isOpen: boolean;
@@ -23,6 +25,21 @@ export function ResultsPopup({
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [hasCopied, setHasCopied] = useState(false);
   const { minutes, seconds } = formatTimeInSeconds(timeInSeconds);
+  const [rating, setRating] = useState<number | null>(null);
+  const [hoverRating, setHoverRating] = useState<number | null>(null);
+  const [comment, setComment] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Reset rating state when gameNumber changes
+  useEffect(() => {
+    setRating(null);
+    setHoverRating(null);
+    setComment("");
+    setSubmitted(false);
+    setError(null);
+  }, [gameNumber]);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -53,9 +70,26 @@ export function ResultsPopup({
   };
 
   const handleClick = (e: React.MouseEvent<HTMLDialogElement>) => {
-    if (e.target === dialogRef.current) {
+    if (dialogRef.current && e.target === dialogRef.current) {
       close();
     }
+  };
+
+  const handleSubmitRating = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!rating) return;
+    setSubmitting(true);
+    setError(null);
+    const { error } = await supabase
+      .from("game_rating")
+      .insert([{ game_id: gameNumber, rating, comment }])
+      .select();
+    setSubmitting(false);
+    if (error) {
+      setError(error.message);
+      return;
+    }
+    setSubmitted(true);
   };
 
   return (
@@ -89,6 +123,54 @@ export function ResultsPopup({
       >
         {hasCopied ? "Copied!" : "Share"}
       </button>
+      <hr className={styles.divider} />
+      <form onSubmit={handleSubmitRating} className={styles.ratingForm}>
+        <div className={styles.ratingLabel}>How was today's inkling?</div>
+        <div className={styles.starsRow}>
+          {[1, 2, 3, 4, 5].map((star) =>
+            (hoverRating ?? rating ?? 0) >= star ? (
+              <IconStarFilled
+                key={star}
+                size={28}
+                color="#FFD700"
+                style={{ cursor: submitted ? "default" : "pointer" }}
+                onMouseEnter={() => !submitted && setHoverRating(star)}
+                onMouseLeave={() => !submitted && setHoverRating(null)}
+                onClick={() => !submitted && setRating(star)}
+              />
+            ) : (
+              <IconStar
+                key={star}
+                size={28}
+                color="#FFD700"
+                style={{ cursor: submitted ? "default" : "pointer" }}
+                onMouseEnter={() => !submitted && setHoverRating(star)}
+                onMouseLeave={() => !submitted && setHoverRating(null)}
+                onClick={() => !submitted && setRating(star)}
+              />
+            )
+          )}
+        </div>
+        <textarea
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          placeholder="Thoughts..."
+          disabled={submitting || submitted}
+          className={styles.ratingTextarea}
+        />
+        <button
+          type="submit"
+          className={styles.button}
+          disabled={submitting || submitted || !rating}
+        >
+          {submitted
+            ? "Thank you!"
+            : submitting
+            ? "Submitting..."
+            : "Submit Rating"}
+        </button>
+        {error && <div className={styles.ratingError}>{error}</div>}
+      </form>
     </dialog>
   );
 }
