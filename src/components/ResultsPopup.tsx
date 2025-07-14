@@ -124,7 +124,11 @@ export function ResultsPopup({
         {hasCopied ? "Copied!" : "Share"}
       </button>
       <hr className={styles.divider} />
-      <form onSubmit={handleSubmitRating} className={styles.ratingForm}>
+      <form
+        onSubmit={handleSubmitRating}
+        className={styles.ratingForm}
+        method="dialog"
+      >
         <div className={styles.ratingLabel}>How was today&apos;s inkling?</div>
         <div className={styles.starsRow}>
           {[1, 2, 3, 4, 5].map((star) =>
