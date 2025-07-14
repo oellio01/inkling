@@ -160,7 +160,12 @@ export function ResultsPopup({
         />
         <button
           type="submit"
-          className={styles.button}
+          className={classNames(
+            styles.button,
+            rating && !submitting && !submitted
+              ? styles.primary_button
+              : undefined
+          )}
           disabled={submitting || submitted || !rating}
         >
           {submitted
