@@ -71,7 +71,7 @@ export function SuggestPopup({
       onClick={handleDialogClick}
     >
       <form onSubmit={handleSubmit} method="dialog">
-        <h2 className={styles.title}>Contribute an Inkling</h2>
+        <h2 className={styles.title}>Contribute an Inkling!</h2>
         <input
           type="text"
           value={suggestedWord}
