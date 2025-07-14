@@ -125,7 +125,7 @@ export function ResultsPopup({
       </button>
       <hr className={styles.divider} />
       <form onSubmit={handleSubmitRating} className={styles.ratingForm}>
-        <div className={styles.ratingLabel}>How was today's inkling?</div>
+        <div className={styles.ratingLabel}>How was today&apos;s inkling?</div>
         <div className={styles.starsRow}>
           {[1, 2, 3, 4, 5].map((star) =>
             (hoverRating ?? rating ?? 0) >= star ? (
