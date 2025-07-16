@@ -143,7 +143,7 @@ export const GAMES: GameData[] = [
   {
     id: 28,
     image: "/games/28.jpg",
-    answer: "CASHCOW",
+    answer: "THREADBARE",
   },
   {
     id: 29,
@@ -162,8 +162,8 @@ export const GAMES: GameData[] = [
   },
   {
     id: 32,
-    image: "/games/32.jpg",
-    answer: "THREADBARE",
+    image: "/games/33.jpg",
+    answer: "CASHCOW",
   },
   
 ];
