@@ -9,6 +9,8 @@ import { SuggestPopup } from "../components/SuggestPopup";
 import { getTodaysGameIndex } from "../hooks/game-logic";
 import { GAMES } from "../../public/game_data";
 import styles from "./Game.module.scss";
+import { useUser } from "../providers/UserProvider";
+import supabase from "./supabaseClient";
 
 export default function Game() {
   const [gameIndex, setGameIndex] = useState(getTodaysGameIndex);
@@ -22,6 +24,9 @@ export default function Game() {
   const [hintCount, setHintCount] = useState(0);
   const [guessCount, setGuessCount] = useState(0);
   const [isSuggestOpen, setIsSuggestOpen] = useState(false);
+  // Remove resultSubmitted state
+
+  const { user } = useUser();
 
   useEffect(() => {
     if (isDone) {
@@ -78,17 +83,34 @@ export default function Game() {
     });
   }, [hintCount]);
 
-  const commitGuess = useCallback(() => {
+  const commitGuess = useCallback(async () => {
     const isCorrect = isCorrectSolution(currentGuess);
     setGuessCount((g) => g + 1);
     if (isCorrect) {
       setIsDone(true);
       setIsResultsOpen(true);
+      await supabase.from("game_results").insert([
+        {
+          game_id: gameIndex,
+          user_id: user ? user.id : null,
+          time_seconds: timer,
+          guesses: guessCount + 1, // include the final guess
+          hints: hintCount,
+        },
+      ]);
     } else {
       setShowIncorrect(true);
       setTimeout(() => setShowIncorrect(false), 500);
     }
-  }, [currentGuess, isCorrectSolution]);
+  }, [
+    currentGuess,
+    isCorrectSolution,
+    user,
+    gameIndex,
+    timer,
+    guessCount,
+    hintCount,
+  ]);
 
   const onHint = useCallback(() => {
     if (!gameForToday) return;
@@ -150,6 +172,7 @@ export default function Game() {
     setShowIncorrect(false);
     setHintCount(0);
     setGuessCount(0);
+    // Reset resultSubmitted on game switch
   };
 
   // Calculate the maximum selectable game index (today or last available)
