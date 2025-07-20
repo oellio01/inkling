@@ -4,6 +4,7 @@ import { formatTimeInSeconds } from "./formatTimeInSeconds";
 import classNames from "classnames";
 import { IconStar, IconStarFilled } from "@tabler/icons-react";
 import supabase from "../app/supabaseClient";
+import { useUser } from "../providers/UserProvider";
 
 export interface ResultsPopupProps {
   isOpen: boolean;
@@ -31,6 +32,7 @@ export function ResultsPopup({
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { user } = useUser();
 
   // Reset rating state when gameNumber changes
   useEffect(() => {
@@ -84,7 +86,7 @@ export function ResultsPopup({
     setError(null);
     const { error } = await supabase
       .from("game_rating")
-      .insert([{ game_id: gameNumber, rating, comment }])
+      .insert([{ game_id: gameNumber, rating, comment, user_id: user?.id }])
       .select();
     setSubmitting(false);
     if (error) {

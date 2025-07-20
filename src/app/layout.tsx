@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { PostHogProvider } from "../providers/PostHogProvider";
+import { UserProvider } from "../providers/UserProvider";
 
 export const metadata: Metadata = {
   title: "Inkling",
@@ -32,7 +33,9 @@ export default function RootLayout({
         <link rel="manifest" href="/site.webmanifest" />
       </head>
       <body>
-        <PostHogProvider>{children}</PostHogProvider>
+        <UserProvider>
+          <PostHogProvider>{children}</PostHogProvider>
+        </UserProvider>
       </body>
     </html>
   );

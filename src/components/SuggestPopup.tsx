@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import styles from "./SuggestPopup.module.scss";
 import supabase from "../app/supabaseClient";
+import { useUser } from "../providers/UserProvider";
 
 export function SuggestPopup({
   isOpen,
@@ -15,6 +16,7 @@ export function SuggestPopup({
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const { user } = useUser();
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -46,9 +48,12 @@ export function SuggestPopup({
     e.preventDefault();
     setLoading(true);
     setError(null);
+    // Insert into Supabase
     const { error } = await supabase
       .from("game_suggestion")
-      .insert([{ suggested_word: suggestedWord, description: description }])
+      .insert([
+        { suggested_word: suggestedWord, description, user_id: user?.id },
+      ])
       .select();
     setLoading(false);
     if (error) {
