@@ -2,6 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import supabase from "../app/supabaseClient";
 import styles from "./GameStats.module.scss";
 import classNames from "classnames";
+import { BarChart } from "@mui/x-charts/BarChart";
+import React from "react";
 
 interface GameStatsProps {
   gameId: number;
@@ -16,6 +18,52 @@ interface GameResult {
   time_seconds: number;
   guesses: number;
   hints: number;
+}
+
+interface UserBarChartProps {
+  hist: Record<number, number>;
+  userValue: number | null;
+  answerLength: number;
+  barLabel: string;
+  minValue?: number;
+}
+
+function UserBarChart({
+  hist,
+  userValue,
+  answerLength,
+  barLabel,
+  minValue = 0,
+}: UserBarChartProps) {
+  const min = minValue;
+  const max = answerLength;
+  const xLabels = Array.from({ length: max - min + 1 }, (_, i) =>
+    (min + i).toString()
+  );
+  // Build dataset without color property
+  const dataset = xLabels.map((val) => ({
+    label: val,
+    value: hist[Number(val)] || 0,
+  }));
+  return (
+    <div className={styles.barChart}>
+      <BarChart
+        xAxis={[{ data: xLabels, label: barLabel }]}
+        yAxis={[
+          {
+            label: undefined, // No label
+            tickSize: 0, // Hide ticks
+          },
+        ]}
+        dataset={dataset}
+        series={[{ dataKey: "value" }]}
+        height={200}
+        margin={{ left: -20, bottom: 0 }}
+        borderRadius={8}
+        slots={{ legend: () => null, tooltip: () => null }}
+      />
+    </div>
+  );
 }
 
 export function GameStats({
@@ -80,7 +128,6 @@ export function GameStats({
       >
         Back
       </button>
-      <h2 className={styles.statsTitle}>Game Stats</h2>
       {loading ? (
         <div>Loading...</div>
       ) : error ? (
@@ -105,23 +152,20 @@ export function GameStats({
               </div>
             </div>
           </div>
-
-          <div className={styles.statsChartsWrapper}>
-            <BarChart
-              hist={guessesHist}
-              label="Guesses"
-              userValue={guessCount}
-              maxValue={answerLength}
-              minValue={1}
-            />
-            <BarChart
-              hist={hintsHist}
-              label="Hints"
-              userValue={hintCount}
-              maxValue={answerLength}
-              minValue={0}
-            />
-          </div>
+          <UserBarChart
+            hist={guessesHist}
+            userValue={guessCount}
+            answerLength={answerLength}
+            barLabel="Guesses"
+            minValue={1}
+          />
+          <UserBarChart
+            hist={hintsHist}
+            userValue={hintCount}
+            answerLength={answerLength}
+            barLabel="Hints"
+            minValue={0}
+          />
         </>
       )}
     </dialog>
@@ -135,54 +179,4 @@ function buildHistogram(arr: number[]) {
     hist[val] = (hist[val] || 0) + 1;
   });
   return hist;
-}
-
-// Render a histogram bar chart with highlight for the user's bucket
-function BarChart({
-  hist,
-  label,
-  userValue,
-  maxValue,
-  minValue = 0,
-}: {
-  hist: Record<number, number>;
-  label: string;
-  userValue: number | null;
-  maxValue: number;
-  minValue?: number;
-}) {
-  const min = minValue;
-  const max = maxValue;
-  const maxCount = Math.max(...Object.values(hist), 1);
-  return (
-    <div className={styles.statsChartVertical}>
-      <div className={styles.statsChartLabel}>{label}</div>
-      <div className={styles.statsChartBarsVertical}>
-        {Array.from({ length: max - min + 1 }, (_, i) => {
-          const val = min + i;
-          const count = hist[val] || 0;
-          const isUser = userValue !== null && val === userValue;
-          return (
-            <div key={val} className={styles.statsChartBarCol}>
-              <div
-                className={
-                  isUser
-                    ? styles.statsChartBarVertical +
-                      " " +
-                      styles.statsChartBarUser
-                    : styles.statsChartBarVertical
-                }
-                style={{ height: `${(count / maxCount) * 100}%` }}
-              >
-                {count > 0 && (
-                  <span className={styles.statsChartBarCount}>{count}</span>
-                )}
-              </div>
-              <div className={styles.statsChartBarLabelVertical}>{val}</div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
 }

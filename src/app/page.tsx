@@ -270,8 +270,6 @@ export default function Game() {
           gameId={game.id}
           answerLength={game.answer.length}
           timeInSeconds={timer}
-          guessCount={guessCount}
-          hintCount={hintCount}
           onClose={(reason) => {
             if (reason === "back") {
               setIsTodaysStatsOpen(false);
