@@ -10,11 +10,12 @@ import { getTodaysGameIndex } from "../hooks/game-logic";
 import { GAMES } from "../../public/game_data";
 import styles from "./Game.module.scss";
 import { useUser } from "../providers/UserProvider";
+import { GameStats } from "../components/GameStats";
 import supabase from "./supabaseClient";
 
 export default function Game() {
   const [gameIndex, setGameIndex] = useState(getTodaysGameIndex);
-  const gameForToday = GAMES[gameIndex];
+  const game = GAMES[gameIndex];
 
   const [isDone, setIsDone] = useState(false);
   const [isResultsOpen, setIsResultsOpen] = useState(false);
@@ -24,7 +25,7 @@ export default function Game() {
   const [hintCount, setHintCount] = useState(0);
   const [guessCount, setGuessCount] = useState(0);
   const [isSuggestOpen, setIsSuggestOpen] = useState(false);
-  // Remove resultSubmitted state
+  const [isTodaysStatsOpen, setIsTodaysStatsOpen] = useState(false);
 
   const { user } = useUser();
 
@@ -40,18 +41,18 @@ export default function Game() {
 
   const isCorrectSolution = useCallback(
     (guess: string) => {
-      if (!gameForToday) {
+      if (!game) {
         return false;
       }
-      return guess.toLowerCase() === gameForToday.answer.toLowerCase();
+      return guess.toLowerCase() === game.answer.toLowerCase();
     },
-    [gameForToday]
+    [game]
   );
 
   const onPressLetter = useCallback(
     (letter: string) => {
       setCurrentGuess((prev) => {
-        if (!gameForToday) {
+        if (!game) {
           return prev;
         }
         if (hintCount === undefined) {
@@ -60,15 +61,15 @@ export default function Game() {
         const safePrefix = prev.slice(0, hintCount);
         const rest = prev.slice(hintCount);
         if (safePrefix.length < hintCount) {
-          return gameForToday.answer.slice(0, hintCount).toUpperCase() + letter;
+          return game.answer.slice(0, hintCount).toUpperCase() + letter;
         }
-        if (safePrefix.length + rest.length < gameForToday.answer.length) {
+        if (safePrefix.length + rest.length < game.answer.length) {
           return safePrefix + rest + letter;
         }
         return prev;
       });
     },
-    [hintCount, gameForToday]
+    [hintCount, game]
   );
 
   const onPressBackspace = useCallback(() => {
@@ -91,7 +92,7 @@ export default function Game() {
       setIsResultsOpen(true);
       await supabase.from("game_results").insert([
         {
-          game_id: gameIndex,
+          game_id: game.id,
           user_id: user ? user.id : null,
           time_seconds: timer,
           guesses: guessCount + 1, // include the final guess
@@ -106,26 +107,26 @@ export default function Game() {
     currentGuess,
     isCorrectSolution,
     user,
-    gameIndex,
+    game.id,
     timer,
     guessCount,
     hintCount,
   ]);
 
   const onHint = useCallback(() => {
-    if (!gameForToday) return;
-    if (hintCount < gameForToday.answer.length) {
+    if (!game) return;
+    if (hintCount < game.answer.length) {
       setTimer((t) => t + 30);
       const newHintCount = hintCount + 1;
       setCurrentGuess(
-        gameForToday.answer
+        game.answer
           .slice(0, newHintCount)
           .toUpperCase()
-          .padEnd(gameForToday.answer.length, "")
+          .padEnd(game.answer.length, "")
       );
       setHintCount(newHintCount);
     }
-  }, [gameForToday, hintCount]);
+  }, [game, hintCount]);
 
   useEffect(() => {
     if (isDone) {
@@ -181,7 +182,7 @@ export default function Game() {
     GAMES.length
   );
 
-  if (!gameForToday) {
+  if (!game) {
     return (
       <div className={styles.game}>
         <p>Come back tomorrow for a new puzzle!</p>
@@ -194,11 +195,11 @@ export default function Game() {
       <Header
         timerInSeconds={timer}
         className={styles.header}
-        gameIndex={gameIndex}
+        gameIndex={game.id}
         onSelectGame={handleSelectGame}
         maxGameIndex={maxSelectableGameIndex}
         onHint={onHint}
-        hintDisabled={hintCount >= gameForToday.answer.length}
+        hintDisabled={hintCount >= game.answer.length}
         hintAriaLabel="Reveal a letter (costs +30s)"
         isSuggestOpen={isSuggestOpen}
         setIsSuggestOpen={setIsSuggestOpen}
@@ -209,7 +210,7 @@ export default function Game() {
       />
       <div className={styles.imageWrapper}>
         <Image
-          src={gameForToday.image}
+          src={game.image}
           alt="inkling"
           fill
           sizes="(max-width: 600px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -229,18 +230,16 @@ export default function Game() {
               }
             >
               <span className={styles.guessWithDashesContent}>
-                {Array.from({ length: gameForToday.answer.length }).map(
-                  (_, index) => (
-                    <div key={index} className={styles.charContainer}>
-                      <span className={styles.char}>
-                        {index < hintCount
-                          ? gameForToday.answer[index].toUpperCase()
-                          : currentGuess[index] || " "}
-                      </span>
-                      <span className={styles.dash}>_</span>
-                    </div>
-                  )
-                )}
+                {Array.from({ length: game.answer.length }).map((_, index) => (
+                  <div key={index} className={styles.charContainer}>
+                    <span className={styles.char}>
+                      {index < hintCount
+                        ? game.answer[index].toUpperCase()
+                        : currentGuess[index] || " "}
+                    </span>
+                    <span className={styles.dash}>_</span>
+                  </div>
+                ))}
               </span>
             </div>
           </>
@@ -257,11 +256,32 @@ export default function Game() {
       <ResultsPopup
         isOpen={isResultsOpen}
         close={() => setIsResultsOpen(false)}
-        gameNumber={gameForToday.id}
+        gameNumber={game.id}
         timeInSeconds={timer}
         guessCount={guessCount}
         hintCount={hintCount}
+        onShowStats={() => {
+          setIsResultsOpen(false);
+          setIsTodaysStatsOpen(true);
+        }}
       />
+      {isTodaysStatsOpen && (
+        <GameStats
+          gameId={game.id}
+          answerLength={game.answer.length}
+          timeInSeconds={timer}
+          guessCount={guessCount}
+          hintCount={hintCount}
+          onClose={(reason) => {
+            if (reason === "back") {
+              setIsTodaysStatsOpen(false);
+              setIsResultsOpen(true);
+            } else {
+              setIsTodaysStatsOpen(false);
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

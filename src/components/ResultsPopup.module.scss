@@ -55,7 +55,7 @@
 }
 
 .primary_button {
-  background-color: #1976d2;
+  background-color: #5E807F;
   color: white;
 }
 
@@ -66,12 +66,12 @@
 }
 
 .share_button {
-  background-color: #4caf50;
+  background-color: #2F6239;
   color: white;
 }
 
 .share_button:hover {
-  background-color: #45a049;
+  background-color: #0e4417;
 }
 
 .divider {
@@ -92,7 +92,7 @@
   font-size: 16px;
   font-weight: 500;
   margin-bottom: 10px;
-  color: #222;
+  color: #5E807F;
 }
 
 .starsRow {
@@ -144,8 +144,22 @@
   font-family: inherit;
 }
 
-.ratingError {
-  color: #e53935;
-  margin-top: 4px;
-  text-align: center;
+.stats_button {
+  background-color: #9DC5BB; /* pastel orange */
+  color: #000000;
+  transition: background 0.2s;
+}
+
+.stats_button:hover {
+  background-color: #80b0a4;
+}
+
+.back_button {
+  background-color: #e0e0e0; /* light grey */
+  color: #333;
+  transition: background 0.2s;
+}
+
+.back_button:hover {
+  background-color: #bdbdbd;
 } 

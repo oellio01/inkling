@@ -13,6 +13,7 @@ export interface ResultsPopupProps {
   timeInSeconds: number;
   guessCount: number;
   hintCount: number;
+  onShowStats: () => void;
 }
 
 export function ResultsPopup({
@@ -22,6 +23,7 @@ export function ResultsPopup({
   timeInSeconds,
   guessCount,
   hintCount,
+  onShowStats,
 }: ResultsPopupProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [hasCopied, setHasCopied] = useState(false);
@@ -34,7 +36,6 @@ export function ResultsPopup({
   const [error, setError] = useState<string | null>(null);
   const { user } = useUser();
 
-  // Reset rating state when gameNumber changes
   useEffect(() => {
     setRating(null);
     setHoverRating(null);
@@ -86,7 +87,9 @@ export function ResultsPopup({
     setError(null);
     const { error } = await supabase
       .from("game_rating")
-      .insert([{ game_id: gameNumber, rating, comment, user_id: user?.id }])
+      .insert([
+        { game_id: gameNumber + 10, rating, comment, user_id: user?.id },
+      ])
       .select();
     setSubmitting(false);
     if (error) {
@@ -126,6 +129,13 @@ export function ResultsPopup({
         onClick={handleShare}
       >
         {hasCopied ? "Copied!" : "Share"}
+      </button>
+      <hr className={styles.divider} />
+      <button
+        className={classNames(styles.button, styles.stats_button)}
+        onClick={onShowStats}
+      >
+        {"View today's stats"}
       </button>
       <hr className={styles.divider} />
       <form

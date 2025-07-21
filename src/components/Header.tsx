@@ -66,7 +66,7 @@ export function Header({
               onClick={handleGameNumberClick}
               aria-label="Select game number"
             >
-              Inkling {gameIndex + 1}
+              Inkling {gameIndex}
               <span className={styles.gameNumberButtonDropdownIcon}>▼</span>
             </button>
             {dropdownOpen && (
