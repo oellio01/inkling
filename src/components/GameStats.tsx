@@ -9,8 +9,6 @@ interface GameStatsProps {
   gameId: number;
   answerLength: number;
   timeInSeconds: number;
-  guessCount: number;
-  hintCount: number;
   onClose: (reason?: "back") => void;
 }
 
@@ -22,7 +20,6 @@ interface GameResult {
 
 interface UserBarChartProps {
   hist: Record<number, number>;
-  userValue: number | null;
   answerLength: number;
   barLabel: string;
   minValue?: number;
@@ -30,7 +27,6 @@ interface UserBarChartProps {
 
 function UserBarChart({
   hist,
-  userValue,
   answerLength,
   barLabel,
   minValue = 0,
@@ -70,8 +66,6 @@ export function GameStats({
   gameId,
   answerLength,
   timeInSeconds,
-  guessCount,
-  hintCount,
   onClose,
 }: GameStatsProps) {
   const [results, setResults] = useState<GameResult[]>([]);
@@ -154,14 +148,12 @@ export function GameStats({
           </div>
           <UserBarChart
             hist={guessesHist}
-            userValue={guessCount}
             answerLength={answerLength}
             barLabel="Guesses"
             minValue={1}
           />
           <UserBarChart
             hist={hintsHist}
-            userValue={hintCount}
             answerLength={answerLength}
             barLabel="Hints"
             minValue={0}
