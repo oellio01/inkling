@@ -87,9 +87,7 @@ export function ResultsPopup({
     setError(null);
     const { error } = await supabase
       .from("game_rating")
-      .insert([
-        { game_id: gameNumber + 10, rating, comment, user_id: user?.id },
-      ])
+      .insert([{ game_id: gameNumber, rating, comment, user_id: user?.id }])
       .select();
     setSubmitting(false);
     if (error) {
