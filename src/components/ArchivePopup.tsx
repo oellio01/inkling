@@ -43,10 +43,8 @@ export function ArchivePopup({
     };
   }, [close]);
 
-  const handleClick = (e: React.MouseEvent<HTMLDialogElement>) => {
-    if (e.target === dialogRef.current) {
-      close();
-    }
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
+    if (e.target === dialogRef.current) close();
   };
 
   const handleGameClick = (gameIndex: number) => {
@@ -55,7 +53,11 @@ export function ArchivePopup({
   };
 
   return (
-    <dialog ref={dialogRef} className={styles.popup} onClick={handleClick}>
+    <dialog
+      ref={dialogRef}
+      className={styles.popup}
+      onClick={handleBackdropClick}
+    >
       <h2 className={styles.title}>Game Archive</h2>
       <div className={styles.grid}>
         {GAMES.slice(0, maxGameIndex)
