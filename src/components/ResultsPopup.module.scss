@@ -116,10 +116,8 @@
   outline: none;
 }
 
-.starButton:focus-visible,
 .starButton:hover:not(:disabled) {
   background: #f0f4ff;
-  box-shadow: 0 0 0 2px #1976d233;
 }
 
 .starButton:active {

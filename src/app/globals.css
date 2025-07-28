@@ -24,3 +24,25 @@ body {
     height: 100dvh;
   }
 }
+
+/* Remove blue focus borders from all elements */
+*:focus {
+  outline: none !important;
+}
+
+*:focus-visible {
+  outline: none !important;
+}
+
+/* Remove blue borders from buttons and interactive elements */
+button:focus,
+button:focus-visible,
+input:focus,
+input:focus-visible,
+textarea:focus,
+textarea:focus-visible,
+dialog:focus,
+dialog:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}

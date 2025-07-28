@@ -54,26 +54,30 @@ export function ArchivePopup({
     <dialog ref={dialogRef} className={styles.popup} onClick={handleClick}>
       <h2 className={styles.title}>Game Archive</h2>
       <div className={styles.grid}>
-        {GAMES.slice(0, maxGameIndex).map((game, index) => (
-          <div
-            key={game.id}
-            className={`${styles.gameItem} ${
-              index === currentGameIndex ? styles.currentGame : ""
-            }`}
-            onClick={() => handleGameClick(index)}
-          >
-            <div className={styles.imageContainer}>
-              <Image
-                src={game.image}
-                alt={`Inkling ${game.id}`}
-                fill
-                className={styles.image}
-                sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-              />
+        {GAMES.slice(0, maxGameIndex)
+          .reverse()
+          .map((game, index) => (
+            <div
+              key={game.id}
+              className={`${styles.gameItem} ${
+                maxGameIndex - 1 - index === currentGameIndex
+                  ? styles.currentGame
+                  : ""
+              }`}
+              onClick={() => handleGameClick(maxGameIndex - 1 - index)}
+            >
+              <div className={styles.imageContainer}>
+                <Image
+                  src={game.image}
+                  alt={`Inkling ${game.id}`}
+                  fill
+                  className={styles.image}
+                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                />
+              </div>
+              <div className={styles.gameNumber}>#{game.id}</div>
             </div>
-            <div className={styles.gameNumber}>#{game.id}</div>
-          </div>
-        ))}
+          ))}
       </div>
     </dialog>
   );

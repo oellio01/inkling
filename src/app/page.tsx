@@ -90,7 +90,9 @@ export default function Game() {
     if (isCorrect) {
       setIsDone(true);
       setIsResultsOpen(true);
-      await supabase.from("game_results").insert([
+
+      // Insert the result - database constraint will handle duplicates
+      const { error } = await supabase.from("game_results").insert([
         {
           game_id: game.id,
           user_id: user ? user.id : null,
@@ -99,6 +101,11 @@ export default function Game() {
           hints: hintCount,
         },
       ]);
+
+      // Log any errors (like constraint violations) but don't show to user
+      if (error) {
+        console.log("Game result insert error:", error.message);
+      }
     } else {
       setShowIncorrect(true);
       setTimeout(() => setShowIncorrect(false), 500);
@@ -270,6 +277,7 @@ export default function Game() {
           gameId={game.id}
           answerLength={game.answer.length}
           timeInSeconds={timer}
+          userId={user?.id}
           onClose={(reason) => {
             if (reason === "back") {
               setIsTodaysStatsOpen(false);
