@@ -1,0 +1,113 @@
+.popup {
+  background: rgba(0, 0, 0, 0.8);
+  border: none;
+  border-radius: 8px;
+  padding: 0;
+  max-width: 90vw;
+  max-height: 90vh;
+  width: 800px;
+  height: auto;
+  color: white;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+}
+
+.popup::backdrop {
+  background: rgba(0, 0, 0, 1);
+}
+
+.content {
+  padding: 24px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 20px 0;
+  text-align: center;
+  color: #fff;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 16px;
+  justify-items: center;
+}
+
+.gameItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  border-radius: 8px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid transparent;
+}
+
+.gameItem:hover {
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.gameItem.currentGame {
+  border-color: #1976d2;
+  background: rgba(25, 118, 210, 0.1);
+}
+
+.imageContainer {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.image {
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.gameNumber {
+  font-size: 14px;
+  font-weight: 500;
+  color: #ccc;
+  text-align: center;
+}
+
+.currentGame .gameNumber {
+  color: #1976d2;
+  font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .popup {
+    width: 95vw;
+    max-width: 95vw;
+  }
+  
+  .content {
+    padding: 16px;
+  }
+  
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 12px;
+  }
+  
+  .imageContainer {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .title {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+} 

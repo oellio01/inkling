@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { formatTimeInSeconds } from "./formatTimeInSeconds";
 import styles from "./Header.module.scss";
 import { InfoPopup } from "./InfoPopup";
+import { ArchivePopup } from "./ArchivePopup";
 import classNames from "classnames";
 import { SuggestPopup } from "./SuggestPopup";
 import { IconBulb, IconInfoCircle, IconEye } from "@tabler/icons-react";
@@ -30,66 +31,25 @@ export function Header({
   setIsSuggestOpen: (open: boolean) => void;
 }) {
   const [isInfoOpen, setIsInfoOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isArchiveOpen, setIsArchiveOpen] = useState(false);
   const { minutes, seconds } = formatTimeInSeconds(timerInSeconds);
 
-  // Close dropdown on outside click
-  useEffect(() => {
-    if (!dropdownOpen) return;
-    function handleClick() {
-      setDropdownOpen(false);
-    }
-    window.addEventListener("click", handleClick);
-    return () => window.removeEventListener("click", handleClick);
-  }, [dropdownOpen]);
-
-  // Prevent dropdown from closing when clicking the button
-  function handleGameNumberClick(e: React.MouseEvent) {
-    e.stopPropagation();
-    setDropdownOpen((open) => !open);
-  }
-
-  function handleSelectGame(idx: number) {
-    setDropdownOpen(false);
-    if (idx !== gameIndex) {
-      onSelectGame(idx);
-    }
+  function handleArchiveClick() {
+    setIsArchiveOpen(true);
   }
 
   return (
     <>
       <div className={classNames(styles.headerContainer, className)}>
         <div className={styles.left}>
-          <span className={styles.leftDropdownWrapper}>
-            <button
-              className={styles.gameNumberButton}
-              onClick={handleGameNumberClick}
-              aria-label="Select game number"
-            >
-              Inkling {gameIndex}
-              <span className={styles.gameNumberButtonDropdownIcon}>▼</span>
-            </button>
-            {dropdownOpen && (
-              <div
-                className={styles.dropdownMenu}
-                onClick={(e) => e.stopPropagation()}
-              >
-                {[...Array(maxGameIndex).keys()].map((idx) => (
-                  <div
-                    key={idx}
-                    className={
-                      idx === gameIndex
-                        ? `${styles.dropdownMenuItem} ${styles.dropdownMenuItemActive}`
-                        : styles.dropdownMenuItem
-                    }
-                    onClick={() => handleSelectGame(idx)}
-                  >
-                    Game {idx + 1}
-                  </div>
-                ))}
-              </div>
-            )}
-          </span>
+          <button
+            className={styles.gameNumberButton}
+            onClick={handleArchiveClick}
+            aria-label="Open game archive"
+          >
+            Inkling {gameIndex}
+            <span className={styles.gameNumberButtonDropdownIcon}>▼</span>
+          </button>
         </div>
         <div className={styles.center}>
           <div className={styles.timer}>
@@ -132,6 +92,13 @@ export function Header({
       <SuggestPopup
         isOpen={isSuggestOpen}
         close={() => setIsSuggestOpen(false)}
+      />
+      <ArchivePopup
+        isOpen={isArchiveOpen}
+        close={() => setIsArchiveOpen(false)}
+        currentGameIndex={gameIndex - 1}
+        maxGameIndex={maxGameIndex}
+        onSelectGame={onSelectGame}
       />
     </>
   );
