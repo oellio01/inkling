@@ -91,18 +91,16 @@ export default function Game() {
       setIsDone(true);
       setIsResultsOpen(true);
 
-      // Insert the result - database constraint will handle duplicates
       const { error } = await supabase.from("game_results").insert([
         {
           game_id: game.id,
           user_id: user ? user.id : null,
           time_seconds: timer,
-          guesses: guessCount + 1, // include the final guess
+          guesses: guessCount + 1,
           hints: hintCount,
         },
       ]);
 
-      // Log any errors (like constraint violations) but don't show to user
       if (error) {
         console.log("Game result insert error:", error.message);
       }

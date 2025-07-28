@@ -2,6 +2,8 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import styles from "./ArchivePopup.module.scss";
 import { GAMES } from "../../public/game_data";
+import { useCompletedGames } from "../hooks/useCompletedGames";
+import { IconCheck } from "@tabler/icons-react";
 
 export interface ArchivePopupProps {
   isOpen: boolean;
@@ -19,17 +21,19 @@ export function ArchivePopup({
   onSelectGame,
 }: ArchivePopupProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const { isCompleted, loading, refreshArchive } = useCompletedGames();
 
   useEffect(() => {
     const dialog = dialogRef.current;
     if (dialog) {
       if (isOpen) {
         dialog.showModal();
+        refreshArchive();
       } else {
         dialog.close();
       }
     }
-  }, [isOpen]);
+  }, [isOpen, refreshArchive]);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -56,28 +60,38 @@ export function ArchivePopup({
       <div className={styles.grid}>
         {GAMES.slice(0, maxGameIndex)
           .reverse()
-          .map((game, index) => (
-            <div
-              key={game.id}
-              className={`${styles.gameItem} ${
-                maxGameIndex - 1 - index === currentGameIndex
-                  ? styles.currentGame
-                  : ""
-              }`}
-              onClick={() => handleGameClick(maxGameIndex - 1 - index)}
-            >
-              <div className={styles.imageContainer}>
-                <Image
-                  src={game.image}
-                  alt={`Inkling ${game.id}`}
-                  fill
-                  className={styles.image}
-                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                />
+          .map((game, index) => {
+            const gameIndexInArray = maxGameIndex - 1 - index;
+            const isGameCompleted = !loading && isCompleted(game.id);
+
+            return (
+              <div
+                key={game.id}
+                className={`${styles.gameItem} ${
+                  gameIndexInArray === currentGameIndex
+                    ? styles.currentGame
+                    : ""
+                } ${isGameCompleted ? styles.completed : ""}`}
+                onClick={() => handleGameClick(gameIndexInArray)}
+              >
+                <div className={styles.imageContainer}>
+                  <Image
+                    src={game.image}
+                    alt={`Inkling ${game.id}`}
+                    fill
+                    className={styles.image}
+                    sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                  />
+                  {isGameCompleted && (
+                    <div className={styles.completionBadge}>
+                      <IconCheck size={16} />
+                    </div>
+                  )}
+                </div>
+                <div className={styles.gameNumber}>#{game.id}</div>
               </div>
-              <div className={styles.gameNumber}>#{game.id}</div>
-            </div>
-          ))}
+            );
+          })}
       </div>
     </dialog>
   );
