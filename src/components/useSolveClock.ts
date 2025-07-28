@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useIsPageVisible } from "../components/useIsPageVisible";
 
 export interface UseSolveClockArgs {
@@ -17,6 +17,8 @@ export function useSolveClock({
   // if no data, then default to true
   // (better for clock to run a bit unnecessarily than to show a stopped clock)
   const isVisible = useIsPageVisible() ?? false;
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const startTimeRef = useRef<number | null>(null);
 
   const [state, setState] = useState({
     msBeforeThisInterval: initialTimeInSeconds * 1000,
@@ -24,26 +26,45 @@ export function useSolveClock({
   });
 
   useEffect(() => {
+    // Clear any existing interval
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
     if (hasSolved || !isVisible) {
       return;
     }
 
     const intervalStartTime = Date.now();
+    startTimeRef.current = intervalStartTime;
 
-    const interval = setInterval(() => {
-      setState((existing) => ({
-        ...existing,
-        msForThisInterval: Date.now() - intervalStartTime,
-      }));
-    }, 500);
+    // Use 1000ms interval instead of 500ms for better performance
+    intervalRef.current = setInterval(() => {
+      // Check if this interval is still valid (prevent stale closures)
+      if (startTimeRef.current === intervalStartTime) {
+        setState((existing) => ({
+          ...existing,
+          msForThisInterval: Date.now() - intervalStartTime,
+        }));
+      }
+    }, 1000);
 
     return () => {
-      setState((existing) => ({
-        msBeforeThisInterval:
-          existing.msBeforeThisInterval + Date.now() - intervalStartTime,
-        msForThisInterval: 0,
-      }));
-      clearInterval(interval);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      
+      // Only update state if this cleanup is for the current interval
+      if (startTimeRef.current === intervalStartTime) {
+        setState((existing) => ({
+          msBeforeThisInterval:
+            existing.msBeforeThisInterval + Date.now() - intervalStartTime,
+          msForThisInterval: 0,
+        }));
+      }
+      startTimeRef.current = null;
     };
   }, [hasSolved, isVisible]);
 

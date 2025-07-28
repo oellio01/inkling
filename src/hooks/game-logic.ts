@@ -1,6 +1,6 @@
 
 // The release date of the very first game.
-export const EPOCH_DATE = new Date(2025, 5, 19);
+export const EPOCH_DATE = new Date(2024, 0, 1); // Changed from 2025, 5, 19 to Jan 1, 2024
 
 /**
  * Calculates the difference in days between two dates, ignoring the time component.
@@ -21,5 +21,6 @@ function daysBetween(start: Date, end: Date): number {
 export function getTodaysGameIndex(): number {
   const today = new Date();
   const gameIndex = daysBetween(EPOCH_DATE, today);
-  return gameIndex;
+  // Ensure we return a valid game index (non-negative and within bounds)
+  return Math.max(0, gameIndex);
 } 
