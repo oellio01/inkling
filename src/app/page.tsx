@@ -275,7 +275,6 @@ export default function Game() {
           gameId={game.id}
           answerLength={game.answer.length}
           timeInSeconds={timer}
-          userId={user?.id}
           onClose={(reason) => {
             if (reason === "back") {
               setIsTodaysStatsOpen(false);
