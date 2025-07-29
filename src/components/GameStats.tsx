@@ -10,7 +10,6 @@ interface GameStatsProps {
   answerLength: number;
   timeInSeconds: number;
   onClose: (reason?: "back") => void;
-  userId?: string | null;
 }
 
 interface GameResult {
@@ -68,7 +67,6 @@ export function GameStats({
   answerLength,
   timeInSeconds,
   onClose,
-  userId,
 }: GameStatsProps) {
   const [results, setResults] = useState<GameResult[]>([]);
   const [loading, setLoading] = useState(true);
@@ -78,23 +76,16 @@ export function GameStats({
   useEffect(() => {
     setLoading(true);
     setError(null);
-
-    let query = supabase
+    supabase
       .from("game_results")
       .select("time_seconds,guesses,hints,user_id")
-      .eq("game_id", gameId);
-
-    // If userId is provided, filter by user_id
-    if (userId) {
-      query = query.eq("user_id", userId);
-    }
-
-    query.then(({ data, error }) => {
-      if (error) setError(error.message);
-      else setResults(data || []);
-      setLoading(false);
-    });
-  }, [gameId, userId]);
+      .eq("game_id", gameId)
+      .then(({ data, error }) => {
+        if (error) setError(error.message);
+        else setResults(data || []);
+        setLoading(false);
+      });
+  }, [gameId]);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -136,11 +127,7 @@ export function GameStats({
       ) : error ? (
         <div className={styles.ratingError}>{error}</div>
       ) : results.length === 0 ? (
-        <div className={styles.noResultsMsg}>
-          {userId
-            ? "No results yet for your attempts at this game."
-            : "No results yet for this game."}
-        </div>
+        <div className={styles.noResultsMsg}>No results yet for this game.</div>
       ) : (
         <>
           <div className={styles.statsRow}>
