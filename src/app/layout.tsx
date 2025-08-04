@@ -1,10 +1,44 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { UserProvider } from "../providers/UserProvider";
+import { getTodaysGameIndex } from "../hooks/game-logic";
+import { GAMES } from "../../public/game_data";
 
-export const metadata: Metadata = {
-  title: "Inkling",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const game = GAMES[getTodaysGameIndex()];
+
+  return {
+    title: "Inkling",
+    description: `Solve daily puzzles inspired by pictionary!`,
+    keywords:
+      "rebus puzzles, pictionary, word games, brain games, visual puzzles, daily puzzles, wordplay, logic games, puzzle games",
+    authors: [{ name: "Inkling Team" }],
+    creator: "Owen",
+    publisher: "Inkling",
+    robots: "index, follow",
+    openGraph: {
+      title: "Inkling",
+      description: `Solve daily puzzles inspired by pictionary!`,
+      type: "website",
+      url: "https://inkling-puzzle.com",
+      siteName: "Inkling",
+      images: [
+        {
+          url: game.image,
+          width: 1200,
+          height: 630,
+          alt: `Today's Inkling puzzle`,
+        },
+      ],
+      locale: "en_US",
+    },
+    alternates: {
+      canonical: "https://inkling-puzzle.com",
+    },
+    category: "games",
+    classification: "puzzle game",
+  };
+}
 
 export default function RootLayout({
   children,
