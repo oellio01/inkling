@@ -26,18 +26,20 @@ export default function Game() {
   const [guessCount, setGuessCount] = useState(0);
   const [isSuggestOpen, setIsSuggestOpen] = useState(false);
   const [isTodaysStatsOpen, setIsTodaysStatsOpen] = useState(false);
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
+  const [cameFromResults, setCameFromResults] = useState(false);
 
   const { user } = useUser();
 
   useEffect(() => {
-    if (isDone) {
+    if (isDone || isSuggestOpen || isTodaysStatsOpen || isInfoOpen) {
       return;
     }
     const intervalId = setInterval(() => {
       setTimer((t) => t + 1);
     }, 1000);
     return () => clearInterval(intervalId);
-  }, [isDone]);
+  }, [isDone, isSuggestOpen, isTodaysStatsOpen, isInfoOpen]);
 
   const isCorrectSolution = useCallback(
     (guess: string) => {
@@ -209,9 +211,11 @@ export default function Game() {
         isSuggestOpen={isSuggestOpen}
         setIsSuggestOpen={setIsSuggestOpen}
         onShowStats={() => {
-          setIsResultsOpen(false);
           setIsTodaysStatsOpen(true);
+          setCameFromResults(false);
         }}
+        isInfoOpen={isInfoOpen}
+        setIsInfoOpen={setIsInfoOpen}
       />
       <SuggestPopup
         isOpen={isSuggestOpen}
@@ -272,6 +276,7 @@ export default function Game() {
         onShowStats={() => {
           setIsResultsOpen(false);
           setIsTodaysStatsOpen(true);
+          setCameFromResults(true);
         }}
       />
       {isTodaysStatsOpen && (
@@ -279,6 +284,7 @@ export default function Game() {
           gameId={game.id}
           answerLength={game.answer.length}
           timeInSeconds={timer}
+          showBackButton={cameFromResults}
           onClose={(reason) => {
             if (reason === "back") {
               setIsTodaysStatsOpen(false);
@@ -286,6 +292,7 @@ export default function Game() {
             } else {
               setIsTodaysStatsOpen(false);
             }
+            setCameFromResults(false);
           }}
         />
       )}

@@ -10,6 +10,7 @@ interface GameStatsProps {
   answerLength: number;
   timeInSeconds: number;
   onClose: (reason?: "back") => void;
+  showBackButton?: boolean;
 }
 
 interface GameResult {
@@ -67,6 +68,7 @@ export function GameStats({
   answerLength,
   timeInSeconds,
   onClose,
+  showBackButton = false,
 }: GameStatsProps) {
   const [results, setResults] = useState<GameResult[]>([]);
   const [loading, setLoading] = useState(true);
@@ -116,12 +118,14 @@ export function GameStats({
 
   return (
     <dialog ref={dialogRef} className={styles.popup} onClick={handleClick}>
-      <button
-        className={classNames(styles.button, styles.back_button)}
-        onClick={() => onClose("back")}
-      >
-        Back
-      </button>
+      {showBackButton && (
+        <button
+          className={classNames(styles.button, styles.back_button)}
+          onClick={() => onClose("back")}
+        >
+          Back
+        </button>
+      )}
       {loading ? (
         <div>Loading...</div>
       ) : error ? (

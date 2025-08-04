@@ -24,6 +24,8 @@ export function Header({
   isSuggestOpen,
   setIsSuggestOpen,
   onShowStats,
+  isInfoOpen,
+  setIsInfoOpen,
 }: {
   timerInSeconds: number;
   className?: string;
@@ -36,8 +38,9 @@ export function Header({
   isSuggestOpen: boolean;
   setIsSuggestOpen: (open: boolean) => void;
   onShowStats: () => void;
+  isInfoOpen: boolean;
+  setIsInfoOpen: (open: boolean) => void;
 }) {
-  const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
   const { minutes, seconds } = formatTimeInSeconds(timerInSeconds);
 
