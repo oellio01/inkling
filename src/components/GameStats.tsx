@@ -4,6 +4,7 @@ import styles from "./GameStats.module.scss";
 import classNames from "classnames";
 import { BarChart } from "@mui/x-charts/BarChart";
 import React from "react";
+import { formatTimeInSeconds } from "./formatTimeInSeconds";
 
 interface GameStatsProps {
   gameId: number;
@@ -110,9 +111,8 @@ export function GameStats({
     ? Math.round(times.reduce((a, b) => a + b, 0) / times.length)
     : 0;
 
-  const sorted = [...times].sort((a, b) => a - b);
-  const rank = sorted.findIndex((t) => t === timeInSeconds) + 1;
-
+  const fastestFormatted = formatTimeInSeconds(fastest);
+  const averageFormatted = formatTimeInSeconds(average);
   const guessesHist = buildHistogram(results.map((r) => r.guesses));
   const hintsHist = buildHistogram(results.map((r) => r.hints));
 
@@ -134,19 +134,18 @@ export function GameStats({
         <div className={styles.noResultsMsg}>No results yet for this game.</div>
       ) : (
         <>
+          <h2>Inkling {gameId}</h2>
           <div className={styles.statsRow}>
             <div className={styles.statsCard}>
               <div className={styles.statsLabel}>Fastest</div>
-              <div className={styles.statsValue}>{fastest} sec</div>
+              <div className={styles.statsValue}>
+                {fastestFormatted.minutes}:{fastestFormatted.seconds}
+              </div>
             </div>
             <div className={styles.statsCard}>
               <div className={styles.statsLabel}>Average</div>
-              <div className={styles.statsValue}>{average} sec</div>
-            </div>
-            <div className={styles.statsCard}>
-              <div className={styles.statsLabel}>Rank</div>
-              <div className={styles.statsPercentile}>
-                {rank}/{times.length}
+              <div className={styles.statsValue}>
+                {averageFormatted.minutes}:{averageFormatted.seconds}
               </div>
             </div>
           </div>
