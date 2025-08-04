@@ -7,6 +7,7 @@ import { Keyboard } from "../components/Keyboard";
 import { ResultsPopup } from "../components/ResultsPopup";
 import { SuggestPopup } from "../components/SuggestPopup";
 import { getTodaysGameIndex } from "../hooks/game-logic";
+import { usePersistentTimer } from "../hooks/usePersistentTimer";
 import { GAMES } from "../../public/game_data";
 import styles from "./Game.module.scss";
 import { useUser } from "../providers/UserProvider";
@@ -20,7 +21,6 @@ export default function Game() {
   const [isDone, setIsDone] = useState(false);
   const [isResultsOpen, setIsResultsOpen] = useState(false);
   const [currentGuess, setCurrentGuess] = useState("");
-  const [timer, setTimer] = useState(0);
   const [showIncorrect, setShowIncorrect] = useState(false);
   const [hintCount, setHintCount] = useState(0);
   const [guessCount, setGuessCount] = useState(0);
@@ -31,15 +31,24 @@ export default function Game() {
 
   const { user } = useUser();
 
+  // Use persistent timer hook
+  const isPaused = isDone || isSuggestOpen || isTodaysStatsOpen || isInfoOpen;
+  const {
+    timeInSeconds: timer,
+    startTimer,
+    pauseTimer,
+    resetTimer,
+    addTime,
+  } = usePersistentTimer(gameIndex, isPaused);
+
+  // Start timer when component mounts and game is not paused
   useEffect(() => {
-    if (isDone || isSuggestOpen || isTodaysStatsOpen || isInfoOpen) {
-      return;
+    if (!isPaused) {
+      startTimer();
+    } else {
+      pauseTimer();
     }
-    const intervalId = setInterval(() => {
-      setTimer((t) => t + 1);
-    }, 1000);
-    return () => clearInterval(intervalId);
-  }, [isDone, isSuggestOpen, isTodaysStatsOpen, isInfoOpen]);
+  }, [isPaused, startTimer, pauseTimer]);
 
   const isCorrectSolution = useCallback(
     (guess: string) => {
@@ -123,7 +132,7 @@ export default function Game() {
   const onHint = useCallback(() => {
     if (!game) return;
     if (hintCount < game.answer.length) {
-      setTimer((t) => t + 30);
+      addTime(30);
       const newHintCount = hintCount + 1;
       setCurrentGuess(
         game.answer
@@ -133,7 +142,7 @@ export default function Game() {
       );
       setHintCount(newHintCount);
     }
-  }, [game, hintCount]);
+  }, [game, hintCount, addTime]);
 
   useEffect(() => {
     if (isDone) {
@@ -176,7 +185,7 @@ export default function Game() {
     setIsDone(false);
     setIsResultsOpen(false);
     setCurrentGuess("");
-    setTimer(0);
+    resetTimer();
     setShowIncorrect(false);
     setHintCount(0);
     setGuessCount(0);
