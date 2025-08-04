@@ -208,6 +208,10 @@ export default function Game() {
         hintAriaLabel="Reveal a letter (costs +30s)"
         isSuggestOpen={isSuggestOpen}
         setIsSuggestOpen={setIsSuggestOpen}
+        onShowStats={() => {
+          setIsResultsOpen(false);
+          setIsTodaysStatsOpen(true);
+        }}
       />
       <SuggestPopup
         isOpen={isSuggestOpen}

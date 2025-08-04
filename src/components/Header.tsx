@@ -5,7 +5,12 @@ import { InfoPopup } from "./InfoPopup";
 import { ArchivePopup } from "./ArchivePopup";
 import classNames from "classnames";
 import { SuggestPopup } from "./SuggestPopup";
-import { IconBulb, IconInfoCircle, IconEye } from "@tabler/icons-react";
+import {
+  IconBulb,
+  IconInfoCircle,
+  IconEye,
+  IconChartBar,
+} from "@tabler/icons-react";
 
 export function Header({
   timerInSeconds,
@@ -18,6 +23,7 @@ export function Header({
   hintAriaLabel = "Reveal a letter (costs +30s)",
   isSuggestOpen,
   setIsSuggestOpen,
+  onShowStats,
 }: {
   timerInSeconds: number;
   className?: string;
@@ -29,6 +35,7 @@ export function Header({
   hintAriaLabel?: string;
   isSuggestOpen: boolean;
   setIsSuggestOpen: (open: boolean) => void;
+  onShowStats: () => void;
 }) {
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
@@ -59,29 +66,33 @@ export function Header({
           </div>
         </div>
         <div className={styles.right}>
-          {onHint && (
-            <button
-              className={styles.hintButton}
-              type="button"
-              aria-label={hintAriaLabel}
-              onClick={onHint}
-              disabled={hintDisabled}
-            >
-              <IconEye size={24} color="#fff" stroke={2} />
-            </button>
-          )}
-          {/* SuggestPopup trigger button */}
           <button
-            className={styles.suggestButton}
+            className={styles.headerButton}
+            type="button"
+            aria-label={hintAriaLabel}
+            onClick={onHint}
+            disabled={hintDisabled}
+          >
+            <IconEye size={24} color="#fff" stroke={2} />
+          </button>
+          <button
+            className={styles.headerButton}
+            type="button"
+            onClick={onShowStats}
+            aria-label="View today's stats"
+          >
+            <IconChartBar size={24} color="#fff" stroke={2} />
+          </button>
+          <button
+            className={styles.headerButton}
             onClick={() => setIsSuggestOpen(true)}
             aria-label="Suggest an Inkling"
             type="button"
           >
             <IconBulb size={22} color="#fff" stroke={2} />
           </button>
-          {/* Info icon button */}
           <button
-            className={styles.infoButton}
+            className={styles.headerButton}
             onClick={() => setIsInfoOpen(true)}
           >
             <IconInfoCircle size={22} color="#fff" stroke={2} />
