@@ -67,7 +67,6 @@ function UserBarChart({
 export function GameStats({
   gameId,
   answerLength,
-  timeInSeconds,
   onClose,
   showBackButton = false,
 }: GameStatsProps) {
