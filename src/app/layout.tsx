@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { PostHogProvider } from "../providers/PostHogProvider";
 import { UserProvider } from "../providers/UserProvider";
 
 export const metadata: Metadata = {
@@ -15,7 +14,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* https://realfavicongenerator.net/ */}
         <link
           rel="icon"
           type="image/png"
@@ -30,12 +28,9 @@ export default function RootLayout({
           href="/apple-touch-icon.png"
         />
         <meta name="apple-mobile-web-app-title" content="Inkling" />
-        <link rel="manifest" href="/site.webmanifest" />
       </head>
       <body>
-        <UserProvider>
-          <PostHogProvider>{children}</PostHogProvider>
-        </UserProvider>
+        <UserProvider>{children}</UserProvider>
       </body>
     </html>
   );
