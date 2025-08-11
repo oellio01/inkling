@@ -41,7 +41,7 @@ export function InfoPopup({ isOpen, close }: InfoPopupProps) {
         <Image src={"/info.png"} alt="Example Inkling" fill />
       </div>
       <button className={styles.playButton} onClick={close}>
-        Got it! Let's Play
+        Got it! Let&apos;s Play
       </button>
     </dialog>
   );
