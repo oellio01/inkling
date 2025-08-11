@@ -17,7 +17,7 @@ import supabase from "./supabaseClient";
 export default function Game() {
   const [gameIndex, setGameIndex] = useState(getTodaysGameIndex);
   const game = GAMES[gameIndex];
-
+  const { user, isFistTimeUser } = useUser();
   const [isDone, setIsDone] = useState(false);
   const [isResultsOpen, setIsResultsOpen] = useState(false);
   const [currentGuess, setCurrentGuess] = useState("");
@@ -26,10 +26,8 @@ export default function Game() {
   const [guessCount, setGuessCount] = useState(0);
   const [isSuggestOpen, setIsSuggestOpen] = useState(false);
   const [isTodaysStatsOpen, setIsTodaysStatsOpen] = useState(false);
-  const [isInfoOpen, setIsInfoOpen] = useState(false);
+  const [isInfoOpen, setIsInfoOpen] = useState(isFistTimeUser);
   const [cameFromResults, setCameFromResults] = useState(false);
-
-  const { user } = useUser();
 
   // Use persistent timer hook
   const isPaused = isDone || isSuggestOpen || isTodaysStatsOpen || isInfoOpen;

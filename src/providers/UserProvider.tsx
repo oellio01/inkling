@@ -13,16 +13,19 @@ import type { User } from "@supabase/supabase-js";
 interface UserContextType {
   user: User | null;
   loading: boolean;
+  isFistTimeUser: boolean;
 }
 
 const UserContext = createContext<UserContextType>({
   user: null,
   loading: true,
+  isFistTimeUser: false,
 });
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isFirstTimeUser, setIsFirstTimeUser] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -30,6 +33,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       const { data } = await supabase.auth.getUser();
       if (!data.user) {
         await supabase.auth.signInAnonymously();
+        setIsFirstTimeUser(true);
       }
       const { data: userData } = await supabase.auth.getUser();
       if (mounted) {
@@ -44,7 +48,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <UserContext.Provider value={{ user, loading }}>
+    <UserContext.Provider
+      value={{ user, loading, isFistTimeUser: isFirstTimeUser }}
+    >
       {children}
     </UserContext.Provider>
   );

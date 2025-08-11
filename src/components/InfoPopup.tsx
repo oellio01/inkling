@@ -38,7 +38,12 @@ export function InfoPopup({ isOpen, close }: InfoPopupProps) {
   return (
     <dialog ref={dialogRef} className={styles.popup} onClick={handleClick}>
       <div className={styles.imageContainer}>
-        <Image src={"/info.png"} alt="Example Inkling" fill />
+        <Image
+          src={"/info.png"}
+          alt="Example Inkling"
+          fill
+          sizes="(max-width: 400px) 90vw, 400px"
+        />
       </div>
       <button className={styles.playButton} onClick={close}>
         Got it! Let&apos;s Play
