@@ -8,12 +8,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const game = GAMES[getTodaysGameIndex()];
 
   const imageUrl = `https://inkling-puzzle.com${game.image}`;
-  const gameSpecificTitle = `Inkling`;
-  const socialDescription = `Can you solve today's Inkling puzzle?`;
+  const title = `Inkling`;
+  const description = `Can you guess today's word? Each image represents one or more concepts, which when combined form the answer.`;
 
   return {
-    title: gameSpecificTitle,
-    description: socialDescription,
+    title: title,
+    description: description,
     keywords:
       "rebus puzzles, pictionary, word games, brain games, visual puzzles, daily puzzles, wordplay, logic games, puzzle games",
     authors: [{ name: "Inkling Team" }],
@@ -21,8 +21,8 @@ export async function generateMetadata(): Promise<Metadata> {
     publisher: "Inkling",
     robots: "index, follow",
     openGraph: {
-      title: gameSpecificTitle,
-      description: socialDescription,
+      title: title,
+      description: description,
       type: "website",
       url: "https://inkling-puzzle.com",
       siteName: "Inkling",
@@ -31,15 +31,15 @@ export async function generateMetadata(): Promise<Metadata> {
           url: imageUrl,
           width: 1200,
           height: 630,
-          alt: `Inkling #${game.id} - Today's puzzle - Can you solve it?`,
+          alt: `Inkling #${game.id} - Can you guess today's word?`,
         },
       ],
       locale: "en_US",
     },
     twitter: {
       card: "summary_large_image",
-      title: gameSpecificTitle,
-      description: socialDescription,
+      title: title,
+      description: description,
       images: [imageUrl],
     },
     alternates: {
@@ -49,7 +49,7 @@ export async function generateMetadata(): Promise<Metadata> {
     classification: "puzzle game",
     other: {
       "og:image:secure_url": imageUrl,
-      "twitter:image:alt": `Inkling #${game.id} - Today's puzzle - Can you solve it?`,
+      "twitter:image:alt": `Inkling #${game.id} - Can you guess today's word?`,
       "msapplication-TileImage": "/file.svg",
     },
   };
