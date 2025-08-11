@@ -76,7 +76,7 @@ export function Header({
             onClick={onHint}
             disabled={hintDisabled}
           >
-            <IconEye size={24} color="#fff" stroke={2} />
+            <IconEye size={24} color="#333" stroke={2} />
           </button>
           <button
             className={styles.headerButton}
@@ -84,7 +84,7 @@ export function Header({
             onClick={onShowStats}
             aria-label="View today's stats"
           >
-            <IconChartBar size={24} color="#fff" stroke={2} />
+            <IconChartBar size={24} color="#333" stroke={2} />
           </button>
           <button
             className={styles.headerButton}
@@ -92,13 +92,13 @@ export function Header({
             aria-label="Suggest an Inkling"
             type="button"
           >
-            <IconBulb size={22} color="#fff" stroke={2} />
+            <IconBulb size={22} color="#333" stroke={2} />
           </button>
           <button
             className={styles.headerButton}
             onClick={() => setIsInfoOpen(true)}
           >
-            <IconInfoCircle size={22} color="#fff" stroke={2} />
+            <IconInfoCircle size={22} color="#333" stroke={2} />
           </button>
         </div>
       </div>

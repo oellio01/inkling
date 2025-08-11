@@ -26,7 +26,7 @@
   font-weight: 600;
   margin: 0 0 20px 0;
   text-align: center;
-  color: #fff;
+  color: #000;
 }
 
 .grid {
@@ -44,14 +44,14 @@
   transition: transform 0.2s ease, opacity 0.2s ease;
   border-radius: 8px;
   padding: 8px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.05);
   border: 2px solid transparent;
 }
 
 .gameItem:hover {
   transform: scale(1.05);
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.1);
+  border-color: rgba(0, 0, 0, 0.2);
 }
 
 .gameItem.currentGame {
@@ -100,7 +100,7 @@
 .gameNumber {
   font-size: 14px;
   font-weight: 500;
-  color: #ccc;
+  color: #666;
   text-align: center;
 }
 

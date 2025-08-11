@@ -31,7 +31,7 @@
 }
 
 .headerButton {
-  border: 1px solid #4a4a4a;
+  border: 1px solid #e0e0e0;
   width: 32px;
   height: 32px;
   display: flex;
@@ -39,13 +39,13 @@
   align-items: center;
   cursor: pointer;
   background-color: transparent;
-  color: #d7dadc;
+  color: #333;
   border-radius: 4px;
   font-size: 20px;
 }
 
 .headerButton:hover {
-  background-color: #2c2c2c;
+  background-color: #f5f5f5;
 }
 
 .headerButton:disabled {
@@ -62,7 +62,7 @@
 .gameNumberButton {
   background: none;
   border: none;
-  color: #fff;
+  color: #000;
   font-size: inherit;
 }
 
@@ -72,24 +72,25 @@
 
 .dropdownMenu {
   position: absolute;
-  background: #222;
-  border: 1px solid #444;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
   border-radius: 4px;
   z-index: 10;
   max-height: 400px;
   overflow-y: auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .dropdownMenuItem {
   padding: 6px 12px;
-  background: #222;
-  color: #ccc;
+  background: #ffffff;
+  color: #333;
   cursor: pointer;
 }
 
 .dropdownMenuItemActive {
-  background: #444;
-  color: #fff;
+  background: #f0f0f0;
+  color: #000;
 }
 
 .left {
