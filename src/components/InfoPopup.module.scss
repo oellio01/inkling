@@ -5,7 +5,7 @@
   text-align: center;
   color: rgb(0, 0, 0);
   width: 90%;
-  max-width: 350px;
+  max-width: 500px;
   border: none;
 }
 
@@ -30,11 +30,7 @@
 .imageContainer {
   position: relative;
   width: 100%;
-  padding-top: 56.25%; /* 16:9 Aspect Ratio */
-}
-
-.image {
-  object-fit: contain;
+  padding-top: 150%;
 }
 
 .hintRow {
@@ -55,3 +51,21 @@
   font-size: 15px;
   text-align: center;
 } 
+
+.playButton {
+  width: 100%;
+  padding: 12px;
+  margin-top: 20px;
+  background-color: #227838;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.playButton:hover {
+  background-color: #227838;
+}

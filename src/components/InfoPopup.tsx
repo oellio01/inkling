@@ -37,23 +37,12 @@ export function InfoPopup({ isOpen, close }: InfoPopupProps) {
 
   return (
     <dialog ref={dialogRef} className={styles.popup} onClick={handleClick}>
-      <h2 className={styles.title}>How To Play</h2>
-      <p className={styles.description}>Guess the word based on the image.</p>
       <div className={styles.imageContainer}>
-        <Image
-          src={"/games/1.jpg"}
-          alt="Example Inkling"
-          fill
-          className={styles.image}
-          sizes="(max-width: 350px) 90vw, 350px"
-        />
+        <Image src={"/info.png"} alt="Example Inkling" fill />
       </div>
-      <p className={styles.answer}>Answer: CENTURY</p>
-      <p className={styles.answer}>Explanation: Cent + Cherry</p>
-      <p className={styles.hintText}>
-        Click the eye to reveal the next letter of the answer. Each hint adds{" "}
-        <b>30 seconds</b> to your time.
-      </p>
+      <button className={styles.playButton} onClick={close}>
+        Got it! Let's Play
+      </button>
     </dialog>
   );
 }
