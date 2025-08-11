@@ -136,57 +136,60 @@ export function ResultsPopup({
         {"View today's stats"}
       </button>
       <hr className={styles.divider} />
-      <form
-        onSubmit={handleSubmitRating}
-        className={styles.ratingForm}
-        method="dialog"
-      >
-        <div className={styles.ratingLabel}>How was today&apos;s inkling?</div>
-        <div className={styles.starsRow}>
-          {[1, 2, 3, 4, 5].map((star) => (
-            <button
-              key={star}
-              type="button"
-              className={styles.starButton}
-              aria-label={`Rate ${star} star${star > 1 ? "s" : ""}`}
-              disabled={submitted}
-              onClick={() => !submitted && setRating(star)}
-              onMouseEnter={() => !submitted && setHoverRating(star)}
-              onMouseLeave={() => !submitted && setHoverRating(null)}
-            >
-              {(hoverRating ?? rating ?? 0) >= star ? (
-                <IconStarFilled size={28} color="#FFD700" />
-              ) : (
-                <IconStar size={28} color="#FFD700" />
-              )}
-            </button>
-          ))}
+      {submitted ? (
+        <div className={styles.thankYouMessage}>
+          <div className={styles.thankYouText}>
+            Thank you for your feedback! 🎉
+          </div>
         </div>
-        <textarea
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          placeholder="Thoughts..."
-          disabled={submitting || submitted}
-          className={styles.ratingTextarea}
-        />
-        <button
-          type="submit"
-          className={classNames(
-            styles.button,
-            rating && !submitting && !submitted
-              ? styles.primary_button
-              : undefined
-          )}
-          disabled={submitting || submitted || !rating}
+      ) : (
+        <form
+          onSubmit={handleSubmitRating}
+          className={styles.ratingForm}
+          method="dialog"
         >
-          {submitted
-            ? "Thank you!"
-            : submitting
-            ? "Submitting..."
-            : "Submit Rating"}
-        </button>
-        {error && <div className={styles.ratingError}>{error}</div>}
-      </form>
+          <div className={styles.ratingLabel}>
+            How was today&apos;s inkling?
+          </div>
+          <div className={styles.starsRow}>
+            {[1, 2, 3, 4, 5].map((star) => (
+              <button
+                key={star}
+                type="button"
+                className={styles.starButton}
+                aria-label={`Rate ${star} star${star > 1 ? "s" : ""}`}
+                onClick={() => setRating(star)}
+                onMouseEnter={() => setHoverRating(star)}
+                onMouseLeave={() => setHoverRating(null)}
+              >
+                {(hoverRating ?? rating ?? 0) >= star ? (
+                  <IconStarFilled size={28} color="#FFD700" />
+                ) : (
+                  <IconStar size={28} color="#FFD700" />
+                )}
+              </button>
+            ))}
+          </div>
+          <textarea
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="Any suggestions?"
+            disabled={submitting}
+            className={styles.ratingTextarea}
+          />
+          <button
+            type="submit"
+            className={classNames(
+              styles.button,
+              rating && !submitting ? styles.primary_button : undefined
+            )}
+            disabled={submitting || !rating}
+          >
+            {submitting ? "Submitting..." : "Submit Rating"}
+          </button>
+          {error && <div className={styles.ratingError}>{error}</div>}
+        </form>
+      )}
     </dialog>
   );
 }

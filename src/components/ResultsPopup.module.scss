@@ -55,7 +55,7 @@
 }
 
 .primary_button {
-  background-color: #5E807F;
+  background-color: #2172a7;
   color: white;
 }
 
@@ -92,7 +92,7 @@
   font-size: 16px;
   font-weight: 500;
   margin-bottom: 10px;
-  color: #5E807F;
+  color: #104570;
 }
 
 .starsRow {
@@ -160,4 +160,20 @@
 
 .back_button:hover {
   background-color: #bdbdbd;
+}
+
+.thankYouMessage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+}
+
+.thankYouText {
+  font-size: 18px;
+  font-weight: 500;
+  color: #5E807F;
+  margin: 0;
 } 
