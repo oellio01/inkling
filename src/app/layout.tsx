@@ -7,9 +7,13 @@ import { GAMES } from "../../public/game_data";
 export async function generateMetadata(): Promise<Metadata> {
   const game = GAMES[getTodaysGameIndex()];
 
+  const imageUrl = `https://inkling-puzzle.com${game.image}`;
+  const gameSpecificTitle = `Inkling`;
+  const socialDescription = `Can you solve today's Inkling puzzle?`;
+
   return {
-    title: "Inkling",
-    description: `Solve daily puzzles inspired by pictionary!`,
+    title: gameSpecificTitle,
+    description: socialDescription,
     keywords:
       "rebus puzzles, pictionary, word games, brain games, visual puzzles, daily puzzles, wordplay, logic games, puzzle games",
     authors: [{ name: "Inkling Team" }],
@@ -17,26 +21,37 @@ export async function generateMetadata(): Promise<Metadata> {
     publisher: "Inkling",
     robots: "index, follow",
     openGraph: {
-      title: "Inkling",
-      description: `Solve daily puzzles inspired by pictionary!`,
+      title: gameSpecificTitle,
+      description: socialDescription,
       type: "website",
       url: "https://inkling-puzzle.com",
       siteName: "Inkling",
       images: [
         {
-          url: game.image,
+          url: imageUrl,
           width: 1200,
           height: 630,
-          alt: `Today's Inkling puzzle`,
+          alt: `Inkling #${game.id} - Today's puzzle - Can you solve it?`,
         },
       ],
       locale: "en_US",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: gameSpecificTitle,
+      description: socialDescription,
+      images: [imageUrl],
     },
     alternates: {
       canonical: "https://inkling-puzzle.com",
     },
     category: "games",
     classification: "puzzle game",
+    other: {
+      "og:image:secure_url": imageUrl,
+      "twitter:image:alt": `Inkling #${game.id} - Today's puzzle - Can you solve it?`,
+      "msapplication-TileImage": "/file.svg",
+    },
   };
 }
 
@@ -48,20 +63,67 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link
-          rel="icon"
-          type="image/png"
-          href="/favicon-96x96.png"
-          sizes="96x96"
-        />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="icon" type="image/svg+xml" href="/file.svg" />
         <link rel="shortcut icon" href="/favicon.ico" />
-        <link
-          rel="apple-touch-icon"
-          sizes="180x180"
-          href="/apple-touch-icon.png"
-        />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#1976d2" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Inkling" />
+        <meta name="application-name" content="Inkling" />
+        <meta name="msapplication-TileColor" content="#1976d2" />
+        <meta name="msapplication-config" content="/browserconfig.xml" />
+
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Inkling" />
+        <meta property="og:locale" content="en_US" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@inkling_puzzle" />
+        <meta name="twitter:creator" content="@inkling_puzzle" />
+
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-touch-fullscreen" content="yes" />
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent"
+        />
+
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="Daily Inkling puzzle" />
+
+        <meta name="author" content="Inkling Team" />
+        <meta name="copyright" content="Inkling Team" />
+        <meta name="language" content="English" />
+        <meta name="coverage" content="Worldwide" />
+        <meta name="distribution" content="Global" />
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebApplication",
+              name: "Inkling",
+              description: "Daily visual word puzzles inspired by pictionary",
+              url: "https://inkling-puzzle.com",
+              applicationCategory: "Game",
+              operatingSystem: "Web Browser",
+              offers: {
+                "@type": "Offer",
+                price: "0",
+                priceCurrency: "USD",
+              },
+              publisher: {
+                "@type": "Organization",
+                name: "Inkling Team",
+              },
+            }),
+          }}
+        />
       </head>
       <body>
         <UserProvider>{children}</UserProvider>
