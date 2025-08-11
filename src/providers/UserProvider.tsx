@@ -34,6 +34,16 @@ export function UserProvider({ children }: { children: ReactNode }) {
       if (!data.user) {
         await supabase.auth.signInAnonymously();
         setIsFirstTimeUser(true);
+      } else {
+        // Check if this user has played before by looking for any game results
+        const { data: gameResults } = await supabase
+          .from("game_results")
+          .select("id")
+          .eq("user_id", data.user.id)
+          .limit(1);
+
+        // If no game results exist, this is their first time
+        setIsFirstTimeUser(!!gameResults && gameResults.length === 0);
       }
       const { data: userData } = await supabase.auth.getUser();
       if (mounted) {
