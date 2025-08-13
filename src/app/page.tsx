@@ -17,7 +17,7 @@ import supabase from "./supabaseClient";
 export default function Game() {
   const [gameIndex, setGameIndex] = useState(getTodaysGameIndex);
   const game = GAMES[gameIndex];
-  const { user, isFistTimeUser } = useUser();
+  const { user } = useUser();
   const [isDone, setIsDone] = useState(false);
   const [isResultsOpen, setIsResultsOpen] = useState(false);
   const [currentGuess, setCurrentGuess] = useState("");
@@ -26,7 +26,7 @@ export default function Game() {
   const [guessCount, setGuessCount] = useState(0);
   const [isSuggestOpen, setIsSuggestOpen] = useState(false);
   const [isTodaysStatsOpen, setIsTodaysStatsOpen] = useState(false);
-  const [isInfoOpen, setIsInfoOpen] = useState(isFistTimeUser);
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [cameFromResults, setCameFromResults] = useState(false);
 
   // Use persistent timer hook
@@ -38,6 +38,34 @@ export default function Game() {
     resetTimer,
     addTime,
   } = usePersistentTimer(gameIndex, isPaused);
+
+  useEffect(() => {
+    const checkUserResults = async () => {
+      if (!user) return;
+
+      try {
+        const { data, error } = await supabase
+          .from("game_results")
+          .select("id")
+          .eq("user_id", user.id)
+          .limit(1);
+
+        if (error) {
+          console.error("Error checking user results:", error);
+          return;
+        }
+
+        // If no results found, show the info popup
+        if (!data || data.length === 0) {
+          setIsInfoOpen(true);
+        }
+      } catch (error) {
+        console.error("Error checking user results:", error);
+      }
+    };
+
+    checkUserResults();
+  }, [user]);
 
   // Start timer when component mounts and game is not paused
   useEffect(() => {
