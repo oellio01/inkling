@@ -300,5 +300,75 @@ export const GAMES: GameData[] = [
     image: "/games/59.jpg",
     answer: "SWEETHEART",
   },
+  {
+    id: 60,
+    image: "/games/60.jpg",
+    answer: "SHINGLE",
+  },
+  {
+    id: 61,
+    image: "/games/61.jpg",
+    answer: "POTENT",
+  },
+  {
+    id: 62,
+    image: "/games/62.jpg",
+    answer: "WHISKEY",
+  },
+  {
+    id: 63,
+    image: "/games/63.jpg",
+    answer: "COWLICK",
+  },
+  {
+    id: 64,
+    image: "/games/64.jpg",
+    answer: "CLASSIC",
+  },
+  {
+    id: 65,
+    image: "/games/65.jpg",
+    answer: "CABINET",
+  },
+  {
+    id: 66,
+    image: "/games/66.jpg",
+    answer: "CARDBOARD",
+  },
+  {
+    id: 67,
+    image: "/games/67.jpg",
+    answer: "CROCODILE",
+  },
+  {
+    id: 68,
+    image: "/games/68.png",
+    answer: "BUCKET",
+  },
+  {
+    id: 69,
+    image: "/games/69.jpg",
+    answer: "PELVIS",
+  },
+  {
+    id: 70,
+    image: "/games/70.jpg",
+    answer: "HERRING",
+  },
+  {
+    id: 71,
+    image: "/games/71.jpg",
+    answer: "BREAK ROOM",
+  },
+  {
+    id: 72,
+    image: "/games/72.jpg",
+    answer: "FARE BOX",
+  },
+  {
+    id: 73,
+    image: "/games/73.jpg",
+    answer: "HARRY POTTER",
+  },
 ];
   
