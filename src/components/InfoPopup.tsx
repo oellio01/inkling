@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./InfoPopup.module.scss";
 import Image from "next/image";
 
@@ -9,12 +9,17 @@ export interface InfoPopupProps {
 
 export function InfoPopup({ isOpen, close }: InfoPopupProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const images = ["/info_0.jpg", "/info_1.jpg", "/info_2.jpg", "/info_3.jpg"];
 
   useEffect(() => {
     const dialog = dialogRef.current;
     if (dialog) {
       if (isOpen) {
         dialog.showModal();
+        // Reset to first image when opening
+        setCurrentImageIndex(0);
       } else {
         dialog.close();
       }
@@ -35,19 +40,37 @@ export function InfoPopup({ isOpen, close }: InfoPopupProps) {
     }
   };
 
+  const handleNextExample = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const handlePlay = () => {
+    close();
+  };
+
+  const isLastImage = currentImageIndex === images.length - 1;
+
   return (
     <dialog ref={dialogRef} className={styles.popup} onClick={handleClick}>
       <div className={styles.imageContainer}>
         <Image
-          src={"/info.png"}
-          alt="Example Inkling"
+          src={images[currentImageIndex]}
+          alt={`Example Inkling ${currentImageIndex + 1}`}
           fill
           sizes="(max-width: 400px) 90vw, 400px"
         />
       </div>
-      <button className={styles.playButton} onClick={close}>
-        Got it! Let&apos;s Play
-      </button>
+
+      <div className={styles.buttonContainer}>
+        {!isLastImage && (
+          <button className={styles.nextButton} onClick={handleNextExample}>
+            See another example
+          </button>
+        )}
+        <button className={styles.playButton} onClick={handlePlay}>
+          Got it! Let&apos;s Play
+        </button>
+      </div>
     </dialog>
   );
 }

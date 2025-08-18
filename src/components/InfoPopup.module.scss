@@ -5,7 +5,7 @@
   text-align: center;
   color: rgb(0, 0, 0);
   width: 90%;
-  max-width: 500px;
+  max-width: 400px;
   border: none;
 }
 
@@ -52,10 +52,34 @@
   text-align: center;
 } 
 
+.buttonContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.nextButton {
+  width: 100%;
+  padding: 12px;
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.nextButton:hover {
+  background-color: #e0e0e0;
+  border-color: #ccc;
+}
+
 .playButton {
   width: 100%;
   padding: 12px;
-  margin-top: 20px;
   background-color: #227838;
   color: white;
   border: none;
@@ -67,5 +91,5 @@
 }
 
 .playButton:hover {
-  background-color: #227838;
+  background-color: #1a5f2e;
 }
