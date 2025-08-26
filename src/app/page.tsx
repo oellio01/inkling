@@ -28,6 +28,8 @@ export default function Game() {
   const [isTodaysStatsOpen, setIsTodaysStatsOpen] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [cameFromResults, setCameFromResults] = useState(false);
+  const [spaceIndexes, setSpaceIndexes] = useState<number[]>([]);
+  const gameAnswer = game?.answer.replace(" ", "");
 
   // Use persistent timer hook
   const isPaused = isDone || isSuggestOpen || isTodaysStatsOpen || isInfoOpen;
@@ -63,9 +65,18 @@ export default function Game() {
         console.error("Error checking user results:", error);
       }
     };
-
     checkUserResults();
   }, [user]);
+
+  useEffect(() => {
+    const indexes: number[] = [];
+    for (let i = 0; i < game.answer.length; i++) {
+      if (game.answer[i] === " ") {
+        indexes.push(i);
+      }
+    }
+    setSpaceIndexes(indexes);
+  }, [game]);
 
   // Start timer when component mounts and game is not paused
   useEffect(() => {
@@ -81,7 +92,14 @@ export default function Game() {
       if (!game) {
         return false;
       }
-      return guess.toLowerCase() === game.answer.toLowerCase();
+      console.log(
+        guess.replace(/ /g, "").toLowerCase(),
+        game.answer.replace(/ /g, "").toLowerCase()
+      );
+      return (
+        guess.replace(/ /g, "").toLowerCase() ===
+        game.answer.replace(/ /g, "").toLowerCase()
+      );
     },
     [game]
   );
@@ -98,15 +116,15 @@ export default function Game() {
         const safePrefix = prev.slice(0, hintCount);
         const rest = prev.slice(hintCount);
         if (safePrefix.length < hintCount) {
-          return game.answer.slice(0, hintCount).toUpperCase() + letter;
+          return gameAnswer.slice(0, hintCount).toUpperCase() + letter;
         }
-        if (safePrefix.length + rest.length < game.answer.length) {
+        if (safePrefix.length + rest.length < gameAnswer.length) {
           return safePrefix + rest + letter;
         }
         return prev;
       });
     },
-    [hintCount, game]
+    [game, hintCount, gameAnswer]
   );
 
   const onPressBackspace = useCallback(() => {
@@ -157,18 +175,18 @@ export default function Game() {
 
   const onHint = useCallback(() => {
     if (!game) return;
-    if (hintCount < game.answer.length) {
+    if (hintCount < gameAnswer.length) {
       addTime(30);
       const newHintCount = hintCount + 1;
       setCurrentGuess(
-        game.answer
+        gameAnswer
           .slice(0, newHintCount)
           .toUpperCase()
-          .padEnd(game.answer.length, "")
+          .padEnd(gameAnswer.length, "")
       );
       setHintCount(newHintCount);
     }
-  }, [game, hintCount, addTime]);
+  }, [game, hintCount, gameAnswer, addTime]);
 
   useEffect(() => {
     if (isDone) {
@@ -241,7 +259,7 @@ export default function Game() {
         onSelectGame={handleSelectGame}
         maxGameIndex={maxSelectableGameIndex}
         onHint={onHint}
-        hintDisabled={hintCount >= game.answer.length}
+        hintDisabled={hintCount >= gameAnswer.length}
         hintAriaLabel="Reveal a letter (costs +30s)"
         isSuggestOpen={isSuggestOpen}
         setIsSuggestOpen={setIsSuggestOpen}
@@ -278,16 +296,39 @@ export default function Game() {
               }
             >
               <span className={styles.guessWithDashesContent}>
-                {Array.from({ length: game.answer.length }).map((_, index) => (
-                  <div key={index} className={styles.charContainer}>
-                    <span className={styles.char}>
-                      {index < hintCount
-                        ? game.answer[index].toUpperCase()
-                        : currentGuess[index] || " "}
-                    </span>
-                    <span className={styles.dash}>_</span>
-                  </div>
-                ))}
+                {Array.from({ length: game.answer.length }).map(
+                  (_, originalIndex) => {
+                    if (spaceIndexes.includes(originalIndex)) {
+                      // This is a space position
+                      return (
+                        <div
+                          key={`space-${originalIndex}`}
+                          className={styles.spaceSeparator}
+                        >
+                          <span className={styles.spaceChar}> </span>
+                        </div>
+                      );
+                    } else {
+                      // This is a letter position - calculate which letter it is
+                      const letterIndex =
+                        originalIndex -
+                        spaceIndexes.filter((si) => si < originalIndex).length;
+                      return (
+                        <div
+                          key={`char-${originalIndex}`}
+                          className={styles.charContainer}
+                        >
+                          <span className={styles.char}>
+                            {letterIndex < hintCount
+                              ? gameAnswer[letterIndex].toUpperCase()
+                              : currentGuess[letterIndex] || " "}
+                          </span>
+                          <span className={styles.dash}>_</span>
+                        </div>
+                      );
+                    }
+                  }
+                )}
               </span>
             </div>
           </>
@@ -317,7 +358,7 @@ export default function Game() {
       {isTodaysStatsOpen && (
         <GameStats
           gameId={game.id}
-          answerLength={game.answer.length}
+          answerLength={gameAnswer.length}
           timeInSeconds={timer}
           showBackButton={cameFromResults}
           onClose={(reason) => {
