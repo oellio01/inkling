@@ -117,12 +117,20 @@ export function GameStats({
 
   return (
     <dialog ref={dialogRef} className={styles.popup} onClick={handleClick}>
-      {showBackButton && (
+      {showBackButton ? (
         <button
           className={classNames(styles.button, styles.back_button)}
           onClick={() => onClose("back")}
         >
           Back
+        </button>
+      ) : (
+        <button
+          className={styles.closeButton}
+          onClick={() => onClose()}
+          aria-label="Close"
+        >
+          ×
         </button>
       )}
       {loading ? (
