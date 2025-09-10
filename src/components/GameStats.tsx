@@ -44,6 +44,7 @@ interface UserBarChartProps {
   answerLength: number;
   barLabel: string;
   minValue?: number;
+  userValue?: number;
 }
 
 function UserBarChart({
@@ -51,6 +52,7 @@ function UserBarChart({
   answerLength,
   barLabel,
   minValue = 0,
+  userValue,
 }: UserBarChartProps) {
   const data = Array.from({ length: answerLength - minValue + 1 }, (_, i) => {
     const value = minValue + i;
@@ -78,9 +80,16 @@ function UserBarChart({
                 typeof value === "number" && value > 0 ? value : ""
               }
             />
-            {data.map((_, index) => (
-              <Cell key={`cell-${index}`} fill="#9e9e9e" />
-            ))}
+            {data.map((entry, index) => {
+              const isUserValue =
+                userValue !== undefined && parseInt(entry.name) === userValue;
+              return (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={isUserValue ? "#4caf50" : "#9e9e9e"}
+                />
+              );
+            })}
           </Bar>
         </BarChart>
       </ResponsiveContainer>
@@ -248,11 +257,11 @@ export function GameStats({
                 />
                 <StatsCard
                   label="Guesses"
-                  value={userGameResult?.guesses || "--"}
+                  value={userGameResult?.guesses ?? "--"}
                 />
                 <StatsCard
                   label="Hints"
-                  value={userGameResult?.hints || "--"}
+                  value={userGameResult?.hints ?? "--"}
                 />
               </div>
 
@@ -287,12 +296,14 @@ export function GameStats({
               answerLength={answerLength}
               barLabel="Guesses"
               minValue={1}
+              userValue={userGameResult?.guesses}
             />
             <UserBarChart
               hist={hintsHist}
               answerLength={answerLength}
               barLabel="Hints"
               minValue={0}
+              userValue={userGameResult?.hints}
             />
           </div>
         </>
