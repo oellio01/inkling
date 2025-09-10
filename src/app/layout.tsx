@@ -3,6 +3,7 @@ import "./globals.css";
 import { UserProvider } from "../providers/UserProvider";
 import { getTodaysGameIndex } from "../hooks/game-logic";
 import { GAMES } from "../../public/game_data";
+import { PostHogProvider } from "@/providers/PostHogProvider";
 
 export async function generateMetadata(): Promise<Metadata> {
   const game = GAMES[getTodaysGameIndex()];
@@ -126,7 +127,9 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <UserProvider>{children}</UserProvider>
+        <UserProvider>
+          <PostHogProvider>{children}</PostHogProvider>
+        </UserProvider>
       </body>
     </html>
   );
