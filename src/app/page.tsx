@@ -359,7 +359,8 @@ export default function Game() {
         <GameStats
           gameId={game.id}
           answerLength={gameAnswer.length}
-          timeInSeconds={timer}
+          guessCount={guessCount}
+          hintCount={hintCount}
           showBackButton={cameFromResults}
           onClose={(reason) => {
             if (reason === "back") {
