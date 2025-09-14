@@ -442,7 +442,7 @@ export const GAMES: GameData[] = [
   },
   {
     id: 88,
-    image: "/games/88.jpg",
+    image: "/games/88.png",
     answer: "MAIDEN VOYAGE",
   },
 ];
