@@ -467,18 +467,93 @@ export const GAMES: GameData[] = [
   },
   {
     id: 93,
-    image: "/games/93.png",
-    answer: "BANDAGE",
+    image: "/games/93.jpeg",
+    answer: "EMOTIONAL BAGGAGE",
   },
   {
     id: 94,
     image: "/games/94.png",
-    answer: "BULLDOZE",
+    answer: "BANDWIDTH",
   },
   {
     id: 95,
-    image: "/games/95.png",
+    image: "/games/95.jpeg",
+    answer: "JUNK FOOD",
+  },
+  {
+    id: 96,
+    image: "/games/96.jpeg",
+    answer: "MOTHERBOARD",
+  },
+  {
+    id: 97,
+    image: "/games/97.jpeg",
+    answer: "COPY CAT",
+  },
+  {
+    id: 98,
+    image: "/games/98.png",
+    answer: "CAR POOL",
+  },
+  {
+    id: 99,
+    image: "/games/99.png",
+    answer: "BRAINWASHED",
+  },
+  {
+    id: 100,
+    image: "/games/100.png",
+    answer: "HAPPY ACCIDENT",
+  },
+  {
+    id: 101,
+    image: "/games/101.png",
+    answer: "LIGHTHOUSE",
+  },
+  {
+    id: 102,
+    image: "/games/102.jpeg",
+    answer: "HOLY WATER",
+  },
+  {
+    id: 103,
+    image: "/games/103.png",
+    answer: "HIDDEN AGENDA",
+  },
+  {
+    id: 104,
+    image: "/games/104.png",
+    answer: "SWEET DREAMS",
+  },
+  {
+    id: 105,
+    image: "/games/105.png",
+    answer: "SUPERMAN",
+  },
+  {
+    id: 106,
+    image: "/games/106.png",
+    answer: "BANDAGE",
+  },
+  {
+    id: 107,
+    image: "/games/107.png",
     answer: "FOOTNOTE",
+  },
+  {
+    id: 108,
+    image: "/games/108.png",
+    answer: "BULLDOZE",
+  },
+  {
+    id: 109,
+    image: "/games/109.png",
+    answer: "SNOWBALL",
+  },
+  {
+    id: 110,
+    image: "/games/110.jpeg",
+    answer: "POWER PLANT",
   },
 ];
   
