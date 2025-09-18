@@ -467,8 +467,8 @@ export const GAMES: GameData[] = [
   },
   {
     id: 93,
-    image: "/games/93.jpeg",
-    answer: "EMOTIONAL BAGGAGE",
+    image: "/games/93.png",
+    answer: "BULLDOZE",
   },
   {
     id: 94,
@@ -542,8 +542,8 @@ export const GAMES: GameData[] = [
   },
   {
     id: 108,
-    image: "/games/108.png",
-    answer: "BULLDOZE",
+    image: "/games/108.jpeg",
+    answer: "EMOTIONAL BAGGAGE",
   },
   {
     id: 109,
