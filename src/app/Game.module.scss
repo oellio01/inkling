@@ -52,6 +52,21 @@
   flex: 1 1 0;
 }
 
+.guessWithDashesContentStacked {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  flex: 1 1 0;
+}
+
+.wordRow {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
 .charContainer {
   position: relative;
   width: 20px;

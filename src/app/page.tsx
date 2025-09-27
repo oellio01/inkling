@@ -295,41 +295,61 @@ export default function Game() {
                 (showIncorrect ? " " + styles.incorrectGuess : "")
               }
             >
-              <span className={styles.guessWithDashesContent}>
-                {Array.from({ length: game.answer.length }).map(
-                  (_, originalIndex) => {
-                    if (spaceIndexes.includes(originalIndex)) {
-                      // This is a space position
-                      return (
-                        <div
-                          key={`space-${originalIndex}`}
-                          className={styles.spaceSeparator}
-                        >
-                          <span className={styles.spaceChar}> </span>
-                        </div>
-                      );
-                    } else {
-                      // This is a letter position - calculate which letter it is
-                      const letterIndex =
-                        originalIndex -
-                        spaceIndexes.filter((si) => si < originalIndex).length;
+              {spaceIndexes.length > 0 ? (
+                // Two-word answer - stack vertically
+                <span className={styles.guessWithDashesContentStacked}>
+                  {(() => {
+                    const words = game.answer.split(" ");
+                    let letterIndex = 0;
+
+                    return words.map((word, wordIndex) => (
+                      <div key={`word-${wordIndex}`} className={styles.wordRow}>
+                        {Array.from({ length: word.length }).map(
+                          (_, charIndex) => {
+                            const currentLetterIndex = letterIndex++;
+                            return (
+                              <div
+                                key={`char-${wordIndex}-${charIndex}`}
+                                className={styles.charContainer}
+                              >
+                                <span className={styles.char}>
+                                  {currentLetterIndex < hintCount
+                                    ? gameAnswer[
+                                        currentLetterIndex
+                                      ].toUpperCase()
+                                    : currentGuess[currentLetterIndex] || " "}
+                                </span>
+                                <span className={styles.dash}>_</span>
+                              </div>
+                            );
+                          }
+                        )}
+                      </div>
+                    ));
+                  })()}
+                </span>
+              ) : (
+                // Single word answer - horizontal layout
+                <span className={styles.guessWithDashesContent}>
+                  {Array.from({ length: game.answer.length }).map(
+                    (_, originalIndex) => {
                       return (
                         <div
                           key={`char-${originalIndex}`}
                           className={styles.charContainer}
                         >
                           <span className={styles.char}>
-                            {letterIndex < hintCount
-                              ? gameAnswer[letterIndex].toUpperCase()
-                              : currentGuess[letterIndex] || " "}
+                            {originalIndex < hintCount
+                              ? gameAnswer[originalIndex].toUpperCase()
+                              : currentGuess[originalIndex] || " "}
                           </span>
                           <span className={styles.dash}>_</span>
                         </div>
                       );
                     }
-                  }
-                )}
-              </span>
+                  )}
+                </span>
+              )}
             </div>
           </>
         )}
