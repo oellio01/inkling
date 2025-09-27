@@ -2,7 +2,14 @@ import { useState, useEffect, useRef } from "react";
 import styles from "./ResultsPopup.module.scss";
 import { formatTimeInSeconds } from "./formatTimeInSeconds";
 import classNames from "classnames";
-import { IconStar, IconStarFilled } from "@tabler/icons-react";
+import {
+  IconStar,
+  IconStarFilled,
+  IconBrandTwitter,
+  IconMessage,
+  IconCopy,
+  IconBrandWhatsapp,
+} from "@tabler/icons-react";
 import supabase from "../app/supabaseClient";
 import { useUser } from "../providers/UserProvider";
 
@@ -42,6 +49,7 @@ export function ResultsPopup({
     setComment("");
     setSubmitted(false);
     setError(null);
+    setHasCopied(false);
   }, [gameNumber]);
 
   useEffect(() => {
@@ -64,12 +72,42 @@ export function ResultsPopup({
     };
   }, [close]);
 
-  const handleShare = () => {
+  const createShareText = () => {
     const url = window.location.href;
-    const shareText = `Inkling #${gameNumber} - ${minutes}:${seconds} - ${guessCount} guesses - ${hintCount} hints\n${url}`;
+    return `Inkling #${gameNumber} - ${minutes}:${seconds} - ${guessCount} guesses - ${hintCount} hints\n${url}`;
+  };
+
+  const handleCopyShare = () => {
+    const shareText = createShareText();
     navigator.clipboard.writeText(shareText).then(() => {
       setHasCopied(true);
+      setTimeout(() => setHasCopied(false), 2000);
     });
+  };
+
+  const handleTwitterShare = () => {
+    const text = encodeURIComponent(
+      `I just solved Inkling #${gameNumber} in ${minutes}:${seconds} with ${guessCount} guesses and ${hintCount} hints! 🧩`
+    );
+    const url = encodeURIComponent(window.location.href);
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+    window.open(twitterUrl, "_blank", "width=550,height=420");
+  };
+
+  const handleWhatsAppShare = () => {
+    const text = encodeURIComponent(
+      `I just solved Inkling #${gameNumber} in ${minutes}:${seconds} with ${guessCount} guesses and ${hintCount} hints! 🧩\n\n${window.location.href}`
+    );
+    const whatsappUrl = `https://wa.me/?text=${text}`;
+    window.open(whatsappUrl, "_blank");
+  };
+
+  const handleTextShare = () => {
+    const text = encodeURIComponent(
+      `I just solved Inkling #${gameNumber} in ${minutes}:${seconds} with ${guessCount} guesses and ${hintCount} hints! 🧩 Play at: ${window.location.href}`
+    );
+    const smsUrl = `sms:?body=${text}`;
+    window.location.href = smsUrl;
   };
 
   const handleClick = (e: React.MouseEvent<HTMLDialogElement>) => {
@@ -122,12 +160,46 @@ export function ResultsPopup({
         </div>
       </div>
 
-      <button
-        className={classNames(styles.button, styles.share_button)}
-        onClick={handleShare}
-      >
-        {hasCopied ? "Copied!" : "Share"}
-      </button>
+      <div className={styles.shareSection}>
+        <div className={styles.shareLabel}>Share your result</div>
+        <div className={styles.shareButtons}>
+          <button
+            className={styles.shareIconButton}
+            onClick={handleCopyShare}
+            title="Copy to clipboard"
+            aria-label="Copy share text to clipboard"
+          >
+            <IconCopy size={20} />
+          </button>
+          <button
+            className={styles.shareIconButton}
+            onClick={handleTwitterShare}
+            title="Share on Twitter"
+            aria-label="Share on Twitter"
+          >
+            <IconBrandTwitter size={20} />
+          </button>
+          <button
+            className={styles.shareIconButton}
+            onClick={handleWhatsAppShare}
+            title="Share on WhatsApp"
+            aria-label="Share on WhatsApp"
+          >
+            <IconBrandWhatsapp size={20} />
+          </button>
+          <button
+            className={styles.shareIconButton}
+            onClick={handleTextShare}
+            title="Share via Text"
+            aria-label="Share via text message"
+          >
+            <IconMessage size={20} />
+          </button>
+        </div>
+        {hasCopied && (
+          <div className={styles.copiedMessage}>Copied to clipboard!</div>
+        )}
+      </div>
       <hr className={styles.divider} />
       <button
         className={classNames(styles.button, styles.stats_button)}
