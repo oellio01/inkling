@@ -22,8 +22,8 @@ export const GAMES: GameData[] = [
   },
   {
     id: 4,
-    image: "/games/4.jpg",
-    answer: "PARADOX",
+    image: "/games/4.jpeg",
+    answer: "POWER PLANT",
   },
   {
     id: 5,
@@ -32,7 +32,7 @@ export const GAMES: GameData[] = [
   },
   {
     id: 6,
-    image: "/games/6.jpg",
+    image: "/games/6.png",
     answer: "INFLATION",
   },
   {
@@ -512,12 +512,12 @@ export const GAMES: GameData[] = [
   },
   {
     id: 102,
-    image: "/games/108.jpeg",
+    image: "/games/102.jpeg",
     answer: "EMOTIONAL BAGGAGE",
   },
   {
     id: 103,
-    image: "/games/113.png",
+    image: "/games/103.png",
     answer: "HOT CHOCOLATE",
   },
   {
@@ -533,7 +533,7 @@ export const GAMES: GameData[] = [
   {
     id: 106,
     image: "/games/106.png",
-    answer: "BANDAGE",
+    answer: "HOUSE GUEST",
   },
   {
     id: 107,
@@ -542,8 +542,8 @@ export const GAMES: GameData[] = [
   },
   {
     id: 108,
-    image: "/games/102.jpeg",
-    answer: "HOLY WATER",
+    image: "/games/108.jpeg",
+    answer: "LIONEL MESSI",
   },
   {
     id: 109,
@@ -552,8 +552,8 @@ export const GAMES: GameData[] = [
   },
   {
     id: 110,
-    image: "/games/110.jpeg",
-    answer: "POWER PLANT",
+    image: "/games/110.png",
+    answer: "HIDDEN AGENDA",
   },
   {
     id: 111,
@@ -563,17 +563,7 @@ export const GAMES: GameData[] = [
   {
     id: 112,
     image: "/games/112.jpeg",
-    answer: "LIONEL MESSI",
-  },
-  {
-    id: 113,
-    image: "/games/103.png",
-    answer: "HIDDEN AGENDA",
-  },
-  {
-    id: 114,
-    image: "/games/114.png",
-    answer: "HOUSE GUEST",
+    answer: "HOLY WATER",
   },
 ];
   
