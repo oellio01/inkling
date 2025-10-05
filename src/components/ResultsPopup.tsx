@@ -165,7 +165,20 @@ export const ResultsPopup = React.memo(function ResultsPopup({
           <div className={styles.statLabel}>Hints</div>
         </div>
       </div>
-
+      <button
+        className={classNames(styles.button, styles.stats_button)}
+        onClick={onShowStats}
+      >
+        {"View today's stats"}
+      </button>
+      <hr className={styles.divider} />
+      <div className={styles.personalMessage}>
+        <p>
+          Hi 👋 I&apos;m Owen. This game was inspired from countless late-night
+          Pictionary games. I hope you are enjoying it! If you are, it would
+          mean a lot if helped spread the word by sharing it with your friends!
+        </p>
+      </div>
       <div className={styles.shareSection}>
         <div className={styles.shareLabel}>Share your result</div>
         <div className={styles.shareButtons}>
@@ -206,13 +219,6 @@ export const ResultsPopup = React.memo(function ResultsPopup({
           <div className={styles.copiedMessage}>Copied to clipboard!</div>
         )}
       </div>
-      <hr className={styles.divider} />
-      <button
-        className={classNames(styles.button, styles.stats_button)}
-        onClick={onShowStats}
-      >
-        {"View today's stats"}
-      </button>
       <hr className={styles.divider} />
       {submitted ? (
         <div className={styles.thankYouMessage}>

@@ -80,6 +80,22 @@
   margin: 24px 0 16px 0;
 }
 
+.personalMessage {
+  margin: 16px 0;
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #1976d2;
+  
+  p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+    text-align: left;
+  }
+}
+
 .ratingForm {
   display: flex;
   flex-direction: column;
