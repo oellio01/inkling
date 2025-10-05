@@ -1,4 +1,5 @@
 import classNames from "classnames";
+import React from "react";
 import styles from "./KeyboardKey.module.scss";
 
 export interface KeyboardKeyProps {
@@ -8,7 +9,7 @@ export interface KeyboardKeyProps {
   onClick: (() => void) | undefined;
 }
 
-export function KeyboardKey({
+export const KeyboardKey = React.memo(function KeyboardKey({
   containerClassName,
   className,
   text,
@@ -32,4 +33,4 @@ export function KeyboardKey({
       {text}
     </div>
   );
-}
+});

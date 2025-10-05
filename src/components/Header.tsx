@@ -1,4 +1,5 @@
 import { useState } from "react";
+import React from "react";
 import { formatTimeInSeconds } from "./formatTimeInSeconds";
 import styles from "./Header.module.scss";
 import { InfoPopup } from "./InfoPopup";
@@ -12,7 +13,7 @@ import {
   IconChartBar,
 } from "@tabler/icons-react";
 
-export function Header({
+export const Header = React.memo(function Header({
   timerInSeconds,
   className,
   gameIndex,
@@ -116,4 +117,4 @@ export function Header({
       />
     </>
   );
-}
+});

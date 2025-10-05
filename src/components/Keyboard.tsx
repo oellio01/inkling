@@ -1,5 +1,5 @@
 import { IconBackspace } from "@tabler/icons-react";
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import { KeyboardKey } from "../components/KeyboardKey";
 import { KeyboardLine } from "../components/KeyboardLine";
 import classNames from "classnames";
@@ -18,24 +18,28 @@ export const Keyboard = React.memo(function KeyboardImpl({
   onPressEnter,
   className,
 }: KeyboardProps) {
-  const renderCharacter = (character: string) => {
-    return (
-      <KeyboardKey
-        containerClassName={styles.characterKey}
-        text={character}
-        onClick={
-          onPressCharacter
-            ? () => {
-                onPressCharacter(character);
-              }
-            : undefined
-        }
-      />
-    );
-  };
+  const renderCharacter = useCallback(
+    (character: string) => {
+      return (
+        <KeyboardKey
+          containerClassName={styles.characterKey}
+          text={character}
+          onClick={
+            onPressCharacter
+              ? () => {
+                  onPressCharacter(character);
+                }
+              : undefined
+          }
+        />
+      );
+    },
+    [onPressCharacter]
+  );
 
-  return (
-    <div className={classNames(styles.keyboard, className)}>
+  // Memoize keyboard rows to prevent unnecessary re-renders
+  const topRow = useMemo(
+    () => (
       <KeyboardLine className={styles.keyboardRow}>
         {renderCharacter("Q")}
         {renderCharacter("W")}
@@ -48,6 +52,12 @@ export const Keyboard = React.memo(function KeyboardImpl({
         {renderCharacter("O")}
         {renderCharacter("P")}
       </KeyboardLine>
+    ),
+    [renderCharacter]
+  );
+
+  const middleRow = useMemo(
+    () => (
       <KeyboardLine className={styles.keyboardRow}>
         {renderCharacter("A")}
         {renderCharacter("S")}
@@ -59,6 +69,12 @@ export const Keyboard = React.memo(function KeyboardImpl({
         {renderCharacter("K")}
         {renderCharacter("L")}
       </KeyboardLine>
+    ),
+    [renderCharacter]
+  );
+
+  const bottomRow = useMemo(
+    () => (
       <KeyboardLine className={styles.keyboardRow}>
         <KeyboardKey
           className={styles.keyWide}
@@ -78,6 +94,15 @@ export const Keyboard = React.memo(function KeyboardImpl({
           onClick={onPressBackspace}
         />
       </KeyboardLine>
+    ),
+    [renderCharacter, onPressEnter, onPressBackspace]
+  );
+
+  return (
+    <div className={classNames(styles.keyboard, className)}>
+      {topRow}
+      {middleRow}
+      {bottomRow}
     </div>
   );
 });
