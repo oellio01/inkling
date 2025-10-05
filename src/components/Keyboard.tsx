@@ -18,21 +18,12 @@ export const Keyboard = React.memo(function KeyboardImpl({
   onPressEnter,
   className,
 }: KeyboardProps) {
-  const renderCharacter = useCallback(
+  // Create stable click handlers for each character
+  const handleCharacterClick = useCallback(
     (character: string) => {
-      return (
-        <KeyboardKey
-          containerClassName={styles.characterKey}
-          text={character}
-          onClick={
-            onPressCharacter
-              ? () => {
-                  onPressCharacter(character);
-                }
-              : undefined
-          }
-        />
-      );
+      if (onPressCharacter) {
+        onPressCharacter(character);
+      }
     },
     [onPressCharacter]
   );
@@ -41,36 +32,33 @@ export const Keyboard = React.memo(function KeyboardImpl({
   const topRow = useMemo(
     () => (
       <KeyboardLine className={styles.keyboardRow}>
-        {renderCharacter("Q")}
-        {renderCharacter("W")}
-        {renderCharacter("E")}
-        {renderCharacter("R")}
-        {renderCharacter("T")}
-        {renderCharacter("Y")}
-        {renderCharacter("U")}
-        {renderCharacter("I")}
-        {renderCharacter("O")}
-        {renderCharacter("P")}
+        {["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"].map((char) => (
+          <KeyboardKey
+            key={char}
+            containerClassName={styles.characterKey}
+            text={char}
+            onClick={handleCharacterClick.bind(null, char)}
+          />
+        ))}
       </KeyboardLine>
     ),
-    [renderCharacter]
+    [handleCharacterClick]
   );
 
   const middleRow = useMemo(
     () => (
       <KeyboardLine className={styles.keyboardRow}>
-        {renderCharacter("A")}
-        {renderCharacter("S")}
-        {renderCharacter("D")}
-        {renderCharacter("F")}
-        {renderCharacter("G")}
-        {renderCharacter("H")}
-        {renderCharacter("J")}
-        {renderCharacter("K")}
-        {renderCharacter("L")}
+        {["A", "S", "D", "F", "G", "H", "J", "K", "L"].map((char) => (
+          <KeyboardKey
+            key={char}
+            containerClassName={styles.characterKey}
+            text={char}
+            onClick={handleCharacterClick.bind(null, char)}
+          />
+        ))}
       </KeyboardLine>
     ),
-    [renderCharacter]
+    [handleCharacterClick]
   );
 
   const bottomRow = useMemo(
@@ -81,13 +69,14 @@ export const Keyboard = React.memo(function KeyboardImpl({
           text="SUBMIT"
           onClick={onPressEnter}
         />
-        {renderCharacter("Z")}
-        {renderCharacter("X")}
-        {renderCharacter("C")}
-        {renderCharacter("V")}
-        {renderCharacter("B")}
-        {renderCharacter("N")}
-        {renderCharacter("M")}
+        {["Z", "X", "C", "V", "B", "N", "M"].map((char) => (
+          <KeyboardKey
+            key={char}
+            containerClassName={styles.characterKey}
+            text={char}
+            onClick={handleCharacterClick.bind(null, char)}
+          />
+        ))}
         <KeyboardKey
           className={styles.key}
           text={<IconBackspace size={24} />}
@@ -95,7 +84,7 @@ export const Keyboard = React.memo(function KeyboardImpl({
         />
       </KeyboardLine>
     ),
-    [renderCharacter, onPressEnter, onPressBackspace]
+    [handleCharacterClick, onPressEnter, onPressBackspace]
   );
 
   return (
