@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import supabase from "../app/supabaseClient";
 import styles from "./GameStats.module.scss";
 import classNames from "classnames";
@@ -47,20 +47,24 @@ interface UserBarChartProps {
   userValue?: number;
 }
 
-function UserBarChart({
+const UserBarChart = React.memo(function UserBarChart({
   hist,
   answerLength,
   barLabel,
   minValue = 0,
   userValue,
 }: UserBarChartProps) {
-  const data = Array.from({ length: answerLength - minValue + 1 }, (_, i) => {
-    const value = minValue + i;
-    return {
-      name: value.toString(),
-      value: hist[value] || 0,
-    };
-  });
+  const data = useMemo(
+    () =>
+      Array.from({ length: answerLength - minValue + 1 }, (_, i) => {
+        const value = minValue + i;
+        return {
+          name: value.toString(),
+          value: hist[value] || 0,
+        };
+      }),
+    [answerLength, minValue, hist]
+  );
 
   return (
     <div className={styles.barChart}>
@@ -80,22 +84,27 @@ function UserBarChart({
                 typeof value === "number" && value > 0 ? value : ""
               }
             />
-            {data.map((entry, index) => {
-              const isUserValue =
-                userValue !== undefined && parseInt(entry.name) === userValue;
-              return (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={isUserValue ? "#4caf50" : "#9e9e9e"}
-                />
-              );
-            })}
+            {useMemo(
+              () =>
+                data.map((entry, index) => {
+                  const isUserValue =
+                    userValue !== undefined &&
+                    parseInt(entry.name) === userValue;
+                  return (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={isUserValue ? "#4caf50" : "#9e9e9e"}
+                    />
+                  );
+                }),
+              [data, userValue]
+            )}
           </Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>
   );
-}
+});
 
 // Helper function to format time display
 function formatTimeDisplay(timeInSeconds: number): string {
@@ -105,7 +114,7 @@ function formatTimeDisplay(timeInSeconds: number): string {
 }
 
 // Helper component for stats cards
-function StatsCard({
+const StatsCard = React.memo(function StatsCard({
   label,
   value,
 }: {
@@ -118,9 +127,9 @@ function StatsCard({
       <div className={styles.statsValue}>{value}</div>
     </div>
   );
-}
+});
 
-export function GameStats({
+export const GameStats = React.memo(function GameStats({
   gameId,
   answerLength,
   onClose,
@@ -196,26 +205,46 @@ export function GameStats({
     };
   }, []);
 
-  const handleClick = (e: React.MouseEvent<HTMLDialogElement>) => {
-    if (dialogRef.current && e.target === dialogRef.current) {
-      onClose();
-    }
-  };
+  const handleClick = useCallback(
+    (e: React.MouseEvent<HTMLDialogElement>) => {
+      if (dialogRef.current && e.target === dialogRef.current) {
+        onClose();
+      }
+    },
+    [onClose]
+  );
 
   // Calculate stats
-  const times = results.map((r) => r.time_seconds).filter((t) => t > 0);
-  const fastest = times.length ? Math.min(...times) : 0;
-  const average = times.length
-    ? Math.round(times.reduce((a, b) => a + b, 0) / times.length)
-    : 0;
+  const times = useMemo(
+    () => results.map((r) => r.time_seconds).filter((t) => t > 0),
+    [results]
+  );
+  const fastest = useMemo(
+    () => (times.length ? Math.min(...times) : 0),
+    [times]
+  );
+  const average = useMemo(
+    () =>
+      times.length
+        ? Math.round(times.reduce((a, b) => a + b, 0) / times.length)
+        : 0,
+    [times]
+  );
 
-  const guessesHist = buildHistogram(results.map((r) => r.guesses));
-  const hintsHist = buildHistogram(results.map((r) => r.hints));
+  const guessesHist = useMemo(
+    () => buildHistogram(results.map((r) => r.guesses)),
+    [results]
+  );
+  const hintsHist = useMemo(
+    () => buildHistogram(results.map((r) => r.hints)),
+    [results]
+  );
 
   // Check if current user has played this specific game
-  const userGameResult = user
-    ? results.find((r) => r.user_id === user.id)
-    : null;
+  const userGameResult = useMemo(
+    () => (user ? results.find((r) => r.user_id === user.id) : null),
+    [user, results]
+  );
 
   return (
     <dialog ref={dialogRef} className={styles.popup} onClick={handleClick}>
@@ -310,7 +339,7 @@ export function GameStats({
       )}
     </dialog>
   );
-}
+});
 
 // Build histograms
 function buildHistogram(arr: number[]) {

@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
+import React from "react";
 import styles from "./InfoPopup.module.scss";
 import Image from "next/image";
 
@@ -7,7 +8,10 @@ export interface InfoPopupProps {
   close: () => void;
 }
 
-export function InfoPopup({ isOpen, close }: InfoPopupProps) {
+export const InfoPopup = React.memo(function InfoPopup({
+  isOpen,
+  close,
+}: InfoPopupProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -34,19 +38,22 @@ export function InfoPopup({ isOpen, close }: InfoPopupProps) {
     };
   }, [close]);
 
-  const handleClick = (e: React.MouseEvent<HTMLDialogElement>) => {
-    if (e.target === dialogRef.current) {
-      close();
-    }
-  };
+  const handleClick = useCallback(
+    (e: React.MouseEvent<HTMLDialogElement>) => {
+      if (e.target === dialogRef.current) {
+        close();
+      }
+    },
+    [close]
+  );
 
-  const handleNextExample = () => {
+  const handleNextExample = useCallback(() => {
     setCurrentImageIndex((prev) => (prev + 1) % images.length);
-  };
+  }, [images.length]);
 
-  const handlePlay = () => {
+  const handlePlay = useCallback(() => {
     close();
-  };
+  }, [close]);
 
   const isLastImage = currentImageIndex === images.length - 1;
 
@@ -73,4 +80,4 @@ export function InfoPopup({ isOpen, close }: InfoPopupProps) {
       </div>
     </dialog>
   );
-}
+});

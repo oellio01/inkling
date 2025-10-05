@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import React from "react";
 import styles from "./ResultsPopup.module.scss";
 import { formatTimeInSeconds } from "./formatTimeInSeconds";
 import classNames from "classnames";
@@ -23,7 +24,7 @@ export interface ResultsPopupProps {
   onShowStats: () => void;
 }
 
-export function ResultsPopup({
+export const ResultsPopup = React.memo(function ResultsPopup({
   isOpen,
   close,
   gameNumber,
@@ -72,68 +73,73 @@ export function ResultsPopup({
     };
   }, [close]);
 
-  const createShareText = () => {
+  const createShareText = useCallback(() => {
     const url = window.location.href;
     return `Inkling #${gameNumber} - ${minutes}:${seconds} - ${guessCount} guesses - ${hintCount} hints\n${url}`;
-  };
+  }, [gameNumber, minutes, seconds, guessCount, hintCount]);
 
-  const handleCopyShare = () => {
+  const handleCopyShare = useCallback(() => {
     const shareText = createShareText();
     navigator.clipboard.writeText(shareText).then(() => {
       setHasCopied(true);
       setTimeout(() => setHasCopied(false), 2000);
     });
-  };
+  }, [createShareText]);
 
-  const handleTwitterShare = () => {
+  const handleTwitterShare = useCallback(() => {
     const text = encodeURIComponent(
-      `I just solved Inkling #${gameNumber} in ${minutes}:${seconds} with ${guessCount} guesses and ${hintCount} hints! 🧩`
+      `Inkling #${gameNumber} - ${minutes}:${seconds} - ${guessCount} guesses - ${hintCount} hints\n${window.location.href}`
     );
-    const url = encodeURIComponent(window.location.href);
-    const twitterUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${text}`;
     window.open(twitterUrl, "_blank", "width=550,height=420");
-  };
+  }, [gameNumber, minutes, seconds, guessCount, hintCount]);
 
-  const handleWhatsAppShare = () => {
+  const handleWhatsAppShare = useCallback(() => {
     const text = encodeURIComponent(
-      `I just solved Inkling #${gameNumber} in ${minutes}:${seconds} with ${guessCount} guesses and ${hintCount} hints! 🧩\n\n${window.location.href}`
+      `Inkling #${gameNumber} - ${minutes}:${seconds} - ${guessCount} guesses - ${hintCount} hints\n${window.location.href}`
     );
     const whatsappUrl = `https://wa.me/?text=${text}`;
     window.open(whatsappUrl, "_blank");
-  };
+  }, [gameNumber, minutes, seconds, guessCount, hintCount]);
 
-  const handleTextShare = () => {
+  const handleTextShare = useCallback(() => {
     const text = encodeURIComponent(
-      `I just solved Inkling #${gameNumber} in ${minutes}:${seconds} with ${guessCount} guesses and ${hintCount} hints! 🧩 Play at: ${window.location.href}`
+      `Inkling #${gameNumber} - ${minutes}:${seconds} - ${guessCount} guesses - ${hintCount} hints\n${window.location.href}`
     );
     const smsUrl = `sms:?body=${text}`;
     window.location.href = smsUrl;
-  };
+  }, [gameNumber, minutes, seconds, guessCount, hintCount]);
 
-  const handleClick = (e: React.MouseEvent<HTMLDialogElement>) => {
-    if (dialogRef.current && e.target === dialogRef.current) {
-      close();
-    }
-  };
+  const handleClick = useCallback(
+    (e: React.MouseEvent<HTMLDialogElement>) => {
+      if (dialogRef.current && e.target === dialogRef.current) {
+        close();
+      }
+    },
+    [close]
+  );
 
-  const handleSubmitRating = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!rating) {
-      return;
-    }
-    setSubmitting(true);
-    setError(null);
-    const { error } = await supabase
-      .from("game_rating")
-      .insert([{ game_id: gameNumber, rating, comment, user_id: user?.id }])
-      .select();
-    setSubmitting(false);
-    if (error) {
-      setError(error.message);
-      return;
-    }
-    setSubmitted(true);
-  };
+  const handleSubmitRating = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!rating) {
+        return;
+      }
+      setSubmitting(true);
+      setError(null);
+      const { error } = await supabase
+        .from("game_rating")
+        .insert([{ game_id: gameNumber, rating, comment, user_id: user?.id }])
+        .select();
+      setSubmitting(false);
+      if (error) {
+        setError(error.message);
+        return;
+      }
+      setSubmitted(true);
+    },
+    [rating, comment, gameNumber, user?.id]
+  );
 
   return (
     <dialog ref={dialogRef} className={styles.popup} onClick={handleClick}>
@@ -264,4 +270,4 @@ export function ResultsPopup({
       )}
     </dialog>
   );
-}
+});

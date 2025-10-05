@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import React from "react";
 import { formatTimeInSeconds } from "./formatTimeInSeconds";
 import styles from "./Header.module.scss";
@@ -45,9 +45,29 @@ export const Header = React.memo(function Header({
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
   const { minutes, seconds } = formatTimeInSeconds(timerInSeconds);
 
-  function handleArchiveClick() {
+  const handleArchiveClick = useCallback(() => {
     setIsArchiveOpen(true);
-  }
+  }, []);
+
+  const handleSuggestClick = useCallback(() => {
+    setIsSuggestOpen(true);
+  }, [setIsSuggestOpen]);
+
+  const handleInfoClick = useCallback(() => {
+    setIsInfoOpen(true);
+  }, [setIsInfoOpen]);
+
+  const handleCloseInfo = useCallback(() => {
+    setIsInfoOpen(false);
+  }, [setIsInfoOpen]);
+
+  const handleCloseSuggest = useCallback(() => {
+    setIsSuggestOpen(false);
+  }, [setIsSuggestOpen]);
+
+  const handleCloseArchive = useCallback(() => {
+    setIsArchiveOpen(false);
+  }, [setIsArchiveOpen]);
 
   return (
     <>
@@ -89,28 +109,22 @@ export const Header = React.memo(function Header({
           </button>
           <button
             className={styles.headerButton}
-            onClick={() => setIsSuggestOpen(true)}
+            onClick={handleSuggestClick}
             aria-label="Suggest an Inkling"
             type="button"
           >
             <IconBulb size={22} color="#333" stroke={2} />
           </button>
-          <button
-            className={styles.headerButton}
-            onClick={() => setIsInfoOpen(true)}
-          >
+          <button className={styles.headerButton} onClick={handleInfoClick}>
             <IconInfoCircle size={22} color="#333" stroke={2} />
           </button>
         </div>
       </div>
-      <InfoPopup isOpen={isInfoOpen} close={() => setIsInfoOpen(false)} />
-      <SuggestPopup
-        isOpen={isSuggestOpen}
-        close={() => setIsSuggestOpen(false)}
-      />
+      <InfoPopup isOpen={isInfoOpen} close={handleCloseInfo} />
+      <SuggestPopup isOpen={isSuggestOpen} close={handleCloseSuggest} />
       <ArchivePopup
         isOpen={isArchiveOpen}
-        close={() => setIsArchiveOpen(false)}
+        close={handleCloseArchive}
         currentGameIndex={gameIndex - 1}
         maxGameIndex={maxGameIndex}
         onSelectGame={onSelectGame}

@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback, useMemo } from "react";
+import React from "react";
 import Image from "next/image";
 import styles from "./ArchivePopup.module.scss";
 import { GAMES } from "../../public/game_data";
@@ -13,7 +14,7 @@ export interface ArchivePopupProps {
   onSelectGame: (index: number) => void;
 }
 
-export function ArchivePopup({
+export const ArchivePopup = React.memo(function ArchivePopup({
   isOpen,
   close,
   currentGameIndex,
@@ -43,14 +44,20 @@ export function ArchivePopup({
     };
   }, [close]);
 
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
-    if (e.target === dialogRef.current) close();
-  };
+  const handleBackdropClick = useCallback(
+    (e: React.MouseEvent<HTMLDialogElement>) => {
+      if (e.target === dialogRef.current) close();
+    },
+    [close]
+  );
 
-  const handleGameClick = (gameIndex: number) => {
-    close();
-    onSelectGame(gameIndex);
-  };
+  const handleGameClick = useCallback(
+    (gameIndex: number) => {
+      close();
+      onSelectGame(gameIndex);
+    },
+    [close, onSelectGame]
+  );
 
   return (
     <dialog
@@ -60,41 +67,51 @@ export function ArchivePopup({
     >
       <h2 className={styles.title}>Game Archive</h2>
       <div className={styles.grid}>
-        {GAMES.slice(0, maxGameIndex)
-          .reverse()
-          .map((game, index) => {
-            const gameIndexInArray = maxGameIndex - 1 - index;
-            const isGameCompleted = !loading && isCompleted(game.id);
+        {useMemo(
+          () =>
+            GAMES.slice(0, maxGameIndex)
+              .reverse()
+              .map((game, index) => {
+                const gameIndexInArray = maxGameIndex - 1 - index;
+                const isGameCompleted = !loading && isCompleted(game.id);
 
-            return (
-              <div
-                key={game.id}
-                className={`${styles.gameItem} ${
-                  gameIndexInArray === currentGameIndex
-                    ? styles.currentGame
-                    : ""
-                } ${isGameCompleted ? styles.completed : ""}`}
-                onClick={() => handleGameClick(gameIndexInArray)}
-              >
-                <div className={styles.imageContainer}>
-                  <Image
-                    src={game.image}
-                    alt={`Inkling ${game.id}`}
-                    fill
-                    className={styles.image}
-                    sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                  />
-                  {isGameCompleted && (
-                    <div className={styles.completionBadge}>
-                      <IconCheck size={16} />
+                return (
+                  <div
+                    key={game.id}
+                    className={`${styles.gameItem} ${
+                      gameIndexInArray === currentGameIndex
+                        ? styles.currentGame
+                        : ""
+                    } ${isGameCompleted ? styles.completed : ""}`}
+                    onClick={() => handleGameClick(gameIndexInArray)}
+                  >
+                    <div className={styles.imageContainer}>
+                      <Image
+                        src={game.image}
+                        alt={`Inkling ${game.id}`}
+                        fill
+                        className={styles.image}
+                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                      />
+                      {isGameCompleted && (
+                        <div className={styles.completionBadge}>
+                          <IconCheck size={16} />
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-                <div className={styles.gameNumber}>#{game.id}</div>
-              </div>
-            );
-          })}
+                    <div className={styles.gameNumber}>#{game.id}</div>
+                  </div>
+                );
+              }),
+          [
+            maxGameIndex,
+            currentGameIndex,
+            loading,
+            isCompleted,
+            handleGameClick,
+          ]
+        )}
       </div>
     </dialog>
   );
-}
+});

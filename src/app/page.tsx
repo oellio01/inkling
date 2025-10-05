@@ -223,24 +223,30 @@ export default function Game() {
     isSuggestOpen,
   ]);
 
-  // Add this callback to reset state on game switch
-  const handleSelectGame = (newIndex: number) => {
-    setGameIndex(newIndex);
-    setIsDone(false);
-    setIsResultsOpen(false);
-    setCurrentGuess("");
-    resetTimer();
-    setShowIncorrect(false);
-    setHintCount(0);
-    setGuessCount(0);
-    // Reset resultSubmitted on game switch
-  };
+  const handleSelectGame = useCallback(
+    (newIndex: number) => {
+      setGameIndex(newIndex);
+      setIsDone(false);
+      setIsResultsOpen(false);
+      setCurrentGuess("");
+      resetTimer();
+      setShowIncorrect(false);
+      setHintCount(0);
+      setGuessCount(0);
+    },
+    [resetTimer]
+  );
 
   // Calculate the maximum selectable game index (today or last available)
   const maxSelectableGameIndex = Math.min(
     getTodaysGameIndex() + 1,
     GAMES.length
   );
+
+  const handleShowStats = useCallback(() => {
+    setIsTodaysStatsOpen(true);
+    setCameFromResults(false);
+  }, []);
 
   if (!game) {
     return (
@@ -263,10 +269,7 @@ export default function Game() {
         hintAriaLabel="Reveal a letter (costs +30s)"
         isSuggestOpen={isSuggestOpen}
         setIsSuggestOpen={setIsSuggestOpen}
-        onShowStats={() => {
-          setIsTodaysStatsOpen(true);
-          setCameFromResults(false);
-        }}
+        onShowStats={handleShowStats}
         isInfoOpen={isInfoOpen}
         setIsInfoOpen={setIsInfoOpen}
       />

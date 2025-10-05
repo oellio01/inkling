@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import React from "react";
 import styles from "./SuggestPopup.module.scss";
 import supabase from "../app/supabaseClient";
 import { useUser } from "../providers/UserProvider";
 
-export function SuggestPopup({
+export const SuggestPopup = React.memo(function SuggestPopup({
   isOpen,
   close,
 }: {
@@ -38,36 +39,42 @@ export function SuggestPopup({
     };
   }, [close]);
 
-  const handleDialogClick = (e: React.MouseEvent<HTMLDialogElement>) => {
-    if (e.target === dialogRef.current) {
-      close();
-    }
-  };
+  const handleDialogClick = useCallback(
+    (e: React.MouseEvent<HTMLDialogElement>) => {
+      if (e.target === dialogRef.current) {
+        close();
+      }
+    },
+    [close]
+  );
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    // Insert into Supabase
-    const { error } = await supabase
-      .from("game_suggestion")
-      .insert([
-        { suggested_word: suggestedWord, description, user_id: user?.id },
-      ])
-      .select();
-    setLoading(false);
-    if (error) {
-      setError(error.message);
-      return;
-    }
-    setSuccess(true);
-    setSuggestedWord("");
-    setDescription("");
-    setTimeout(() => {
-      setSuccess(false);
-      close();
-    }, 1500);
-  }
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      setLoading(true);
+      setError(null);
+      // Insert into Supabase
+      const { error } = await supabase
+        .from("game_suggestion")
+        .insert([
+          { suggested_word: suggestedWord, description, user_id: user?.id },
+        ])
+        .select();
+      setLoading(false);
+      if (error) {
+        setError(error.message);
+        return;
+      }
+      setSuccess(true);
+      setSuggestedWord("");
+      setDescription("");
+      setTimeout(() => {
+        setSuccess(false);
+        close();
+      }, 1500);
+    },
+    [suggestedWord, description, user?.id, close]
+  );
 
   return (
     <dialog
@@ -114,4 +121,4 @@ export function SuggestPopup({
       </form>
     </dialog>
   );
-}
+});
