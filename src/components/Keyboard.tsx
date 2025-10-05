@@ -18,12 +18,9 @@ export const Keyboard = React.memo(function KeyboardImpl({
   onPressEnter,
   className,
 }: KeyboardProps) {
-  // Create stable click handlers for each character
   const handleCharacterClick = useCallback(
     (character: string) => {
-      if (onPressCharacter) {
-        onPressCharacter(character);
-      }
+      onPressCharacter?.(character);
     },
     [onPressCharacter]
   );
