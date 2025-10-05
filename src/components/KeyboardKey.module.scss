@@ -1,14 +1,15 @@
 .key {
-  min-width: 32px;
-  height: 40px;
-  font-size: 20px;
+  width: 32px;
+  height: 42px;
+  font-size: 16px;
   border: 1px solid #000000;
   border-radius: 4px;
   display: flex;
-  flex: 1;
+  flex: 0 0 auto;
   justify-content: center;
   align-items: center;
   user-select: none;
+  transition: all 0.1s ease;
 }
 
 .clickable {
@@ -18,5 +19,23 @@
   }
   &:active {
     opacity: 0.7;
+  }
+}
+
+/* Large screens - over 500px */
+@media (min-width: 501px) {
+  .key {
+    width: 45px;
+    height: 55px;
+    font-size: 24px;
+  }
+}
+
+/* Small screens - less than 500px */
+@media (max-width: 500px) {
+  .key {
+    width: 30px;
+    height: 40px;
+    font-size: 18px;
   }
 }
