@@ -561,8 +561,13 @@ export const GAMES: GameData[] = [
     answer: "HOLY WATER",
   },
   {
+    id: 112,
+    image: "/games/112.png",
+    answer: "HIDDEN AGENDA",
+  },
+  {
     id: 113,
-    image: "/games/113.png",
+    image: "/games/112.png",
     answer: "SWIM MEET",
   },
   {
