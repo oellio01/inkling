@@ -59,6 +59,16 @@ export const InfoPopup = React.memo(function InfoPopup({
 
   return (
     <dialog ref={dialogRef} className={styles.popup} onClick={handleClick}>
+      <button
+        className={styles.closeButton}
+        onClick={(e) => {
+          e.stopPropagation();
+          close();
+        }}
+        aria-label="Close"
+      >
+        ×
+      </button>
       <div className={styles.imageContainer}>
         <Image
           src={images[currentImageIndex]}
