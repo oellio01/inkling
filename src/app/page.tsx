@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { Header } from "../components/Header";
 import { Keyboard } from "../components/Keyboard";
@@ -28,18 +28,22 @@ export default function Game() {
   const [isTodaysStatsOpen, setIsTodaysStatsOpen] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [cameFromResults, setCameFromResults] = useState(false);
-  const [spaceIndexes, setSpaceIndexes] = useState<number[]>([]);
   const gameAnswer = game?.answer.replace(" ", "");
-
-  // Use persistent timer hook
   const isPaused = isDone || isSuggestOpen || isTodaysStatsOpen || isInfoOpen;
-  const {
-    timeInSeconds: timer,
-    startTimer,
-    pauseTimer,
-    resetTimer,
-    addTime,
-  } = usePersistentTimer(gameIndex, isPaused);
+  const { timeInSeconds: timer, startTimer, pauseTimer, resetTimer, addTime } = usePersistentTimer(gameIndex, isPaused);
+  const spaceIndexes = useMemo(() => {
+    const indexes: number[] = [];
+    for (let i = 0; i < game.answer.length; i++) {
+      if (game.answer[i] === " ") {
+        indexes.push(i);
+      }
+    }
+    return indexes;
+  }, [game.answer]);
+  const maxSelectableGameIndex = Math.min(
+    getTodaysGameIndex() + 1,
+    GAMES.length
+  );
 
   useEffect(() => {
     const checkUserResults = async () => {
@@ -67,16 +71,6 @@ export default function Game() {
     };
     checkUserResults();
   }, [user]);
-
-  useEffect(() => {
-    const indexes: number[] = [];
-    for (let i = 0; i < game.answer.length; i++) {
-      if (game.answer[i] === " ") {
-        indexes.push(i);
-      }
-    }
-    setSpaceIndexes(indexes);
-  }, [game]);
 
   // Start timer when component mounts and game is not paused
   useEffect(() => {
@@ -116,7 +110,7 @@ export default function Game() {
         const safePrefix = prev.slice(0, hintCount);
         const rest = prev.slice(hintCount);
         if (safePrefix.length < hintCount) {
-          return gameAnswer.slice(0, hintCount).toUpperCase() + letter;
+          return gameAnswer.slice(0, hintCount) + letter;
         }
         if (safePrefix.length + rest.length < gameAnswer.length) {
           return safePrefix + rest + letter;
@@ -182,7 +176,6 @@ export default function Game() {
         gameAnswer
           .slice(0, newHintCount)
           .toUpperCase()
-          .padEnd(gameAnswer.length, "")
       );
       setHintCount(newHintCount);
     }
@@ -193,13 +186,7 @@ export default function Game() {
       return;
     }
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Prevent typing in currentGuess if SuggestPopup is open or a textarea is focused
-      const active = document.activeElement;
-      if (isSuggestOpen || (active && active.tagName === "TEXTAREA")) {
-        return;
-      }
-      if (isResultsOpen) {
-        // Don't accept input if results are open
+      if (isSuggestOpen || isResultsOpen) {
         return;
       }
       const key = event.key;
@@ -235,12 +222,6 @@ export default function Game() {
       setGuessCount(0);
     },
     [resetTimer]
-  );
-
-  // Calculate the maximum selectable game index (today or last available)
-  const maxSelectableGameIndex = Math.min(
-    getTodaysGameIndex() + 1,
-    GAMES.length
   );
 
   const handleShowStats = useCallback(() => {
