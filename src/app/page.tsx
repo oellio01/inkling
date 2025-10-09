@@ -21,15 +21,18 @@ export default function Game() {
   const [isDone, setIsDone] = useState(false);
   const [isResultsOpen, setIsResultsOpen] = useState(false);
   const [currentGuess, setCurrentGuess] = useState("");
-  const [showIncorrect, setShowIncorrect] = useState(false);
   const [hintCount, setHintCount] = useState(0);
   const [guessCount, setGuessCount] = useState(0);
   const [isSuggestOpen, setIsSuggestOpen] = useState(false);
   const [isTodaysStatsOpen, setIsTodaysStatsOpen] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [cameFromResults, setCameFromResults] = useState(false);
+  const [showLetterFeedback, setShowLetterFeedback] = useState(false);
   const gameAnswer = game?.answer.replace(" ", "");
   const isPaused = isDone || isSuggestOpen || isTodaysStatsOpen || isInfoOpen;
+  const normalizeText = useCallback((text: string) => {
+    return text.replace(/ /g, "").toLowerCase();
+  }, []);
   const { timeInSeconds: timer, startTimer, pauseTimer, resetTimer, addTime } = usePersistentTimer(gameIndex, isPaused);
   const spaceIndexes = useMemo(() => {
     const indexes: number[] = [];
@@ -87,15 +90,29 @@ export default function Game() {
         return false;
       }
       console.log(
-        guess.replace(/ /g, "").toLowerCase(),
-        game.answer.replace(/ /g, "").toLowerCase()
+        normalizeText(guess),
+        normalizeText(game.answer)
       );
-      return (
-        guess.replace(/ /g, "").toLowerCase() ===
-        game.answer.replace(/ /g, "").toLowerCase()
-      );
+      return normalizeText(guess) === normalizeText(game.answer);
     },
-    [game]
+    [game, normalizeText]
+  );
+
+  const getLetterStatus = useCallback(
+    (letterIndex: number) => {
+      if (!game || !showLetterFeedback) return "normal";
+      
+      const answer = normalizeText(game.answer);
+      const guessLetters = normalizeText(currentGuess);
+      
+      if (letterIndex >= guessLetters.length) return "normal";
+      
+      const guessLetter = guessLetters[letterIndex];
+      const answerLetter = answer[letterIndex];
+      
+      return guessLetter === answerLetter ? "correct" : "incorrect";
+    },
+    [game, showLetterFeedback, currentGuess, normalizeText]
   );
 
   const onPressLetter = useCallback(
@@ -154,8 +171,10 @@ export default function Game() {
         console.log("Game result insert error:", error.message);
       }
     } else {
-      setShowIncorrect(true);
-      setTimeout(() => setShowIncorrect(false), 500);
+      setShowLetterFeedback(true);
+      setTimeout(() => {
+        setShowLetterFeedback(false);
+      }, 1000);
     }
   }, [
     currentGuess,
@@ -217,9 +236,9 @@ export default function Game() {
       setIsResultsOpen(false);
       setCurrentGuess("");
       resetTimer();
-      setShowIncorrect(false);
       setHintCount(0);
       setGuessCount(0);
+      setShowLetterFeedback(false);
     },
     [resetTimer]
   );
@@ -273,12 +292,7 @@ export default function Game() {
           "Correct!"
         ) : (
           <>
-            <div
-              className={
-                styles.guessWithDashes +
-                (showIncorrect ? " " + styles.incorrectGuess : "")
-              }
-            >
+            <div className={styles.guessWithDashes}>
               {spaceIndexes.length > 0 ? (
                 // Two-word answer - stack vertically
                 <span className={styles.guessWithDashesContentStacked}>
@@ -296,7 +310,15 @@ export default function Game() {
                                 key={`char-${wordIndex}-${charIndex}`}
                                 className={styles.charContainer}
                               >
-                                <span className={styles.char}>
+                                <span 
+                                  className={`${styles.char} ${
+                                    getLetterStatus(currentLetterIndex) === "correct"
+                                      ? styles.correctLetter
+                                      : getLetterStatus(currentLetterIndex) === "incorrect"
+                                      ? styles.incorrectLetter
+                                      : ""
+                                  }`}
+                                >
                                   {currentLetterIndex < hintCount
                                     ? gameAnswer[
                                         currentLetterIndex
@@ -322,7 +344,15 @@ export default function Game() {
                           key={`char-${originalIndex}`}
                           className={styles.charContainer}
                         >
-                          <span className={styles.char}>
+                          <span 
+                            className={`${styles.char} ${
+                              getLetterStatus(originalIndex) === "correct"
+                                ? styles.correctLetter
+                                : getLetterStatus(originalIndex) === "incorrect"
+                                ? styles.incorrectLetter
+                                : ""
+                            }`}
+                          >
                             {originalIndex < hintCount
                               ? gameAnswer[originalIndex].toUpperCase()
                               : currentGuess[originalIndex] || " "}
