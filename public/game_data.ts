@@ -567,7 +567,7 @@ export const GAMES: GameData[] = [
   },
   {
     id: 113,
-    image: "/games/112.png",
+    image: "/games/113.png",
     answer: "SWIM MEET",
   },
   {
