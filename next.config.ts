@@ -25,7 +25,7 @@ const nextConfig: NextConfig = {
     // Enable modern image formats with fallbacks
     formats: ['image/webp', 'image/avif'],
     // Set cache headers for better CDN caching
-    minimumCacheTTL: 31536000, // 1 year in seconds
+    minimumCacheTTL: 86400, // 1 day in seconds (reduced from 1 year)
     // Allow static optimization
     unoptimized: false,
     // Device sizes for responsive images
