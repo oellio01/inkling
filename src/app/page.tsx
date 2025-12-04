@@ -33,7 +33,13 @@ export default function Game() {
   const normalizeText = useCallback((text: string) => {
     return text.replace(/ /g, "").toLowerCase();
   }, []);
-  const { timeInSeconds: timer, startTimer, pauseTimer, resetTimer, addTime } = usePersistentTimer(gameIndex, isPaused);
+  const {
+    timeInSeconds: timer,
+    startTimer,
+    pauseTimer,
+    resetTimer,
+    addTime,
+  } = usePersistentTimer(gameIndex, isPaused);
   const spaceIndexes = useMemo(() => {
     const indexes: number[] = [];
     for (let i = 0; i < game.answer.length; i++) {
@@ -89,10 +95,7 @@ export default function Game() {
       if (!game) {
         return false;
       }
-      console.log(
-        normalizeText(guess),
-        normalizeText(game.answer)
-      );
+      console.log(normalizeText(guess), normalizeText(game.answer));
       return normalizeText(guess) === normalizeText(game.answer);
     },
     [game, normalizeText]
@@ -101,15 +104,15 @@ export default function Game() {
   const getLetterStatus = useCallback(
     (letterIndex: number) => {
       if (!game || !showLetterFeedback) return "normal";
-      
+
       const answer = normalizeText(game.answer);
       const guessLetters = normalizeText(currentGuess);
-      
+
       if (letterIndex >= guessLetters.length) return "normal";
-      
+
       const guessLetter = guessLetters[letterIndex];
       const answerLetter = answer[letterIndex];
-      
+
       return guessLetter === answerLetter ? "correct" : "incorrect";
     },
     [game, showLetterFeedback, currentGuess, normalizeText]
@@ -191,11 +194,7 @@ export default function Game() {
     if (hintCount < gameAnswer.length) {
       addTime(30);
       const newHintCount = hintCount + 1;
-      setCurrentGuess(
-        gameAnswer
-          .slice(0, newHintCount)
-          .toUpperCase()
-      );
+      setCurrentGuess(gameAnswer.slice(0, newHintCount).toUpperCase());
       setHintCount(newHintCount);
     }
   }, [game, hintCount, gameAnswer, addTime]);
@@ -246,6 +245,10 @@ export default function Game() {
   const handleShowStats = useCallback(() => {
     setIsTodaysStatsOpen(true);
     setCameFromResults(false);
+  }, []);
+
+  const handleCloseResults = useCallback(() => {
+    setIsResultsOpen(false);
   }, []);
 
   if (!game) {
@@ -310,11 +313,13 @@ export default function Game() {
                                 key={`char-${wordIndex}-${charIndex}`}
                                 className={styles.charContainer}
                               >
-                                <span 
+                                <span
                                   className={`${styles.char} ${
-                                    getLetterStatus(currentLetterIndex) === "correct"
+                                    getLetterStatus(currentLetterIndex) ===
+                                    "correct"
                                       ? styles.correctLetter
-                                      : getLetterStatus(currentLetterIndex) === "incorrect"
+                                      : getLetterStatus(currentLetterIndex) ===
+                                        "incorrect"
                                       ? styles.incorrectLetter
                                       : ""
                                   }`}
@@ -344,7 +349,7 @@ export default function Game() {
                           key={`char-${originalIndex}`}
                           className={styles.charContainer}
                         >
-                          <span 
+                          <span
                             className={`${styles.char} ${
                               getLetterStatus(originalIndex) === "correct"
                                 ? styles.correctLetter
@@ -378,7 +383,7 @@ export default function Game() {
       />
       <ResultsPopup
         isOpen={isResultsOpen}
-        close={() => setIsResultsOpen(false)}
+        close={handleCloseResults}
         gameNumber={game.id}
         timeInSeconds={timer}
         guessCount={guessCount}
