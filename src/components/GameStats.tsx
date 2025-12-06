@@ -19,8 +19,6 @@ import { GAMES } from "../../public/game_data";
 interface GameStatsProps {
   gameId: number;
   answerLength: number;
-  guessCount: number;
-  hintCount: number;
   onClose: (reason?: "back") => void;
   showBackButton?: boolean;
 }

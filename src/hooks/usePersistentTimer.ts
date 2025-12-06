@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 interface TimerState {
   gameIndex: number;
@@ -15,6 +15,12 @@ export function usePersistentTimer(
 ) {
   const [timeInSeconds, setTimeInSeconds] = useState(0);
   const [isActive, setIsActive] = useState(false);
+  const timeRef = useRef(0);
+
+  // Update the ref when the time changes
+  useEffect(() => {
+    timeRef.current = timeInSeconds;
+  }, [timeInSeconds]);
 
   // Load timer state from localStorage on mount
   useEffect(() => {
@@ -98,11 +104,11 @@ export function usePersistentTimer(
   }, [isActive, saveTimerState]);
 
   return {
-    timeInSeconds,
     isActive,
     startTimer,
     pauseTimer,
     resetTimer,
     addTime,
+    timeRef,
   };
 } 

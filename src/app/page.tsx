@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import Image from "next/image";
 import { Header } from "../components/Header";
 import { Keyboard } from "../components/Keyboard";
@@ -21,8 +21,9 @@ export default function Game() {
   const [isDone, setIsDone] = useState(false);
   const [isResultsOpen, setIsResultsOpen] = useState(false);
   const [currentGuess, setCurrentGuess] = useState("");
+  const currentGuessRef = useRef(currentGuess);
   const [hintCount, setHintCount] = useState(0);
-  const [guessCount, setGuessCount] = useState(0);
+  const guessCountRef = useRef(0);
   const [isSuggestOpen, setIsSuggestOpen] = useState(false);
   const [isTodaysStatsOpen, setIsTodaysStatsOpen] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
@@ -33,13 +34,8 @@ export default function Game() {
   const normalizeText = useCallback((text: string) => {
     return text.replace(/ /g, "").toLowerCase();
   }, []);
-  const {
-    timeInSeconds: timer,
-    startTimer,
-    pauseTimer,
-    resetTimer,
-    addTime,
-  } = usePersistentTimer(gameIndex, isPaused);
+  const { startTimer, pauseTimer, resetTimer, addTime, timeRef } =
+    usePersistentTimer(gameIndex, isPaused);
   const spaceIndexes = useMemo(() => {
     const indexes: number[] = [];
     for (let i = 0; i < game.answer.length; i++) {
@@ -53,6 +49,10 @@ export default function Game() {
     getTodaysGameIndex() + 1,
     GAMES.length
   );
+
+  useEffect(() => {
+    currentGuessRef.current = currentGuess;
+  }, [currentGuess]);
 
   useEffect(() => {
     const checkUserResults = async () => {
@@ -154,9 +154,8 @@ export default function Game() {
   }, [hintCount]);
 
   const commitGuess = useCallback(async () => {
-    const isCorrect = isCorrectSolution(currentGuess);
-    setGuessCount((g) => g + 1);
-    if (isCorrect) {
+    guessCountRef.current++;
+    if (isCorrectSolution(currentGuessRef.current)) {
       setIsDone(true);
       setIsResultsOpen(true);
 
@@ -164,8 +163,8 @@ export default function Game() {
         {
           game_id: game.id,
           user_id: user ? user.id : null,
-          time_seconds: timer,
-          guesses: guessCount + 1,
+          time_seconds: timeRef.current,
+          guesses: guessCountRef,
           hints: hintCount,
         },
       ]);
@@ -179,15 +178,7 @@ export default function Game() {
         setShowLetterFeedback(false);
       }, 1000);
     }
-  }, [
-    currentGuess,
-    isCorrectSolution,
-    user,
-    game.id,
-    timer,
-    guessCount,
-    hintCount,
-  ]);
+  }, [isCorrectSolution, game.id, user, timeRef, guessCountRef, hintCount]);
 
   const onHint = useCallback(() => {
     if (!game) return;
@@ -236,7 +227,7 @@ export default function Game() {
       setCurrentGuess("");
       resetTimer();
       setHintCount(0);
-      setGuessCount(0);
+      guessCountRef.current = 0;
       setShowLetterFeedback(false);
     },
     [resetTimer]
@@ -262,7 +253,7 @@ export default function Game() {
   return (
     <div className={styles.game}>
       <Header
-        timerInSeconds={timer}
+        timerInSeconds={timeRef.current}
         className={styles.header}
         gameIndex={game.id}
         onSelectGame={handleSelectGame}
@@ -374,9 +365,7 @@ export default function Game() {
         )}
       </div>
       <Keyboard
-        onPressBackspace={
-          currentGuess.length > 0 ? onPressBackspace : undefined
-        }
+        onPressBackspace={onPressBackspace}
         onPressCharacter={onPressLetter}
         onPressEnter={commitGuess}
         className={styles.keyboard}
@@ -385,8 +374,8 @@ export default function Game() {
         isOpen={isResultsOpen}
         close={handleCloseResults}
         gameNumber={game.id}
-        timeInSeconds={timer}
-        guessCount={guessCount}
+        timeInSeconds={timeRef.current}
+        guessCount={guessCountRef.current}
         hintCount={hintCount}
         onShowStats={() => {
           setIsResultsOpen(false);
@@ -398,8 +387,6 @@ export default function Game() {
         <GameStats
           gameId={game.id}
           answerLength={gameAnswer.length}
-          guessCount={guessCount}
-          hintCount={hintCount}
           showBackButton={cameFromResults}
           onClose={(reason) => {
             if (reason === "back") {
