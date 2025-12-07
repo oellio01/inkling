@@ -1,5 +1,5 @@
 import { IconBackspace } from "@tabler/icons-react";
-import React, { useCallback, useMemo } from "react";
+import React from "react";
 import { KeyboardKey } from "../components/KeyboardKey";
 import { KeyboardLine } from "../components/KeyboardLine";
 import classNames from "classnames";
@@ -18,48 +18,28 @@ export const Keyboard = React.memo(function KeyboardImpl({
   onPressEnter,
   className,
 }: KeyboardProps) {
-  const handleCharacterClick = useCallback(
-    (character: string) => {
-      onPressCharacter?.(character);
-    },
-    [onPressCharacter]
-  );
-
-  // Memoize keyboard rows to prevent unnecessary re-renders
-  const topRow = useMemo(
-    () => (
+  return (
+    <div className={classNames(styles.keyboard, className)}>
       <KeyboardLine className={styles.keyboardRow}>
         {["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"].map((char) => (
           <KeyboardKey
             key={char}
             containerClassName={styles.characterKey}
             text={char}
-            onClick={handleCharacterClick.bind(null, char)}
+            onClick={() => onPressCharacter?.(char)}
           />
         ))}
       </KeyboardLine>
-    ),
-    [handleCharacterClick]
-  );
-
-  const middleRow = useMemo(
-    () => (
       <KeyboardLine className={styles.keyboardRow}>
         {["A", "S", "D", "F", "G", "H", "J", "K", "L"].map((char) => (
           <KeyboardKey
             key={char}
             containerClassName={styles.characterKey}
             text={char}
-            onClick={handleCharacterClick.bind(null, char)}
+            onClick={() => onPressCharacter?.(char)}
           />
         ))}
       </KeyboardLine>
-    ),
-    [handleCharacterClick]
-  );
-
-  const bottomRow = useMemo(
-    () => (
       <KeyboardLine className={styles.keyboardRow}>
         <KeyboardKey
           className={styles.keyWide}
@@ -71,7 +51,7 @@ export const Keyboard = React.memo(function KeyboardImpl({
             key={char}
             containerClassName={styles.characterKey}
             text={char}
-            onClick={handleCharacterClick.bind(null, char)}
+            onClick={() => onPressCharacter?.(char)}
           />
         ))}
         <KeyboardKey
@@ -80,15 +60,6 @@ export const Keyboard = React.memo(function KeyboardImpl({
           onClick={onPressBackspace}
         />
       </KeyboardLine>
-    ),
-    [handleCharacterClick, onPressEnter, onPressBackspace]
-  );
-
-  return (
-    <div className={classNames(styles.keyboard, className)}>
-      {topRow}
-      {middleRow}
-      {bottomRow}
     </div>
   );
 });
