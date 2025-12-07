@@ -160,7 +160,7 @@ export default function Game() {
           game_id: game.id,
           user_id: user ? user.id : null,
           time_seconds: timeRef.current,
-          guesses: guessCountRef,
+          guesses: guessCountRef.current,
           hints: hintCount,
         },
       ]);
