@@ -18,8 +18,10 @@
   color: rgb(0, 0, 0);
   width: 90%;
   max-width: 400px;
+  max-height: 90vh;
   position: relative;
   padding: 20px;
+  overflow-y: auto;
 }
 
 .closeButton {
