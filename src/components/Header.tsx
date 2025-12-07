@@ -47,7 +47,7 @@ export const Header = React.memo(function Header({
 
   const handleArchiveClick = useCallback(() => {
     setIsArchiveOpen(true);
-  }, []);
+  }, [setIsArchiveOpen]);
 
   const handleSuggestClick = useCallback(() => {
     setIsSuggestOpen(true);

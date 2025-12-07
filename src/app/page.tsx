@@ -311,14 +311,14 @@ export default function Game() {
         hintCount={hintCount}
         onShowStats={handleOnShowStats}
       />
-      {isTodaysStatsOpen && (
+      {isTodaysStatsOpen ? (
         <GameStats
           gameId={game.id}
           answerLength={gameAnswer.length}
           showBackButton={cameFromResults}
           onClose={handleCloseGameStats}
         />
-      )}
+      ) : undefined}
     </div>
   );
 }

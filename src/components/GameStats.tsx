@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import supabase from "../app/supabaseClient";
 import styles from "./GameStats.module.scss";
 import classNames from "classnames";
@@ -112,7 +112,7 @@ function formatTimeDisplay(timeInSeconds: number): string {
 }
 
 // Helper component for stats cards
-const StatsCard = React.memo(function StatsCard({
+const StatsCard = function StatsCard({
   label,
   value,
 }: {
@@ -125,7 +125,7 @@ const StatsCard = React.memo(function StatsCard({
       <div className={styles.statsValue}>{value}</div>
     </div>
   );
-});
+};
 
 export const GameStats = React.memo(function GameStats({
   gameId,
@@ -138,7 +138,6 @@ export const GameStats = React.memo(function GameStats({
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -195,147 +194,123 @@ export const GameStats = React.memo(function GameStats({
     fetchData();
   }, [gameId, user]);
 
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (dialog) dialog.showModal();
-    return () => {
-      if (dialog) dialog.close();
-    };
-  }, []);
-
-  const handleClick = useCallback(
-    (e: React.MouseEvent<HTMLDialogElement>) => {
-      if (dialogRef.current && e.target === dialogRef.current) {
-        onClose();
-      }
-    },
-    [onClose]
-  );
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
 
   // Calculate stats
-  const times = useMemo(
-    () => results.map((r) => r.time_seconds).filter((t) => t > 0),
-    [results]
-  );
-  const fastest = useMemo(
-    () => (times.length ? Math.min(...times) : 0),
-    [times]
-  );
-  const average = useMemo(
-    () =>
-      times.length
-        ? Math.round(times.reduce((a, b) => a + b, 0) / times.length)
-        : 0,
-    [times]
-  );
+  const times = results.map((r) => r.time_seconds).filter((t) => t > 0);
+  const fastest = times.length ? Math.min(...times) : 0;
+  const average = times.length
+    ? Math.round(times.reduce((a, b) => a + b, 0) / times.length)
+    : 0;
 
-  const guessesHist = useMemo(
-    () => buildHistogram(results.map((r) => r.guesses)),
-    [results]
-  );
-  const hintsHist = useMemo(
-    () => buildHistogram(results.map((r) => r.hints)),
-    [results]
-  );
+  const guessesHist = buildHistogram(results.map((r) => r.guesses));
+  const hintsHist = buildHistogram(results.map((r) => r.hints));
 
   // Check if current user has played this specific game
-  const userGameResult = useMemo(
-    () => (user ? results.find((r) => r.user_id === user.id) : null),
-    [user, results]
-  );
+  const userGameResult = user
+    ? results.find((r) => r.user_id === user.id)
+    : null;
 
   return (
-    <dialog ref={dialogRef} className={styles.popup} onClick={handleClick}>
-      {showBackButton ? (
-        <button
-          className={classNames(styles.button, styles.back_button)}
-          onClick={() => onClose("back")}
-        >
-          Back
-        </button>
-      ) : (
-        <button
-          className={styles.closeButton}
-          onClick={() => onClose()}
-          aria-label="Close"
-        >
-          ×
-        </button>
-      )}
-      {loading ? (
-        <div>Loading...</div>
-      ) : error ? (
-        <div className={styles.ratingError}>{error}</div>
-      ) : results.length === 0 ? (
-        <div className={styles.noResultsMsg}>No results yet for this game.</div>
-      ) : (
-        <>
-          {/* Your Stats Section */}
-          {userStats && (
-            <div className={styles.userStatsSection}>
-              <h3 className={styles.sectionTitle}>Your Stats</h3>
-
-              {/* Current Game Results */}
-              <h4 className={styles.subSectionTitle}>This Game</h4>
-              <div className={styles.statsRow}>
-                <StatsCard
-                  label="Your time"
-                  value={formatTimeDisplay(userGameResult?.time_seconds || 0)}
-                />
-                <StatsCard
-                  label="Guesses"
-                  value={userGameResult?.guesses ?? "--"}
-                />
-                <StatsCard
-                  label="Hints"
-                  value={userGameResult?.hints ?? "--"}
-                />
-              </div>
-
-              {/* Overall Stats */}
-              <h4 className={styles.subSectionTitle}>Overall</h4>
-              <div className={styles.statsRow}>
-                <StatsCard
-                  label="Games completed"
-                  value={`${userStats.gamesCompleted} of ${userStats.totalGames}`}
-                />
-                <StatsCard
-                  label="Completed without hints"
-                  value={`${userStats.percentWithoutHints}%`}
-                />
-                <StatsCard
-                  label="Your fastest ever"
-                  value={formatTimeDisplay(userStats.fastestTime)}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Game Stats Section */}
-          <div className={styles.gameStatsSection}>
-            <h3>Inkling {gameId} Stats</h3>
-            <div className={styles.statsRow}>
-              <StatsCard label="Fastest" value={formatTimeDisplay(fastest)} />
-              <StatsCard label="Average" value={formatTimeDisplay(average)} />
-            </div>
-            <UserBarChart
-              hist={guessesHist}
-              answerLength={answerLength}
-              barLabel="Guesses"
-              minValue={1}
-              userValue={userGameResult?.guesses}
-            />
-            <UserBarChart
-              hist={hintsHist}
-              answerLength={answerLength}
-              barLabel="Hints"
-              minValue={0}
-              userValue={userGameResult?.hints}
-            />
+    <div className={styles.backdrop} onClick={handleBackdropClick}>
+      <div className={styles.popup}>
+        {showBackButton ? (
+          <button
+            className={classNames(styles.button, styles.back_button)}
+            onClick={() => onClose("back")}
+          >
+            Back
+          </button>
+        ) : (
+          <button
+            className={styles.closeButton}
+            onClick={() => onClose()}
+            aria-label="Close"
+          >
+            ×
+          </button>
+        )}
+        {loading ? (
+          <div>Loading...</div>
+        ) : error ? (
+          <div className={styles.ratingError}>{error}</div>
+        ) : results.length === 0 ? (
+          <div className={styles.noResultsMsg}>
+            No results yet for this game.
           </div>
-        </>
-      )}
-    </dialog>
+        ) : (
+          <>
+            {/* Your Stats Section */}
+            {userStats && (
+              <div className={styles.userStatsSection}>
+                <h3 className={styles.sectionTitle}>Your Stats</h3>
+
+                {/* Current Game Results */}
+                <h4 className={styles.subSectionTitle}>This Game</h4>
+                <div className={styles.statsRow}>
+                  <StatsCard
+                    label="Your time"
+                    value={formatTimeDisplay(userGameResult?.time_seconds || 0)}
+                  />
+                  <StatsCard
+                    label="Guesses"
+                    value={userGameResult?.guesses ?? "--"}
+                  />
+                  <StatsCard
+                    label="Hints"
+                    value={userGameResult?.hints ?? "--"}
+                  />
+                </div>
+
+                {/* Overall Stats */}
+                <h4 className={styles.subSectionTitle}>Overall</h4>
+                <div className={styles.statsRow}>
+                  <StatsCard
+                    label="Games completed"
+                    value={`${userStats.gamesCompleted} of ${userStats.totalGames}`}
+                  />
+                  <StatsCard
+                    label="Completed without hints"
+                    value={`${userStats.percentWithoutHints}%`}
+                  />
+                  <StatsCard
+                    label="Your fastest ever"
+                    value={formatTimeDisplay(userStats.fastestTime)}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Game Stats Section */}
+            <div className={styles.gameStatsSection}>
+              <h3>Inkling {gameId} Stats</h3>
+              <div className={styles.statsRow}>
+                <StatsCard label="Fastest" value={formatTimeDisplay(fastest)} />
+                <StatsCard label="Average" value={formatTimeDisplay(average)} />
+              </div>
+              <UserBarChart
+                hist={guessesHist}
+                answerLength={answerLength}
+                barLabel="Guesses"
+                minValue={1}
+                userValue={userGameResult?.guesses}
+              />
+              <UserBarChart
+                hist={hintsHist}
+                answerLength={answerLength}
+                barLabel="Hints"
+                minValue={0}
+                userValue={userGameResult?.hints}
+              />
+            </div>
+          </>
+        )}
+      </div>
+    </div>
   );
 });
 
