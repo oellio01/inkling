@@ -23,7 +23,7 @@ export const KeyboardKey = React.memo(function KeyboardKey({
         className,
         styles.keyInner
       )}
-      onClick={onClick}
+      onPointerDown={onClick}
     >
       {text}
     </div>
