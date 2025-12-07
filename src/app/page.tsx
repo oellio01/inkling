@@ -302,15 +302,16 @@ export default function Game() {
         onPressEnter={commitGuess}
         className={styles.keyboard}
       />
-      <ResultsPopup
-        isOpen={isResultsOpen}
-        close={handleCloseResults}
-        gameNumber={game.id}
-        timeInSeconds={timeRef.current}
-        guessCount={guessCountRef.current}
-        hintCount={hintCount}
-        onShowStats={handleOnShowStats}
-      />
+      {isResultsOpen ? (
+        <ResultsPopup
+          close={handleCloseResults}
+          gameNumber={game.id}
+          timeInSeconds={timeRef.current}
+          guessCount={guessCountRef.current}
+          hintCount={hintCount}
+          onShowStats={handleOnShowStats}
+        />
+      ) : undefined}
       {isTodaysStatsOpen ? (
         <GameStats
           gameId={game.id}
