@@ -1,7 +1,6 @@
 import { IconBackspace } from "@tabler/icons-react";
 import React from "react";
 import { KeyboardKey } from "../components/KeyboardKey";
-import { KeyboardLine } from "../components/KeyboardLine";
 import classNames from "classnames";
 import styles from "./Keyboard.module.scss";
 
@@ -20,7 +19,7 @@ export const Keyboard = React.memo(function KeyboardImpl({
 }: KeyboardProps) {
   return (
     <div className={classNames(styles.keyboard, className)}>
-      <KeyboardLine className={styles.keyboardRow}>
+      <div className={styles.line}>
         {["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"].map((char) => (
           <KeyboardKey
             key={char}
@@ -29,8 +28,8 @@ export const Keyboard = React.memo(function KeyboardImpl({
             onClick={() => onPressCharacter?.(char)}
           />
         ))}
-      </KeyboardLine>
-      <KeyboardLine className={styles.keyboardRow}>
+      </div>
+      <div className={styles.line}>
         {["A", "S", "D", "F", "G", "H", "J", "K", "L"].map((char) => (
           <KeyboardKey
             key={char}
@@ -39,8 +38,8 @@ export const Keyboard = React.memo(function KeyboardImpl({
             onClick={() => onPressCharacter?.(char)}
           />
         ))}
-      </KeyboardLine>
-      <KeyboardLine className={styles.keyboardRow}>
+      </div>
+      <div className={styles.line}>
         <KeyboardKey
           className={styles.keyWide}
           text="SUBMIT"
@@ -59,7 +58,7 @@ export const Keyboard = React.memo(function KeyboardImpl({
           text={<IconBackspace size={24} />}
           onClick={onPressBackspace}
         />
-      </KeyboardLine>
+      </div>
     </div>
   );
 });

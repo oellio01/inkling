@@ -20,6 +20,13 @@
   width: 80px;
 }
 
+.line {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+} 
+
 /* Large screens - over 500px */
 @media (min-width: 501px) {
   .keyboard {

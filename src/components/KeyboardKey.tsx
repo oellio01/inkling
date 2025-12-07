@@ -15,18 +15,13 @@ export const KeyboardKey = React.memo(function KeyboardKey({
   text,
   onClick,
 }: KeyboardKeyProps) {
-  const disabled = onClick == null;
-
   return (
     <div
       className={classNames(
         styles.key,
         containerClassName,
         className,
-        styles.keyInner,
-        {
-          [styles.clickable]: !disabled,
-        }
+        styles.keyInner
       )}
       onClick={onClick}
     >
