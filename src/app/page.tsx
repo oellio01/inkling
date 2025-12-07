@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Header } from "../components/Header";
 import { Keyboard } from "../components/Keyboard";
 import { ResultsPopup } from "../components/ResultsPopup";
-import { SuggestPopup } from "../components/SuggestPopup";
+import { GuessDisplay } from "../components/GuessDisplay";
 import { getTodaysGameIndex } from "../hooks/game-logic";
 import { usePersistentTimer } from "../hooks/usePersistentTimer";
 import { GAMES } from "../../public/game_data";
@@ -45,10 +45,6 @@ export default function Game() {
     }
     return indexes;
   }, [game.answer]);
-  const maxSelectableGameIndex = Math.min(
-    getTodaysGameIndex() + 1,
-    GAMES.length
-  );
 
   useEffect(() => {
     currentGuessRef.current = currentGuess;
@@ -242,6 +238,22 @@ export default function Game() {
     setIsResultsOpen(false);
   }, []);
 
+  const handleOnShowStats = useCallback(() => {
+    setIsResultsOpen(false);
+    setIsTodaysStatsOpen(true);
+    setCameFromResults(true);
+  }, []);
+
+  const handleCloseGameStats = useCallback((reason?: "back") => {
+    if (reason === "back") {
+      setIsTodaysStatsOpen(false);
+      setIsResultsOpen(true);
+    } else {
+      setIsTodaysStatsOpen(false);
+    }
+    setCameFromResults(false);
+  }, []);
+
   if (!game) {
     return (
       <div className={styles.game}>
@@ -257,19 +269,13 @@ export default function Game() {
         className={styles.header}
         gameIndex={game.id}
         onSelectGame={handleSelectGame}
-        maxGameIndex={maxSelectableGameIndex}
         onHint={onHint}
         hintDisabled={hintCount >= gameAnswer.length}
-        hintAriaLabel="Reveal a letter (costs +30s)"
         isSuggestOpen={isSuggestOpen}
         setIsSuggestOpen={setIsSuggestOpen}
         onShowStats={handleShowStats}
         isInfoOpen={isInfoOpen}
         setIsInfoOpen={setIsInfoOpen}
-      />
-      <SuggestPopup
-        isOpen={isSuggestOpen}
-        close={() => setIsSuggestOpen(false)}
       />
       <div className={styles.imageWrapper}>
         <Image
@@ -281,89 +287,15 @@ export default function Game() {
           priority={true}
         />
       </div>
-      <div className={styles.guess}>
-        {isDone ? (
-          "Correct!"
-        ) : (
-          <>
-            <div className={styles.guessWithDashes}>
-              {spaceIndexes.length > 0 ? (
-                // Two-word answer - stack vertically
-                <span className={styles.guessWithDashesContentStacked}>
-                  {(() => {
-                    const words = game.answer.split(" ");
-                    let letterIndex = 0;
-
-                    return words.map((word, wordIndex) => (
-                      <div key={`word-${wordIndex}`} className={styles.wordRow}>
-                        {Array.from({ length: word.length }).map(
-                          (_, charIndex) => {
-                            const currentLetterIndex = letterIndex++;
-                            return (
-                              <div
-                                key={`char-${wordIndex}-${charIndex}`}
-                                className={styles.charContainer}
-                              >
-                                <span
-                                  className={`${styles.char} ${
-                                    getLetterStatus(currentLetterIndex) ===
-                                    "correct"
-                                      ? styles.correctLetter
-                                      : getLetterStatus(currentLetterIndex) ===
-                                        "incorrect"
-                                      ? styles.incorrectLetter
-                                      : ""
-                                  }`}
-                                >
-                                  {currentLetterIndex < hintCount
-                                    ? gameAnswer[
-                                        currentLetterIndex
-                                      ].toUpperCase()
-                                    : currentGuess[currentLetterIndex] || " "}
-                                </span>
-                                <span className={styles.dash}>_</span>
-                              </div>
-                            );
-                          }
-                        )}
-                      </div>
-                    ));
-                  })()}
-                </span>
-              ) : (
-                // Single word answer - horizontal layout
-                <span className={styles.guessWithDashesContent}>
-                  {Array.from({ length: game.answer.length }).map(
-                    (_, originalIndex) => {
-                      return (
-                        <div
-                          key={`char-${originalIndex}`}
-                          className={styles.charContainer}
-                        >
-                          <span
-                            className={`${styles.char} ${
-                              getLetterStatus(originalIndex) === "correct"
-                                ? styles.correctLetter
-                                : getLetterStatus(originalIndex) === "incorrect"
-                                ? styles.incorrectLetter
-                                : ""
-                            }`}
-                          >
-                            {originalIndex < hintCount
-                              ? gameAnswer[originalIndex].toUpperCase()
-                              : currentGuess[originalIndex] || " "}
-                          </span>
-                          <span className={styles.dash}>_</span>
-                        </div>
-                      );
-                    }
-                  )}
-                </span>
-              )}
-            </div>
-          </>
-        )}
-      </div>
+      <GuessDisplay
+        isDone={isDone}
+        spaceIndexes={spaceIndexes}
+        answer={game.answer}
+        gameAnswer={gameAnswer}
+        currentGuess={currentGuess}
+        hintCount={hintCount}
+        getLetterStatus={getLetterStatus}
+      />
       <Keyboard
         onPressBackspace={onPressBackspace}
         onPressCharacter={onPressLetter}
@@ -377,26 +309,14 @@ export default function Game() {
         timeInSeconds={timeRef.current}
         guessCount={guessCountRef.current}
         hintCount={hintCount}
-        onShowStats={() => {
-          setIsResultsOpen(false);
-          setIsTodaysStatsOpen(true);
-          setCameFromResults(true);
-        }}
+        onShowStats={handleOnShowStats}
       />
       {isTodaysStatsOpen && (
         <GameStats
           gameId={game.id}
           answerLength={gameAnswer.length}
           showBackButton={cameFromResults}
-          onClose={(reason) => {
-            if (reason === "back") {
-              setIsTodaysStatsOpen(false);
-              setIsResultsOpen(true);
-            } else {
-              setIsTodaysStatsOpen(false);
-            }
-            setCameFromResults(false);
-          }}
+          onClose={handleCloseGameStats}
         />
       )}
     </div>

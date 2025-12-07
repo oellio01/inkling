@@ -7,7 +7,7 @@ interface TimerState {
   isActive: boolean;
 }
 
-const STORAGE_KEY = "rebus_timer_state";
+const STORAGE_KEY = "inkling_timer_state";
 
 export function usePersistentTimer(
   gameIndex: number,

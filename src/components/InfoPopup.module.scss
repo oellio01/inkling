@@ -1,17 +1,25 @@
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
 .popup {
   background-color: #fefefe;
   border-radius: 8px;
-  z-index: 1001;
   text-align: center;
   color: rgb(0, 0, 0);
   width: 90%;
   max-width: 400px;
-  border: none;
   position: relative;
-}
-
-.popup::backdrop {
-  background-color: rgba(0, 0, 0, 0.5);
+  padding: 20px;
 }
 
 .closeButton {

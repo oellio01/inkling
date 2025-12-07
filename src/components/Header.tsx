@@ -12,16 +12,16 @@ import {
   IconEye,
   IconChartBar,
 } from "@tabler/icons-react";
+import { getTodaysGameIndex } from "@/hooks/game-logic";
+import { GAMES } from "../../public/game_data";
 
 export const Header = React.memo(function Header({
   timerInSeconds,
   className,
   gameIndex,
   onSelectGame,
-  maxGameIndex = 19,
   onHint,
   hintDisabled,
-  hintAriaLabel = "Reveal a letter (costs +30s)",
   isSuggestOpen,
   setIsSuggestOpen,
   onShowStats,
@@ -32,10 +32,8 @@ export const Header = React.memo(function Header({
   className?: string;
   gameIndex: number;
   onSelectGame: (index: number) => void;
-  maxGameIndex?: number;
   onHint?: () => void;
   hintDisabled?: boolean;
-  hintAriaLabel?: string;
   isSuggestOpen: boolean;
   setIsSuggestOpen: (open: boolean) => void;
   onShowStats: () => void;
@@ -44,6 +42,8 @@ export const Header = React.memo(function Header({
 }) {
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
   const { minutes, seconds } = formatTimeInSeconds(timerInSeconds);
+
+  const maxGameIndex = Math.min(getTodaysGameIndex() + 1, GAMES.length);
 
   const handleArchiveClick = useCallback(() => {
     setIsArchiveOpen(true);
@@ -93,7 +93,7 @@ export const Header = React.memo(function Header({
           <button
             className={styles.headerButton}
             type="button"
-            aria-label={hintAriaLabel}
+            aria-label={"Reveal a letter (costs +30s)"}
             onClick={onHint}
             disabled={hintDisabled}
           >
@@ -120,13 +120,13 @@ export const Header = React.memo(function Header({
           </button>
         </div>
       </div>
-      <InfoPopup isOpen={isInfoOpen} close={handleCloseInfo} />
-      <SuggestPopup isOpen={isSuggestOpen} close={handleCloseSuggest} />
+      {isInfoOpen ? <InfoPopup close={handleCloseInfo} /> : undefined}
+      {isSuggestOpen ? <SuggestPopup close={handleCloseSuggest} /> : undefined}
       <ArchivePopup
         isOpen={isArchiveOpen}
         close={handleCloseArchive}
         currentGameIndex={gameIndex - 1}
-        maxGameIndex={maxGameIndex}
+        maxGameIndex={maxGameIndex ?? 0}
         onSelectGame={onSelectGame}
       />
     </>
