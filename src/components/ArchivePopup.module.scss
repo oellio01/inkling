@@ -1,24 +1,25 @@
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
 .popup {
-  background: rgba(0, 0, 0, 0.8);
-  border: none;
+  background: rgb(0, 0, 0);
   border-radius: 8px;
-  padding: 0;
+  padding: 24px;
   max-width: 90vw;
   max-height: 90vh;
   width: 800px;
-  height: auto;
-  color: white;
-  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-}
-
-.popup::backdrop {
-  background: rgba(0, 0, 0, 1);
-}
-
-.content {
-  padding: 24px;
-  max-height: 80vh;
   overflow-y: auto;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
 }
 
 .title {
@@ -119,9 +120,6 @@
   .popup {
     width: 95vw;
     max-width: 95vw;
-  }
-  
-  .content {
     padding: 16px;
   }
   

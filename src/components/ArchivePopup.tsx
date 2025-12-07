@@ -36,53 +36,55 @@ export const ArchivePopup = React.memo(function ArchivePopup({
   );
 
   return (
-    <div className={styles.popup} onClick={handleBackdropClick}>
-      <h2 className={styles.title}>Game Archive</h2>
-      <div className={styles.grid}>
-        {useMemo(
-          () =>
-            GAMES.slice(0, maxGameIndex)
-              .reverse()
-              .map((game, index) => {
-                const gameIndexInArray = maxGameIndex - 1 - index;
-                const isGameCompleted = !loading && isCompleted(game.id);
+    <div className={styles.backdrop} onClick={handleBackdropClick}>
+      <div className={styles.popup}>
+        <h2 className={styles.title}>Game Archive</h2>
+        <div className={styles.grid}>
+          {useMemo(
+            () =>
+              GAMES.slice(0, maxGameIndex)
+                .reverse()
+                .map((game, index) => {
+                  const gameIndexInArray = maxGameIndex - 1 - index;
+                  const isGameCompleted = !loading && isCompleted(game.id);
 
-                return (
-                  <div
-                    key={game.id}
-                    className={`${styles.gameItem} ${
-                      gameIndexInArray === currentGameIndex
-                        ? styles.currentGame
-                        : ""
-                    } ${isGameCompleted ? styles.completed : ""}`}
-                    onClick={() => handleGameClick(gameIndexInArray)}
-                  >
-                    <div className={styles.imageContainer}>
-                      <Image
-                        src={game.image}
-                        alt={`Inkling ${game.id}`}
-                        fill
-                        className={styles.image}
-                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                      />
-                      {isGameCompleted && (
-                        <div className={styles.completionBadge}>
-                          <IconCheck size={16} />
-                        </div>
-                      )}
+                  return (
+                    <div
+                      key={game.id}
+                      className={`${styles.gameItem} ${
+                        gameIndexInArray === currentGameIndex
+                          ? styles.currentGame
+                          : ""
+                      } ${isGameCompleted ? styles.completed : ""}`}
+                      onClick={() => handleGameClick(gameIndexInArray)}
+                    >
+                      <div className={styles.imageContainer}>
+                        <Image
+                          src={game.image}
+                          alt={`Inkling ${game.id}`}
+                          fill
+                          className={styles.image}
+                          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                        />
+                        {isGameCompleted && (
+                          <div className={styles.completionBadge}>
+                            <IconCheck size={16} />
+                          </div>
+                        )}
+                      </div>
+                      <div className={styles.gameNumber}>#{game.id}</div>
                     </div>
-                    <div className={styles.gameNumber}>#{game.id}</div>
-                  </div>
-                );
-              }),
-          [
-            maxGameIndex,
-            currentGameIndex,
-            loading,
-            isCompleted,
-            handleGameClick,
-          ]
-        )}
+                  );
+                }),
+            [
+              maxGameIndex,
+              currentGameIndex,
+              loading,
+              isCompleted,
+              handleGameClick,
+            ]
+          )}
+        </div>
       </div>
     </div>
   );
