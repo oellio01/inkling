@@ -122,13 +122,14 @@ export const Header = React.memo(function Header({
       </div>
       {isInfoOpen ? <InfoPopup close={handleCloseInfo} /> : undefined}
       {isSuggestOpen ? <SuggestPopup close={handleCloseSuggest} /> : undefined}
-      <ArchivePopup
-        isOpen={isArchiveOpen}
-        close={handleCloseArchive}
-        currentGameIndex={gameIndex - 1}
-        maxGameIndex={maxGameIndex ?? 0}
-        onSelectGame={onSelectGame}
-      />
+      {isArchiveOpen ? (
+        <ArchivePopup
+          close={handleCloseArchive}
+          currentGameIndex={gameIndex - 1}
+          maxGameIndex={maxGameIndex ?? 0}
+          onSelectGame={onSelectGame}
+        />
+      ) : undefined}
     </>
   );
 });

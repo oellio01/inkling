@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import React from "react";
 import Image from "next/image";
 import styles from "./ArchivePopup.module.scss";
@@ -7,7 +7,6 @@ import { useCompletedGames } from "../hooks/useCompletedGames";
 import { IconCheck } from "@tabler/icons-react";
 
 export interface ArchivePopupProps {
-  isOpen: boolean;
   close: () => void;
   currentGameIndex: number;
   maxGameIndex: number;
@@ -15,41 +14,18 @@ export interface ArchivePopupProps {
 }
 
 export const ArchivePopup = React.memo(function ArchivePopup({
-  isOpen,
   close,
   currentGameIndex,
   maxGameIndex,
   onSelectGame,
 }: ArchivePopupProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
-  const { isCompleted, loading, refreshArchive } = useCompletedGames();
+  const { isCompleted, loading } = useCompletedGames();
 
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (dialog) {
-      if (isOpen) {
-        dialog.showModal();
-        refreshArchive();
-      } else {
-        dialog.close();
-      }
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      close();
     }
-  }, [isOpen, refreshArchive]);
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    dialog?.addEventListener("close", close);
-    return () => {
-      dialog?.removeEventListener("close", close);
-    };
-  }, [close]);
-
-  const handleBackdropClick = useCallback(
-    (e: React.MouseEvent<HTMLDialogElement>) => {
-      if (e.target === dialogRef.current) close();
-    },
-    [close]
-  );
+  };
 
   const handleGameClick = useCallback(
     (gameIndex: number) => {
@@ -60,11 +36,7 @@ export const ArchivePopup = React.memo(function ArchivePopup({
   );
 
   return (
-    <dialog
-      ref={dialogRef}
-      className={styles.popup}
-      onClick={handleBackdropClick}
-    >
+    <div className={styles.popup} onClick={handleBackdropClick}>
       <h2 className={styles.title}>Game Archive</h2>
       <div className={styles.grid}>
         {useMemo(
@@ -112,6 +84,6 @@ export const ArchivePopup = React.memo(function ArchivePopup({
           ]
         )}
       </div>
-    </dialog>
+    </div>
   );
 });
