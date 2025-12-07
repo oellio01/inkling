@@ -12,7 +12,7 @@ import {
   LabelList,
 } from "recharts";
 import React from "react";
-import { formatTimeInSeconds } from "./formatTimeInSeconds";
+import { formatTimeInSeconds } from "../hooks/formatTimeInSeconds";
 import { useUser } from "../providers/UserProvider";
 import { GAMES } from "../../public/game_data";
 

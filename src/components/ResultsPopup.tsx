@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import React from "react";
 import styles from "./ResultsPopup.module.scss";
-import { formatTimeInSeconds } from "./formatTimeInSeconds";
+import { formatTimeInSeconds } from "../hooks/formatTimeInSeconds";
 import classNames from "classnames";
 import {
   IconStar,

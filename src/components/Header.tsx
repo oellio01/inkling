@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import React from "react";
-import { formatTimeInSeconds } from "./formatTimeInSeconds";
+import { formatTimeInSeconds } from "../hooks/formatTimeInSeconds";
 import styles from "./Header.module.scss";
 import { InfoPopup } from "./InfoPopup";
 import { ArchivePopup } from "./ArchivePopup";
