@@ -2,15 +2,13 @@
 
 import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import Image from "next/image";
-import { Header } from "../components/Header";
+import { Header, HeaderRef } from "../components/Header";
 import { Keyboard } from "../components/Keyboard";
-import { ResultsPopup } from "../components/ResultsPopup";
 import { GuessDisplay } from "../components/GuessDisplay";
 import { getTodaysGameIndex } from "../hooks/game-logic";
 import { GAMES } from "../../public/game_data";
 import styles from "./Game.module.scss";
 import { useUser } from "../providers/UserProvider";
-import { GameStats } from "../components/GameStats";
 import supabase from "./supabaseClient";
 
 interface TimerState {
@@ -27,18 +25,15 @@ export default function Game() {
   const game = GAMES[gameIndex];
   const { user } = useUser();
   const [isDone, setIsDone] = useState(false);
-  const [isResultsOpen, setIsResultsOpen] = useState(false);
   const [currentGuess, setCurrentGuess] = useState("");
   const currentGuessRef = useRef(currentGuess);
   const [hintCount, setHintCount] = useState(0);
   const guessCountRef = useRef(0);
-  const [isSuggestOpen, setIsSuggestOpen] = useState(false);
-  const [isTodaysStatsOpen, setIsTodaysStatsOpen] = useState(false);
-  const [isInfoOpen, setIsInfoOpen] = useState(false);
-  const [cameFromResults, setCameFromResults] = useState(false);
+  const [isPausedByPopup, setIsPausedByPopup] = useState(false);
   const [showLetterFeedback, setShowLetterFeedback] = useState(false);
+  const headerRef = useRef<HeaderRef>(null);
   const gameAnswer = game?.answer.replace(" ", "");
-  const isPaused = isDone || isSuggestOpen || isTodaysStatsOpen || isInfoOpen;
+  const isPaused = isDone || isPausedByPopup;
   const normalizeText = useCallback((text: string) => {
     return text.replace(/ /g, "").toLowerCase();
   }, []);
@@ -172,7 +167,7 @@ export default function Game() {
 
         // If no results found, show the info popup
         if (!data || data.length === 0) {
-          setIsInfoOpen(true);
+          headerRef.current?.openInfo();
         }
       } catch (error) {
         console.error("Error checking user results:", error);
@@ -257,7 +252,14 @@ export default function Game() {
     guessCountRef.current++;
     if (isCorrectSolution(currentGuessRef.current)) {
       setIsDone(true);
-      setIsResultsOpen(true);
+
+      // Show results popup via Header
+      headerRef.current?.showResults(
+        game.id,
+        timeRef.current,
+        guessCountRef.current,
+        hintCount
+      );
 
       const { error } = await supabase.from("game_results").insert([
         {
@@ -295,7 +297,7 @@ export default function Game() {
       return;
     }
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (isSuggestOpen || isResultsOpen) {
+      if (isPaused) {
         return;
       }
       const key = event.key;
@@ -310,20 +312,12 @@ export default function Game() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [
-    isDone,
-    isResultsOpen,
-    onPressLetter,
-    onPressBackspace,
-    commitGuess,
-    isSuggestOpen,
-  ]);
+  }, [isDone, onPressLetter, onPressBackspace, commitGuess, isPaused]);
 
   const handleSelectGame = useCallback(
     (newIndex: number) => {
       setGameIndex(newIndex);
       setIsDone(false);
-      setIsResultsOpen(false);
       setCurrentGuess("");
       resetTimer();
       setHintCount(0);
@@ -333,29 +327,8 @@ export default function Game() {
     [resetTimer]
   );
 
-  const handleShowStats = useCallback(() => {
-    setIsTodaysStatsOpen(true);
-    setCameFromResults(false);
-  }, []);
-
-  const handleCloseResults = useCallback(() => {
-    setIsResultsOpen(false);
-  }, []);
-
-  const handleOnShowStats = useCallback(() => {
-    setIsResultsOpen(false);
-    setIsTodaysStatsOpen(true);
-    setCameFromResults(true);
-  }, []);
-
-  const handleCloseGameStats = useCallback((reason?: "back") => {
-    if (reason === "back") {
-      setIsTodaysStatsOpen(false);
-      setIsResultsOpen(true);
-    } else {
-      setIsTodaysStatsOpen(false);
-    }
-    setCameFromResults(false);
+  const handlePausedChange = useCallback((isPaused: boolean) => {
+    setIsPausedByPopup(isPaused);
   }, []);
 
   if (!game) {
@@ -369,17 +342,15 @@ export default function Game() {
   return (
     <div className={styles.game}>
       <Header
-        timerInSeconds={timeRef.current}
+        ref={headerRef}
+        timerInSeconds={timeInSeconds}
         className={styles.header}
         gameIndex={game.id}
+        gameAnswerLength={gameAnswer.length}
         onSelectGame={handleSelectGame}
         onHint={onHint}
         hintDisabled={hintCount >= gameAnswer.length}
-        isSuggestOpen={isSuggestOpen}
-        setIsSuggestOpen={setIsSuggestOpen}
-        onShowStats={handleShowStats}
-        isInfoOpen={isInfoOpen}
-        setIsInfoOpen={setIsInfoOpen}
+        onPausedChange={handlePausedChange}
       />
       <div className={styles.imageWrapper}>
         <Image
@@ -388,7 +359,6 @@ export default function Game() {
           fill
           sizes="(max-width: 600px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className={styles.image}
-          priority={true}
         />
       </div>
       <GuessDisplay
@@ -406,24 +376,6 @@ export default function Game() {
         onPressEnter={commitGuess}
         className={styles.keyboard}
       />
-      {isResultsOpen ? (
-        <ResultsPopup
-          close={handleCloseResults}
-          gameNumber={game.id}
-          timeInSeconds={timeRef.current}
-          guessCount={guessCountRef.current}
-          hintCount={hintCount}
-          onShowStats={handleOnShowStats}
-        />
-      ) : undefined}
-      {isTodaysStatsOpen ? (
-        <GameStats
-          gameId={game.id}
-          answerLength={gameAnswer.length}
-          showBackButton={cameFromResults}
-          onClose={handleCloseGameStats}
-        />
-      ) : undefined}
     </div>
   );
 }

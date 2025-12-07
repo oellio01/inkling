@@ -11,7 +11,7 @@ interface GuessDisplayProps {
   getLetterStatus: (index: number) => string;
 }
 
-export const GuessDisplay: React.FC<GuessDisplayProps> = ({
+export const GuessDisplay = React.memo(function GuessDisplay({
   isDone,
   spaceIndexes,
   answer,
@@ -19,7 +19,7 @@ export const GuessDisplay: React.FC<GuessDisplayProps> = ({
   currentGuess,
   hintCount,
   getLetterStatus,
-}) => {
+}: GuessDisplayProps) {
   return (
     <div className={styles.guess}>
       {isDone ? (
@@ -103,4 +103,4 @@ export const GuessDisplay: React.FC<GuessDisplayProps> = ({
       )}
     </div>
   );
-};
+});
