@@ -7,12 +7,20 @@ import { Keyboard } from "../components/Keyboard";
 import { ResultsPopup } from "../components/ResultsPopup";
 import { GuessDisplay } from "../components/GuessDisplay";
 import { getTodaysGameIndex } from "../hooks/game-logic";
-import { usePersistentTimer } from "../hooks/usePersistentTimer";
 import { GAMES } from "../../public/game_data";
 import styles from "./Game.module.scss";
 import { useUser } from "../providers/UserProvider";
 import { GameStats } from "../components/GameStats";
 import supabase from "./supabaseClient";
+
+interface TimerState {
+  gameIndex: number;
+  timeInSeconds: number;
+  lastUpdated: number;
+  isActive: boolean;
+}
+
+const STORAGE_KEY = "inkling_timer_state";
 
 export default function Game() {
   const [gameIndex, setGameIndex] = useState(getTodaysGameIndex);
@@ -34,8 +42,104 @@ export default function Game() {
   const normalizeText = useCallback((text: string) => {
     return text.replace(/ /g, "").toLowerCase();
   }, []);
-  const { startTimer, pauseTimer, resetTimer, addTime, timeRef } =
-    usePersistentTimer(gameIndex, isPaused);
+
+  // Timer state and logic (updates every second when active!)
+  const [timeInSeconds, setTimeInSeconds] = useState(0);
+  const [isTimerActive, setIsTimerActive] = useState(false);
+  const timeRef = useRef(0);
+
+  // Update the ref when the time changes
+  useEffect(() => {
+    timeRef.current = timeInSeconds;
+  }, [timeInSeconds]);
+
+  // Load timer state from localStorage on mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const state: TimerState = JSON.parse(stored);
+
+        if (state.gameIndex === gameIndex) {
+          setTimeInSeconds(state.timeInSeconds);
+          setIsTimerActive(state.isActive);
+        } else {
+          // Clear old state if it's a different game
+          localStorage.removeItem(STORAGE_KEY);
+        }
+      }
+    } catch (error) {
+      console.error("Error loading timer state:", error);
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  }, [gameIndex]);
+
+  // Save timer state to localStorage
+  const saveTimerState = useCallback(
+    (time: number, active: boolean) => {
+      try {
+        const state: TimerState = {
+          gameIndex,
+          timeInSeconds: time,
+          lastUpdated: Date.now(),
+          isActive: active,
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (error) {
+        console.error("Error saving timer state:", error);
+      }
+    },
+    [gameIndex]
+  );
+
+  // THIS EFFECT CAUSES RE-RENDERS EVERY SECOND when the timer is active!
+  useEffect(() => {
+    if (!isTimerActive || isPaused) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setTimeInSeconds((prev) => {
+        const newTime = prev + 1;
+        saveTimerState(newTime, true);
+        return newTime;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isTimerActive, isPaused, saveTimerState]);
+
+  // Start the timer
+  const startTimer = useCallback(() => {
+    setIsTimerActive(true);
+    saveTimerState(timeInSeconds, true);
+  }, [timeInSeconds, saveTimerState]);
+
+  // Pause the timer
+  const pauseTimer = useCallback(() => {
+    setIsTimerActive(false);
+    saveTimerState(timeInSeconds, false);
+  }, [timeInSeconds, saveTimerState]);
+
+  // Reset the timer for a new game
+  const resetTimer = useCallback(() => {
+    setTimeInSeconds(0);
+    setIsTimerActive(false);
+    saveTimerState(0, false);
+  }, [saveTimerState]);
+
+  // Add time (for hints)
+  const addTime = useCallback(
+    (seconds: number) => {
+      setTimeInSeconds((prev) => {
+        const newTime = prev + seconds;
+        saveTimerState(newTime, isTimerActive);
+        return newTime;
+      });
+    },
+    [isTimerActive, saveTimerState]
+  );
+
   const spaceIndexes = useMemo(() => {
     const indexes: number[] = [];
     for (let i = 0; i < game.answer.length; i++) {
