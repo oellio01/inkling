@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useMemo, useRef } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Header, HeaderRef } from "../components/Header";
 import { Keyboard } from "../components/Keyboard";
@@ -134,16 +134,6 @@ export default function Game() {
     },
     [isTimerActive, saveTimerState]
   );
-
-  const spaceIndexes = useMemo(() => {
-    const indexes: number[] = [];
-    for (let i = 0; i < game.answer.length; i++) {
-      if (game.answer[i] === " ") {
-        indexes.push(i);
-      }
-    }
-    return indexes;
-  }, [game.answer]);
 
   useEffect(() => {
     currentGuessRef.current = currentGuess;
@@ -363,7 +353,6 @@ export default function Game() {
       </div>
       <GuessDisplay
         isDone={isDone}
-        spaceIndexes={spaceIndexes}
         answer={game.answer}
         gameAnswer={gameAnswer}
         currentGuess={currentGuess}
@@ -371,9 +360,11 @@ export default function Game() {
         getLetterStatus={getLetterStatus}
       />
       <Keyboard
-        onPressBackspace={onPressBackspace}
-        onPressCharacter={onPressLetter}
+        setCurrentGuess={setCurrentGuess}
         onPressEnter={commitGuess}
+        hintCount={hintCount}
+        gameAnswer={gameAnswer}
+        game={game}
         className={styles.keyboard}
       />
     </div>

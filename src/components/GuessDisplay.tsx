@@ -1,9 +1,8 @@
-import React from "react";
+import React, { useMemo } from "react";
 import styles from "../app/Game.module.scss";
 
 interface GuessDisplayProps {
   isDone: boolean;
-  spaceIndexes: number[];
   answer: string;
   gameAnswer: string;
   currentGuess: string;
@@ -13,13 +12,22 @@ interface GuessDisplayProps {
 
 export const GuessDisplay = React.memo(function GuessDisplay({
   isDone,
-  spaceIndexes,
   answer,
   gameAnswer,
   currentGuess,
   hintCount,
   getLetterStatus,
 }: GuessDisplayProps) {
+  const spaceIndexes = useMemo(() => {
+    const indexes: number[] = [];
+    for (let i = 0; i < answer.length; i++) {
+      if (answer[i] === " ") {
+        indexes.push(i);
+      }
+    }
+    return indexes;
+  }, [answer]);
+
   return (
     <div className={styles.guess}>
       {isDone ? (
