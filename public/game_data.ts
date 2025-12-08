@@ -870,5 +870,30 @@ export const GAMES: GameData[] = [
     image: "/games/173.jpeg",
     answer: "GIFT CARD",
   },
+  {
+    id: 174,
+    image: "/games/174.png",
+    answer: "MUGSHOT",
+  },
+  {
+    id: 175,
+    image: "/games/175.png",
+    answer: "ICE CREAM",
+  },
+  {
+    id: 176,
+    image: "/games/176.jpeg",
+    answer: "CLIFFHANGER",
+  },
+  {
+    id: 177,
+    image: "/games/177.jpeg",
+    answer: "HERETIC",
+  },
+  {
+    id: 178,
+    image: "/games/178.png",
+    answer: "EXILE",
+  },
 ];
   
