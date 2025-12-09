@@ -35,39 +35,11 @@ export default function Game() {
     isPaused
   );
 
-  useEffect(() => {
-    const checkUserResults = async () => {
-      if (!user) return;
-
-      try {
-        const { data, error } = await supabase
-          .from("game_results")
-          .select("id")
-          .eq("user_id", user.id)
-          .limit(1);
-
-        if (error) {
-          console.error("Error checking user results:", error);
-          return;
-        }
-
-        // If no results found, show the info popup
-        if (!data || data.length === 0) {
-          headerRef.current?.openInfo();
-        }
-      } catch (error) {
-        console.error("Error checking user results:", error);
-      }
-    };
-    checkUserResults();
-  }, [user]);
-
   const isCorrectSolution = useCallback(
     (guess: string) => {
       if (!game) {
         return false;
       }
-      console.log(normalizeText(guess), normalizeText(game.answer));
       return normalizeText(guess) === normalizeText(game.answer);
     },
     [game, normalizeText]

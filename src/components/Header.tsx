@@ -22,6 +22,8 @@ import {
 } from "@tabler/icons-react";
 import { getTodaysGameIndex } from "@/hooks/game-logic";
 import { GAMES } from "../../public/game_data";
+import { useUser } from "../providers/UserProvider";
+import supabase from "../app/supabaseClient";
 
 export interface HeaderRef {
   openStats: (fromResults?: boolean) => void;
@@ -74,6 +76,7 @@ export const Header = React.memo(
     } | null>(null);
     const { minutes, seconds } = formatTimeInSeconds(timerInSeconds);
     const maxGameIndex = Math.min(getTodaysGameIndex() + 1, GAMES.length);
+    const { user } = useUser();
 
     // Notify parent whenever any popup state changes
     const anyPopupOpen =
@@ -82,11 +85,39 @@ export const Header = React.memo(
       isInfoOpen ||
       isTodaysStatsOpen ||
       isResultsOpen;
+
     useEffect(() => {
       if (onPausedChange) {
         onPausedChange(anyPopupOpen);
       }
     }, [anyPopupOpen, onPausedChange]);
+
+    useEffect(() => {
+      const checkUserResults = async () => {
+        if (!user) return;
+
+        try {
+          const { data, error } = await supabase
+            .from("game_results")
+            .select("id")
+            .eq("user_id", user.id)
+            .limit(1);
+
+          if (error) {
+            console.error("Error checking user results:", error);
+            return;
+          }
+
+          // If no results found, show the info popup
+          if (!data || data.length === 0) {
+            setIsInfoOpen(true);
+          }
+        } catch (error) {
+          console.error("Error checking user results:", error);
+        }
+      };
+      checkUserResults();
+    }, [user]);
 
     const handleArchiveClick = useCallback(() => {
       setIsArchiveOpen(true);
