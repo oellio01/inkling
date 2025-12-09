@@ -26,7 +26,7 @@ export default function Game() {
   const gameAnswer = game?.answer.replace(" ", "");
   const isPaused = isDone || isPausedByPopup;
   const normalizeText = useCallback((text: string) => {
-    return text.replace(/ /g, "").toLowerCase();
+    return text.replaceAll(" ", "").toLowerCase();
   }, []);
 
   // Timer logic
