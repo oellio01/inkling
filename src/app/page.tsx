@@ -6,19 +6,11 @@ import { Header, HeaderRef } from "../components/Header";
 import { Keyboard } from "../components/Keyboard";
 import { GuessDisplay } from "../components/GuessDisplay";
 import { getTodaysGameIndex } from "../hooks/game-logic";
+import { useGameTimer } from "../hooks/useGameTimer";
 import { GAMES } from "../../public/game_data";
 import styles from "./Game.module.scss";
 import { useUser } from "../providers/UserProvider";
 import supabase from "./supabaseClient";
-
-interface TimerState {
-  gameIndex: number;
-  timeInSeconds: number;
-  lastUpdated: number;
-  isActive: boolean;
-}
-
-const STORAGE_KEY = "inkling_timer_state";
 
 export default function Game() {
   const [gameIndex, setGameIndex] = useState(getTodaysGameIndex);
@@ -26,9 +18,8 @@ export default function Game() {
   const { user } = useUser();
   const [isDone, setIsDone] = useState(false);
   const [currentGuess, setCurrentGuess] = useState("");
-  const currentGuessRef = useRef(currentGuess);
   const [hintCount, setHintCount] = useState(0);
-  const guessCountRef = useRef(0);
+  const [, setGuessCount] = useState(0);
   const [isPausedByPopup, setIsPausedByPopup] = useState(false);
   const [showLetterFeedback, setShowLetterFeedback] = useState(false);
   const headerRef = useRef<HeaderRef>(null);
@@ -38,106 +29,11 @@ export default function Game() {
     return text.replace(/ /g, "").toLowerCase();
   }, []);
 
-  // Timer state and logic (updates every second when active!)
-  const [timeInSeconds, setTimeInSeconds] = useState(0);
-  const [isTimerActive, setIsTimerActive] = useState(false);
-  const timeRef = useRef(0);
-
-  // Update the ref when the time changes
-  useEffect(() => {
-    timeRef.current = timeInSeconds;
-  }, [timeInSeconds]);
-
-  // Load timer state from localStorage on mount
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const state: TimerState = JSON.parse(stored);
-
-        if (state.gameIndex === gameIndex) {
-          setTimeInSeconds(state.timeInSeconds);
-          setIsTimerActive(state.isActive);
-        } else {
-          // Clear old state if it's a different game
-          localStorage.removeItem(STORAGE_KEY);
-        }
-      }
-    } catch (error) {
-      console.error("Error loading timer state:", error);
-      localStorage.removeItem(STORAGE_KEY);
-    }
-  }, [gameIndex]);
-
-  // Save timer state to localStorage
-  const saveTimerState = useCallback(
-    (time: number, active: boolean) => {
-      try {
-        const state: TimerState = {
-          gameIndex,
-          timeInSeconds: time,
-          lastUpdated: Date.now(),
-          isActive: active,
-        };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      } catch (error) {
-        console.error("Error saving timer state:", error);
-      }
-    },
-    [gameIndex]
+  // Timer logic
+  const { timeInSeconds, timeRef, resetTimer, addTime } = useGameTimer(
+    gameIndex,
+    isPaused
   );
-
-  // THIS EFFECT CAUSES RE-RENDERS EVERY SECOND when the timer is active!
-  useEffect(() => {
-    if (!isTimerActive || isPaused) {
-      return;
-    }
-
-    const interval = setInterval(() => {
-      setTimeInSeconds((prev) => {
-        const newTime = prev + 1;
-        saveTimerState(newTime, true);
-        return newTime;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [isTimerActive, isPaused, saveTimerState]);
-
-  // Start the timer
-  const startTimer = useCallback(() => {
-    setIsTimerActive(true);
-    saveTimerState(timeInSeconds, true);
-  }, [timeInSeconds, saveTimerState]);
-
-  // Pause the timer
-  const pauseTimer = useCallback(() => {
-    setIsTimerActive(false);
-    saveTimerState(timeInSeconds, false);
-  }, [timeInSeconds, saveTimerState]);
-
-  // Reset the timer for a new game
-  const resetTimer = useCallback(() => {
-    setTimeInSeconds(0);
-    setIsTimerActive(false);
-    saveTimerState(0, false);
-  }, [saveTimerState]);
-
-  // Add time (for hints)
-  const addTime = useCallback(
-    (seconds: number) => {
-      setTimeInSeconds((prev) => {
-        const newTime = prev + seconds;
-        saveTimerState(newTime, isTimerActive);
-        return newTime;
-      });
-    },
-    [isTimerActive, saveTimerState]
-  );
-
-  useEffect(() => {
-    currentGuessRef.current = currentGuess;
-  }, [currentGuess]);
 
   useEffect(() => {
     const checkUserResults = async () => {
@@ -165,15 +61,6 @@ export default function Game() {
     };
     checkUserResults();
   }, [user]);
-
-  // Start timer when component mounts and game is not paused
-  useEffect(() => {
-    if (!isPaused) {
-      startTimer();
-    } else {
-      pauseTimer();
-    }
-  }, [isPaused, startTimer, pauseTimer]);
 
   const isCorrectSolution = useCallback(
     (guess: string) => {
@@ -239,38 +126,48 @@ export default function Game() {
   }, [hintCount]);
 
   const commitGuess = useCallback(async () => {
-    guessCountRef.current++;
-    if (isCorrectSolution(currentGuessRef.current)) {
+    if (isCorrectSolution(currentGuess)) {
+      setGuessCount((prevCount) => {
+        const newCount = prevCount + 1;
+
+        // Show results popup via Header
+        headerRef.current?.showResults(
+          game.id,
+          timeRef.current,
+          newCount,
+          hintCount
+        );
+
+        // Insert game result
+        supabase
+          .from("game_results")
+          .insert([
+            {
+              game_id: game.id,
+              user_id: user ? user.id : null,
+              time_seconds: timeRef.current,
+              guesses: newCount,
+              hints: hintCount,
+            },
+          ])
+          .then(({ error }) => {
+            if (error) {
+              console.log("Game result insert error:", error.message);
+            }
+          });
+
+        return newCount;
+      });
+
       setIsDone(true);
-
-      // Show results popup via Header
-      headerRef.current?.showResults(
-        game.id,
-        timeRef.current,
-        guessCountRef.current,
-        hintCount
-      );
-
-      const { error } = await supabase.from("game_results").insert([
-        {
-          game_id: game.id,
-          user_id: user ? user.id : null,
-          time_seconds: timeRef.current,
-          guesses: guessCountRef.current,
-          hints: hintCount,
-        },
-      ]);
-
-      if (error) {
-        console.log("Game result insert error:", error.message);
-      }
     } else {
+      setGuessCount((prev) => prev + 1);
       setShowLetterFeedback(true);
       setTimeout(() => {
         setShowLetterFeedback(false);
       }, 1000);
     }
-  }, [isCorrectSolution, game.id, user, timeRef, guessCountRef, hintCount]);
+  }, [isCorrectSolution, currentGuess, game.id, user, timeRef, hintCount]);
 
   const onHint = useCallback(() => {
     if (!game) return;
@@ -311,7 +208,7 @@ export default function Game() {
       setCurrentGuess("");
       resetTimer();
       setHintCount(0);
-      guessCountRef.current = 0;
+      setGuessCount(0);
       setShowLetterFeedback(false);
     },
     [resetTimer]
@@ -360,11 +257,9 @@ export default function Game() {
         getLetterStatus={getLetterStatus}
       />
       <Keyboard
-        setCurrentGuess={setCurrentGuess}
+        onPressLetter={onPressLetter}
+        onPressBackspace={onPressBackspace}
         onPressEnter={commitGuess}
-        hintCount={hintCount}
-        gameAnswer={gameAnswer}
-        game={game}
         className={styles.keyboard}
       />
     </div>
