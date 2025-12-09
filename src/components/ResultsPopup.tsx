@@ -118,6 +118,13 @@ export const ResultsPopup = React.memo(function ResultsPopup({
   return (
     <div className={styles.backdrop} onClick={handleClick}>
       <div className={styles.popup}>
+        <button
+          className={styles.closeButton}
+          onClick={close}
+          aria-label="Close"
+        >
+          ×
+        </button>
         <h2 className={styles.title}>You got it!</h2>
 
         <div className={styles.stats}>
