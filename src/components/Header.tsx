@@ -109,8 +109,11 @@ export const Header = React.memo(
           }
 
           // If no results found, show the info popup
+          // Use setTimeout to defer state update until after render
           if (!data || data.length === 0) {
-            setIsInfoOpen(true);
+            setTimeout(() => {
+              setIsInfoOpen(true);
+            }, 0);
           }
         } catch (error) {
           console.error("Error checking user results:", error);
