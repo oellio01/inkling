@@ -900,5 +900,80 @@ export const GAMES: GameData[] = [
     image: "/games/179.png",
     answer: "ARISTOCRAT",
   },
+  {
+    id: 180,
+    image: "/games/180.jpeg",
+    answer: "BOOKMARK",
+  },
+  {
+    id: 181,
+    image: "/games/181.png",
+    answer: "WICKED",
+  },
+  {
+    id: 182,
+    image: "/games/182.jpeg",
+    answer: "FULL MOON",
+  },
+  {
+    id: 183,
+    image: "/games/183.png",
+    answer: "ALPHABET",
+  },
+  {
+    id: 184,
+    image: "/games/184.png",
+    answer: "HANGNAIL",
+  },
+  {
+    id: 185,
+    image: "/games/185.jpeg",
+    answer: "TREATY",
+  },
+  {
+    id: 186,
+    image: "/games/186.jpeg",
+    answer: "HOLLYWOOD",
+  },
+  {
+    id: 187,
+    image: "/games/187.jpeg",
+    answer: "CHILDHOOD",
+  },
+  {
+    id: 188,
+    image: "/games/188.jpeg",
+    answer: "HIGHLIGHTER",
+  },
+  {
+    id: 189,
+    image: "/games/189.png",
+    answer: "BEDTIME",
+  },
+  {
+    id: 190,
+    image: "/games/190.jpeg",
+    answer: "CHOPSTICK",
+  },
+  {
+    id: 191,
+    image: "/games/191.jpeg",
+    answer: "CRACKING",
+  },
+  {
+    id: 192,
+    image: "/games/192.jpeg",
+    answer: "POCKET BOOK",
+  },
+  {
+    id: 193,
+    image: "/games/193.png",
+    answer: "GLOBAL",
+  },
+  {
+    id: 194,
+    image: "/games/194.png",
+    answer: "NUMCHUK",
+  },
 ];
   
