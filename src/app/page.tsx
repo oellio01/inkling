@@ -98,6 +98,9 @@ export default function Game() {
   }, [hintCount]);
 
   const commitGuess = useCallback(async () => {
+    if (isDone || isPaused) {
+      return;
+    }
     if (isCorrectSolution(currentGuess)) {
       setGuessCount((prevCount) => {
         const newCount = prevCount + 1;
@@ -139,7 +142,16 @@ export default function Game() {
         setShowLetterFeedback(false);
       }, 1000);
     }
-  }, [isCorrectSolution, currentGuess, game.id, user, timeRef, hintCount]);
+  }, [
+    isDone,
+    isPaused,
+    isCorrectSolution,
+    currentGuess,
+    game.id,
+    timeRef,
+    hintCount,
+    user,
+  ]);
 
   const onHint = useCallback(() => {
     if (!game) return;

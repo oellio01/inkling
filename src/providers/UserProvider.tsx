@@ -12,16 +12,19 @@ import type { User } from "@supabase/supabase-js";
 
 interface UserContextType {
   user: User | null;
+  firstTimeUser: boolean;
   loading: boolean;
 }
 
 const UserContext = createContext<UserContextType>({
   user: null,
+  firstTimeUser: true,
   loading: true,
 });
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [firstTimeUser, setFirstTimeUser] = useState(true);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -30,6 +33,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       const { data } = await supabase.auth.getUser();
       if (!data.user) {
         await supabase.auth.signInAnonymously();
+        setFirstTimeUser(true);
       }
       const { data: userData } = await supabase.auth.getUser();
       if (mounted) {
@@ -44,7 +48,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <UserContext.Provider value={{ user, loading }}>
+    <UserContext.Provider value={{ user, firstTimeUser, loading }}>
       {children}
     </UserContext.Provider>
   );
