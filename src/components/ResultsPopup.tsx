@@ -14,6 +14,10 @@ import {
 import supabase from "../app/supabaseClient";
 import { useUser } from "../providers/UserProvider";
 
+type ShareMethod = "copy" | "twitter" | "whatsapp" | "sms";
+
+const COPY_FEEDBACK_DURATION = 2000; // milliseconds
+
 export interface ResultsPopupProps {
   close: () => void;
   gameNumber: number;
@@ -41,6 +45,7 @@ export const ResultsPopup = React.memo(function ResultsPopup({
   const [error, setError] = useState<string | null>(null);
   const { user } = useUser();
 
+  // Reset state when game changes
   useEffect(() => {
     setRating(null);
     setHoverRating(null);
@@ -51,43 +56,59 @@ export const ResultsPopup = React.memo(function ResultsPopup({
   }, [gameNumber]);
 
   const createShareText = useCallback(() => {
-    const url = window.location.href;
-    return `Inkling #${gameNumber} - ${minutes}:${seconds} - ${guessCount} guesses - ${hintCount} hints\n${url}`;
+    return `Inkling #${gameNumber} - ${minutes}:${seconds} - ${guessCount} guesses - ${hintCount} hints\n${window.location.href}`;
   }, [gameNumber, minutes, seconds, guessCount, hintCount]);
 
-  const handleCopyShare = useCallback(() => {
-    const shareText = createShareText();
-    navigator.clipboard.writeText(shareText).then(() => {
-      setHasCopied(true);
-      setTimeout(() => setHasCopied(false), 2000);
-    });
+  const createEncodedShareText = useCallback(() => {
+    return encodeURIComponent(createShareText());
   }, [createShareText]);
 
+  const trackShareEvent = useCallback(
+    (shareMethod: ShareMethod) => {
+      supabase
+        .from("share_events")
+        .insert([
+          {
+            game_id: gameNumber,
+            user_id: user?.id || null,
+            share_method: shareMethod,
+          },
+        ])
+        .then(({ error }) => {
+          if (error) {
+            console.log("Share event insert error:", error.message);
+          }
+        });
+    },
+    [gameNumber, user?.id]
+  );
+
+  const handleCopyShare = useCallback(() => {
+    trackShareEvent("copy");
+    navigator.clipboard.writeText(createShareText()).then(() => {
+      setHasCopied(true);
+      setTimeout(() => setHasCopied(false), COPY_FEEDBACK_DURATION);
+    });
+  }, [createShareText, trackShareEvent]);
+
   const handleTwitterShare = useCallback(() => {
-    const text = encodeURIComponent(
-      `Inkling #${gameNumber} - ${minutes}:${seconds} - ${guessCount} guesses - ${hintCount} hints\n${window.location.href}`
-    );
-    const twitterUrl = `https://twitter.com/intent/tweet?text=${text}`;
-    window.open(twitterUrl, "_blank", "width=550,height=420");
-  }, [gameNumber, minutes, seconds, guessCount, hintCount]);
+    trackShareEvent("twitter");
+    const url = `https://twitter.com/intent/tweet?text=${createEncodedShareText()}`;
+    window.open(url, "_blank", "width=550,height=420");
+  }, [createEncodedShareText, trackShareEvent]);
 
   const handleWhatsAppShare = useCallback(() => {
-    const text = encodeURIComponent(
-      `Inkling #${gameNumber} - ${minutes}:${seconds} - ${guessCount} guesses - ${hintCount} hints\n${window.location.href}`
-    );
-    const whatsappUrl = `https://wa.me/?text=${text}`;
-    window.open(whatsappUrl, "_blank");
-  }, [gameNumber, minutes, seconds, guessCount, hintCount]);
+    trackShareEvent("whatsapp");
+    const url = `https://wa.me/?text=${createEncodedShareText()}`;
+    window.open(url, "_blank");
+  }, [createEncodedShareText, trackShareEvent]);
 
   const handleTextShare = useCallback(() => {
-    const text = encodeURIComponent(
-      `Inkling #${gameNumber} - ${minutes}:${seconds} - ${guessCount} guesses - ${hintCount} hints\n${window.location.href}`
-    );
-    const smsUrl = `sms:?body=${text}`;
-    window.location.href = smsUrl;
-  }, [gameNumber, minutes, seconds, guessCount, hintCount]);
+    trackShareEvent("sms");
+    window.location.href = `sms:?body=${createEncodedShareText()}`;
+  }, [createEncodedShareText, trackShareEvent]);
 
-  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
       close();
     }
@@ -116,7 +137,7 @@ export const ResultsPopup = React.memo(function ResultsPopup({
   );
 
   return (
-    <div className={styles.backdrop} onClick={handleClick}>
+    <div className={styles.backdrop} onClick={handleBackdropClick}>
       <div className={styles.popup}>
         <button
           className={styles.closeButton}
@@ -219,23 +240,26 @@ export const ResultsPopup = React.memo(function ResultsPopup({
               How was today&apos;s inkling?
             </div>
             <div className={styles.starsRow}>
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  key={star}
-                  type="button"
-                  className={styles.starButton}
-                  aria-label={`Rate ${star} star${star > 1 ? "s" : ""}`}
-                  onClick={() => setRating(star)}
-                  onMouseEnter={() => setHoverRating(star)}
-                  onMouseLeave={() => setHoverRating(null)}
-                >
-                  {(hoverRating ?? rating ?? 0) >= star ? (
-                    <IconStarFilled size={28} color="#FFD700" />
-                  ) : (
-                    <IconStar size={28} color="#FFD700" />
-                  )}
-                </button>
-              ))}
+              {[1, 2, 3, 4, 5].map((star) => {
+                const isFilled = (hoverRating ?? rating ?? 0) >= star;
+                return (
+                  <button
+                    key={star}
+                    type="button"
+                    className={styles.starButton}
+                    aria-label={`Rate ${star} star${star > 1 ? "s" : ""}`}
+                    onClick={() => setRating(star)}
+                    onMouseEnter={() => setHoverRating(star)}
+                    onMouseLeave={() => setHoverRating(null)}
+                  >
+                    {isFilled ? (
+                      <IconStarFilled size={28} color="#FFD700" />
+                    ) : (
+                      <IconStar size={28} color="#FFD700" />
+                    )}
+                  </button>
+                );
+              })}
             </div>
             <textarea
               value={comment}
