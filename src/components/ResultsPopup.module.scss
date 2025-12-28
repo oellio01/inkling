@@ -114,9 +114,8 @@
 .personalMessage {
   margin: 16px 0;
   padding: 16px;
-  background-color: #f8f9fa;
+  background-color: #e1e3e4;
   border-radius: 8px;
-  border-left: 4px solid #1976d2;
   
   p {
     margin: 0;
@@ -233,44 +232,46 @@
   margin-bottom: 8px;
 }
 
-.shareLabel {
-  font-size: 16px;
+.nextInklingLabel {
+  font-size: 14px;
   font-weight: 500;
-  color: #333;
+  color: #5E807F;
+  margin-bottom: 4px;
 }
 
-.shareButtons {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.shareIconButton {
+.shareButton {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  border: 2px solid #e0e0e0;
-  border-radius: 50%;
-  background: white;
-  color: #555;
+  gap: 8px;
+  padding: 12px 24px;
+  background-color: #6b9660;
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  font-size: 16px;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-  padding: 0;
-}
 
-.shareIconButton:hover {
-  border-color: #2172a7;
-  color: #2172a7;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(33, 114, 167, 0.2);
-}
+  span {
+    color: white;
+  }
 
-.shareIconButton:active {
-  transform: translateY(0);
-  box-shadow: 0 1px 4px rgba(33, 114, 167, 0.3);
+  svg {
+    color: white;
+  }
+
+  &:hover {
+    background-color: #5a7f50;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(107, 150, 96, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(107, 150, 96, 0.2);
+  }
 }
 
 .copiedMessage {

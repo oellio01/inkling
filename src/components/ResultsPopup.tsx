@@ -3,20 +3,11 @@ import React from "react";
 import styles from "./ResultsPopup.module.scss";
 import { formatTimeInSeconds } from "../hooks/formatTimeInSeconds";
 import classNames from "classnames";
-import {
-  IconStar,
-  IconStarFilled,
-  IconBrandTwitter,
-  IconMessage,
-  IconCopy,
-  IconBrandWhatsapp,
-} from "@tabler/icons-react";
+import { IconStar, IconStarFilled, IconShare } from "@tabler/icons-react";
 import supabase from "../app/supabaseClient";
 import { useUser } from "../providers/UserProvider";
 
-type ShareMethod = "copy" | "twitter" | "whatsapp" | "sms";
-
-const COPY_FEEDBACK_DURATION = 2000; // milliseconds
+const COPY_FEEDBACK_DURATION = 2000;
 
 export interface ResultsPopupProps {
   close: () => void;
@@ -43,6 +34,7 @@ export const ResultsPopup = React.memo(function ResultsPopup({
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [timeUntilMidnight, setTimeUntilMidnight] = useState("");
   const { user } = useUser();
 
   // Reset state when game changes
@@ -55,63 +47,52 @@ export const ResultsPopup = React.memo(function ResultsPopup({
     setHasCopied(false);
   }, [gameNumber]);
 
-  const createShareText = useCallback(() => {
-    return `Inkling #${gameNumber} - ${minutes}:${seconds} - ${guessCount} guesses - ${hintCount} hints\n${window.location.href}`;
-  }, [gameNumber, minutes, seconds, guessCount, hintCount]);
+  // Countdown to midnight
+  useEffect(() => {
+    const updateCountdown = () => {
+      const now = new Date();
+      const tomorrow = new Date(now);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(0, 0, 0, 0);
 
-  const createEncodedShareText = useCallback(() => {
-    return encodeURIComponent(createShareText());
-  }, [createShareText]);
+      const diff = Math.max(0, tomorrow.getTime() - now.getTime());
+      const hours = Math.floor(diff / 3600000);
+      const minutes = Math.floor((diff % 3600000) / 60000);
+      const seconds = Math.floor((diff % 60000) / 1000);
 
-  const trackShareEvent = useCallback(
-    (shareMethod: ShareMethod) => {
-      supabase
-        .from("share_events")
-        .insert([
-          {
-            game_id: gameNumber,
-            user_id: user?.id || null,
-            share_method: shareMethod,
-          },
-        ])
-        .then(({ error }) => {
-          if (error) {
-            console.log("Share event insert error:", error.message);
-          }
-        });
-    },
-    [gameNumber, user?.id]
-  );
+      const format = (n: number) => String(n).padStart(2, "0");
+      setTimeUntilMidnight(
+        `${format(hours)}:${format(minutes)}:${format(seconds)}`
+      );
+    };
 
-  const handleCopyShare = useCallback(() => {
-    trackShareEvent("copy");
-    navigator.clipboard.writeText(createShareText()).then(() => {
-      setHasCopied(true);
-      setTimeout(() => setHasCopied(false), COPY_FEEDBACK_DURATION);
-    });
-  }, [createShareText, trackShareEvent]);
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
-  const handleTwitterShare = useCallback(() => {
-    trackShareEvent("twitter");
-    const url = `https://twitter.com/intent/tweet?text=${createEncodedShareText()}`;
-    window.open(url, "_blank", "width=550,height=420");
-  }, [createEncodedShareText, trackShareEvent]);
+  const handleShare = useCallback(() => {
+    const shareText = `Inkling #${gameNumber} - ${minutes}:${seconds} - ${guessCount} guesses - ${hintCount} hints\n${window.location.href}`;
+    navigator.clipboard.writeText(shareText);
+    setHasCopied(true);
+    setTimeout(() => setHasCopied(false), COPY_FEEDBACK_DURATION);
 
-  const handleWhatsAppShare = useCallback(() => {
-    trackShareEvent("whatsapp");
-    const url = `https://wa.me/?text=${createEncodedShareText()}`;
-    window.open(url, "_blank");
-  }, [createEncodedShareText, trackShareEvent]);
-
-  const handleTextShare = useCallback(() => {
-    trackShareEvent("sms");
-    window.location.href = `sms:?body=${createEncodedShareText()}`;
-  }, [createEncodedShareText, trackShareEvent]);
+    supabase
+      .from("share_events")
+      .insert([
+        {
+          game_id: gameNumber,
+          user_id: user?.id || null,
+          share_method: "copy",
+        },
+      ])
+      .then(({ error }) => {
+        if (error) console.log("Share event insert error:", error.message);
+      });
+  }, [gameNumber, guessCount, hintCount, minutes, seconds, user?.id]);
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) {
-      close();
-    }
+    if (e.target === e.currentTarget) close();
   };
 
   const handleSubmitRating = useCallback(
@@ -172,7 +153,7 @@ export const ResultsPopup = React.memo(function ResultsPopup({
           className={classNames(styles.button, styles.stats_button)}
           onClick={onShowStats}
         >
-          {"View today's stats"}
+          View today&apos;s stats
         </button>
         <hr className={styles.divider} />
         <div className={styles.personalMessage}>
@@ -184,41 +165,17 @@ export const ResultsPopup = React.memo(function ResultsPopup({
           </p>
         </div>
         <div className={styles.shareSection}>
-          <div className={styles.shareLabel}>Share your result</div>
-          <div className={styles.shareButtons}>
-            <button
-              className={styles.shareIconButton}
-              onClick={handleCopyShare}
-              title="Copy to clipboard"
-              aria-label="Copy share text to clipboard"
-            >
-              <IconCopy size={20} />
-            </button>
-            <button
-              className={styles.shareIconButton}
-              onClick={handleTwitterShare}
-              title="Share on Twitter"
-              aria-label="Share on Twitter"
-            >
-              <IconBrandTwitter size={20} />
-            </button>
-            <button
-              className={styles.shareIconButton}
-              onClick={handleWhatsAppShare}
-              title="Share on WhatsApp"
-              aria-label="Share on WhatsApp"
-            >
-              <IconBrandWhatsapp size={20} />
-            </button>
-            <button
-              className={styles.shareIconButton}
-              onClick={handleTextShare}
-              title="Share via Text"
-              aria-label="Share via text message"
-            >
-              <IconMessage size={20} />
-            </button>
+          <div className={styles.nextInklingLabel}>
+            Next Inkling in {timeUntilMidnight}
           </div>
+          <button
+            className={styles.shareButton}
+            onClick={handleShare}
+            aria-label="Share your result"
+          >
+            <span>Share</span>
+            <IconShare size={20} />
+          </button>
           {hasCopied && (
             <div className={styles.copiedMessage}>Copied to clipboard!</div>
           )}
@@ -227,7 +184,7 @@ export const ResultsPopup = React.memo(function ResultsPopup({
         {submitted ? (
           <div className={styles.thankYouMessage}>
             <div className={styles.thankYouText}>
-              Thank you for your feedback! 🎉
+              Thanks so much for your feedback! I really appreciate it 🎉
             </div>
           </div>
         ) : (
@@ -237,11 +194,12 @@ export const ResultsPopup = React.memo(function ResultsPopup({
             method="dialog"
           >
             <div className={styles.ratingLabel}>
-              How was today&apos;s inkling?
+              What did you think of today&apos;s inkling?
             </div>
             <div className={styles.starsRow}>
               {[1, 2, 3, 4, 5].map((star) => {
                 const isFilled = (hoverRating ?? rating ?? 0) >= star;
+                const StarIcon = isFilled ? IconStarFilled : IconStar;
                 return (
                   <button
                     key={star}
@@ -252,11 +210,7 @@ export const ResultsPopup = React.memo(function ResultsPopup({
                     onMouseEnter={() => setHoverRating(star)}
                     onMouseLeave={() => setHoverRating(null)}
                   >
-                    {isFilled ? (
-                      <IconStarFilled size={28} color="#FFD700" />
-                    ) : (
-                      <IconStar size={28} color="#FFD700" />
-                    )}
+                    <StarIcon size={28} color="#FFD700" />
                   </button>
                 );
               })}
@@ -264,7 +218,7 @@ export const ResultsPopup = React.memo(function ResultsPopup({
             <textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              placeholder="Any suggestions?"
+              placeholder="I'd love to hear your thoughts or suggestions!"
               disabled={submitting}
               className={styles.ratingTextarea}
             />
@@ -276,7 +230,7 @@ export const ResultsPopup = React.memo(function ResultsPopup({
               )}
               disabled={submitting || !rating}
             >
-              {submitting ? "Submitting..." : "Submit Rating"}
+              {submitting ? "Sending..." : "Send Feedback"}
             </button>
             {error && <div className={styles.ratingError}>{error}</div>}
           </form>
