@@ -584,7 +584,7 @@ export const GAMES: GameData[] = [
     id: 116,
     image: "/games/116.jpeg",
     answer: "CANNOT",
-  },  
+  },
   {
     id: 117,
     image: "/games/117.png",
@@ -1114,5 +1114,60 @@ export const GAMES: GameData[] = [
     id: 222,
     image: "/games/222.png",
     answer: "QUARTERBACK",
+  },
+  {
+    id: 223,
+    image: "/games/223.jpeg",
+    answer: "TOILET TRAINING",
+  },
+  {
+    id: 224,
+    image: "/games/224.png",
+    answer: "COLD CALL",
+  },
+  {
+    id: 225,
+    image: "/games/225.png",
+    answer: "CARTOON",
+  },
+  {
+    id: 226,
+    image: "/games/226.jpeg",
+    answer: "EXACTING",
+  },
+  {
+    id: 227,
+    image: "/games/227.png",
+    answer: "PITCHFORK",
+  },
+  {
+    id: 228,
+    image: "/games/228.jpeg",
+    answer: "COCKTAIL",
+  },
+  {
+    id: 229,
+    image: "/games/229.jpeg",
+    answer: "SUNROOF",
+  },
+  {
+    id: 230,
+    image: "/games/230.jpeg",
+    answer: "SQUARE DANCE",
+  },
+  {
+    id: 231,
+    image: "/games/231.jpeg",
+    answer: "BLOWTORCH",
+  },
+  {
+    id: 232,
+    image: "/games/232.png",
+    answer: "OPERATOR",
+  },
+  {
+    id: 233,
+    image: "/games/233.png",
+    answer: "THUMBNAIL",
   },
 ];
