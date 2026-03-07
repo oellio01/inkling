@@ -1315,4 +1315,9 @@ export const GAMES: GameData[] = [
     image: "/games/262.png",
     answer: "BUZZKILL",
   },
+  {
+    id: 263,
+    image: "/games/263.png",
+    answer: "CANDELABRA",
+  },
 ];
