@@ -1415,4 +1415,54 @@ export const GAMES: GameData[] = [
     image: "/games/282.jpeg",
     answer: "SPOTLIGHT",
   },
+  {
+    id: 283,
+    image: "/games/283.jpeg",
+    answer: "LEPROSY",
+  },
+  {
+    id: 284,
+    image: "/games/284.jpeg",
+    answer: "BUTTERSCOTCH",
+  },
+  {
+    id: 285,
+    image: "/games/285.png",
+    answer: "PECAN",
+  },
+  {
+    id: 286,
+    image: "/games/286.png",
+    answer: "CHICPEA",
+  },
+  {
+    id: 287,
+    image: "/games/287.png",
+    answer: "POPCORN",
+  },
+  {
+    id: 288,
+    image: "/games/288.png",
+    answer: "BULLETPROOF",
+  },
+  {
+    id: 289,
+    image: "/games/289.png",
+    answer: "HANDBAG",
+  },
+  {
+    id: 290,
+    image: "/games/290.jpeg",
+    answer: "HUMBUG",
+  },
+  {
+    id: 291,
+    image: "/games/291.jpeg",
+    answer: "ATROPHY",
+  },
+  {
+    id: 292,
+    image: "/games/292.png",
+    answer: "CHAIRLIFT",
+  },
 ];
