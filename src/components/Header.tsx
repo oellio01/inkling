@@ -19,6 +19,7 @@ import {
   IconInfoCircle,
   IconEye,
   IconChartBar,
+  IconShirt,
 } from "@tabler/icons-react";
 import { getTodaysGameIndex } from "@/hooks/game-logic";
 import { GAMES } from "../../public/game_data";
@@ -220,6 +221,14 @@ export const Header = React.memo(
             >
               <IconBulb size={22} color="#333" stroke={2} />
             </button>
+            <a
+              className={styles.headerButton}
+              type="button"
+              href="https://inkling-puzzle.printify.me/"
+              aria-label="Shop"
+            >
+              <IconShirt size={18} color="#333" stroke={2} />
+            </a>
             <button className={styles.headerButton} onClick={handleInfoClick}>
               <IconInfoCircle size={22} color="#333" stroke={2} />
             </button>
