@@ -1482,7 +1482,12 @@ export const GAMES: GameData[] = [
   },
   {
     id: 296,
-    image: "/games/296.png",
+    image: "/games/296.jpeg",
     answer: "BITCOIN",
+  },
+  {
+    id: 297,
+    image: "/games/297.png",
+    answer: "SUPERVISOR",
   },
 ];
