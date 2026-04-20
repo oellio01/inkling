@@ -221,7 +221,7 @@
 
 .copiedMessage {
   font-size: 14px;
-  color: #4caf50;
+  color: #6b9660;
   font-weight: 500;
   margin-top: 8px;
   animation: fadeInOut 2s ease-in-out;
@@ -258,9 +258,13 @@
 }
 
 .chartLabel {
+  font-size: 13px;
   font-weight: 600;
   margin-bottom: 6px;
   text-align: center;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .ratingError,

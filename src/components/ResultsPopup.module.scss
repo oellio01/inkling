@@ -137,9 +137,9 @@
   }
 
   &:hover {
-    background-color: #95e47f;
+    background-color: #5a7f50;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(181, 242, 165, 0.3);
+    box-shadow: 0 4px 12px rgba(107, 150, 96, 0.3);
   }
 
   &:active {
@@ -150,7 +150,7 @@
 
 .copiedMessage {
   font-size: 14px;
-  color: #4caf50;
+  color: #6b9660;
   font-weight: 500;
   animation: fadeInOut 2s ease-in-out;
 }
