@@ -19,7 +19,7 @@ export default function Game() {
   const [isDone, setIsDone] = useState(false);
   const [currentGuess, setCurrentGuess] = useState("");
   const [hintCount, setHintCount] = useState(0);
-  const [, setGuessCount] = useState(0);
+  const [guessCount, setGuessCount] = useState(0);
   const [isPausedByPopup, setIsPausedByPopup] = useState(false);
   const [showLetterFeedback, setShowLetterFeedback] = useState(false);
   const headerRef = useRef<HeaderRef>(null);
@@ -101,42 +101,37 @@ export default function Game() {
     if (isDone || isPaused) {
       return;
     }
+    const newCount = guessCount + 1;
+
     if (isCorrectSolution(currentGuess)) {
-      setGuessCount((prevCount) => {
-        const newCount = prevCount + 1;
-
-        // Show results popup via Header
-        headerRef.current?.showResults(
-          game.id,
-          timeRef.current,
-          newCount,
-          hintCount
-        );
-
-        // Insert game result
-        supabase
-          .from("game_results")
-          .insert([
-            {
-              game_id: game.id,
-              user_id: user ? user.id : null,
-              time_seconds: timeRef.current,
-              guesses: newCount,
-              hints: hintCount,
-            },
-          ])
-          .then(({ error }) => {
-            if (error) {
-              console.log("Game result insert error:", error.message);
-            }
-          });
-
-        return newCount;
-      });
-
+      setGuessCount(newCount);
       setIsDone(true);
+
+      headerRef.current?.showResults(
+        game.id,
+        timeRef.current,
+        newCount,
+        hintCount
+      );
+
+      supabase
+        .from("game_results")
+        .insert([
+          {
+            game_id: game.id,
+            user_id: user ? user.id : null,
+            time_seconds: timeRef.current,
+            guesses: newCount,
+            hints: hintCount,
+          },
+        ])
+        .then(({ error }) => {
+          if (error) {
+            console.log("Game result insert error:", error.message);
+          }
+        });
     } else {
-      setGuessCount((prev) => prev + 1);
+      setGuessCount(newCount);
       setShowLetterFeedback(true);
       setTimeout(() => {
         setShowLetterFeedback(false);
@@ -147,6 +142,7 @@ export default function Game() {
     isPaused,
     isCorrectSolution,
     currentGuess,
+    guessCount,
     game.id,
     timeRef,
     hintCount,

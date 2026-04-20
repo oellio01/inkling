@@ -25,11 +25,15 @@ function buildShareText({
 /**
  * Encapsulates the "share your result" flow used by both the results popup
  * and the stats page: copy a formatted summary to the clipboard, record a
- * `share_events` row, and expose a transient `hasCopied` flag so callers can
- * show a "Copied!" confirmation.
+ * `share_events` row, and remember which gameId was most recently shared so
+ * callers can render a transient "Copied!" confirmation via `hasCopiedFor`.
+ *
+ * Callers check `hasCopiedFor(gameId)` rather than a boolean, which means
+ * navigating to a different game naturally hides the feedback without
+ * needing an explicit reset.
  */
 export function useShareResult() {
-  const [hasCopied, setHasCopied] = useState(false);
+  const [copiedGameId, setCopiedGameId] = useState<number | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -42,10 +46,10 @@ export function useShareResult() {
     const shareText = buildShareText(input);
     void navigator.clipboard.writeText(shareText);
 
-    setHasCopied(true);
+    setCopiedGameId(input.gameId);
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(
-      () => setHasCopied(false),
+      () => setCopiedGameId(null),
       COPY_FEEDBACK_DURATION_MS
     );
 
@@ -63,7 +67,10 @@ export function useShareResult() {
       });
   }, []);
 
-  const resetCopied = useCallback(() => setHasCopied(false), []);
+  const hasCopiedFor = useCallback(
+    (gameId: number) => copiedGameId === gameId,
+    [copiedGameId]
+  );
 
-  return { hasCopied, share, resetCopied };
+  return { hasCopiedFor, share };
 }

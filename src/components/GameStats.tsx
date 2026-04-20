@@ -274,7 +274,7 @@ export const GameStats = React.memo(function GameStats({
   const [error, setError] = useState<string | null>(null);
 
   const todayGameIndex = useMemo(() => getTodaysGameIndex(), []);
-  const { hasCopied, share, resetCopied } = useShareResult();
+  const { hasCopiedFor, share } = useShareResult();
 
   // Fetch current-game and user-aggregate data whenever game or user changes.
   useEffect(() => {
@@ -329,11 +329,6 @@ export const GameStats = React.memo(function GameStats({
       cancelled = true;
     };
   }, [gameId, user, todayGameIndex]);
-
-  // Reset "Copied!" feedback whenever the user navigates to a different game.
-  useEffect(() => {
-    resetCopied();
-  }, [gameId, resetCopied]);
 
   const userGameResult = useMemo(
     () => (user ? results.find((r) => r.user_id === user.id) ?? null : null),
@@ -460,7 +455,7 @@ export const GameStats = React.memo(function GameStats({
                     <span>Share</span>
                     <IconShare size={20} />
                   </button>
-                  {hasCopied && (
+                  {hasCopiedFor(gameId) && (
                     <div className={styles.copiedMessage}>
                       Copied to clipboard!
                     </div>

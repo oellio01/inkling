@@ -1,9 +1,16 @@
 import type { Metadata } from "next";
+import { Fraunces } from "next/font/google";
 import "./globals.css";
 import { UserProvider } from "../providers/UserProvider";
 import { getTodaysGameIndex } from "../hooks/game-logic";
 import { GAMES } from "../../public/game_data";
 import { PostHogProvider } from "@/providers/PostHogProvider";
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-fraunces",
+  display: "swap",
+});
 
 export async function generateMetadata(): Promise<Metadata> {
   const game = GAMES[getTodaysGameIndex()];
@@ -60,7 +67,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={fraunces.variable}>
       <head>
         {/* Basic icons and PWA */}
         <link rel="icon" type="image/svg+xml" href="/file.svg" />

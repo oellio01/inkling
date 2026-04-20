@@ -33,6 +33,10 @@ export const InfoPopup = ({ close }: InfoPopupProps) => {
         >
           ×
         </button>
+        <h1 className={styles.title}>Welcome to Inkling</h1>
+        <p className={styles.description}>
+          Inkling is a daily game where you have to guess the word depicted. Use the hint button if you get stuck.
+        </p>
         <div className={styles.imageContainer}>
           <Image
             src={images[currentImageIndex]}

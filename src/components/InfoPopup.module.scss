@@ -17,11 +17,11 @@
   text-align: center;
   color: rgb(0, 0, 0);
   width: 90%;
-  max-width: 400px;
-  max-height: 90vh;
+  max-width: 380px;
+  max-height: 95vh;
   position: relative;
-  padding: 20px;
-  overflow-y: auto;
+  padding: 16px 20px;
+  overflow: hidden;
 }
 
 .closeButton {
@@ -47,12 +47,20 @@
 }
 
 .title {
-  font-size: 24px;
-  font-weight: bold;
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0 0 8px;
 }
 
 .description {
-  font-size: 16px;
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 15px;
+  line-height: 1.45;
+  color: #333;
+  margin: 0 0 12px;
+  text-align: left;
 }
 
 .subtitle {
@@ -63,7 +71,12 @@
 .imageContainer {
   position: relative;
   width: 100%;
-  padding-top: 150%;
+  height: 60vh;
+  max-height: 500px;
+
+  img {
+    object-fit: contain;
+  }
 }
 
 .hintRow {
@@ -88,18 +101,18 @@
 .buttonContainer {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-top: 20px;
+  gap: 8px;
+  margin-top: 12px;
 }
 
 .nextButton {
   width: 100%;
-  padding: 12px;
+  padding: 10px;
   background-color: #f0f0f0;
   color: #333;
   border: 1px solid #ddd;
   border-radius: 6px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.2s, border-color 0.2s;
@@ -112,12 +125,12 @@
 
 .playButton {
   width: 100%;
-  padding: 12px;
+  padding: 10px;
   background-color: #227838;
   color: white;
   border: none;
   border-radius: 6px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.2s;

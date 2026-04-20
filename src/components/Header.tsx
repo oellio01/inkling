@@ -60,8 +60,10 @@ export const Header = React.memo(
     },
     ref
   ) {
+    const { firstTimeUser } = useUser();
     const [isArchiveOpen, setIsArchiveOpen] = useState(false);
-    const [isInfoOpen, setIsInfoOpen] = useState(false);
+    // Open the info popup automatically on first visit.
+    const [isInfoOpen, setIsInfoOpen] = useState(() => firstTimeUser);
     const [isTodaysStatsOpen, setIsTodaysStatsOpen] = useState(false);
     const [isResultsOpen, setIsResultsOpen] = useState(false);
     const [cameFromResults, setCameFromResults] = useState(false);
@@ -73,17 +75,10 @@ export const Header = React.memo(
     } | null>(null);
     const { minutes, seconds } = formatTimeInSeconds(timerInSeconds);
     const maxGameIndex = Math.min(getTodaysGameIndex() + 1, GAMES.length);
-    const { firstTimeUser } = useUser();
 
     // Notify parent whenever any popup state changes
     const anyPopupOpen =
       isArchiveOpen || isInfoOpen || isTodaysStatsOpen || isResultsOpen;
-
-    useEffect(() => {
-      if (firstTimeUser) {
-        setIsInfoOpen(true);
-      }
-    }, [firstTimeUser]);
 
     useEffect(() => {
       if (onPausedChange) {

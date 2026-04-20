@@ -38,7 +38,7 @@ export const ResultsPopup = React.memo(function ResultsPopup({
   const { user } = useUser();
   const { minutes, seconds } = formatTimeInSeconds(timeInSeconds);
   const timeUntilMidnight = useCountdownToMidnight();
-  const { hasCopied, share } = useShareResult();
+  const { hasCopiedFor, share } = useShareResult();
 
   const handleShare = useCallback(() => {
     share({
@@ -100,7 +100,7 @@ export const ResultsPopup = React.memo(function ResultsPopup({
             <span>Share</span>
             <IconShare size={20} />
           </button>
-          {hasCopied && (
+          {hasCopiedFor(gameNumber) && (
             <div className={styles.copiedMessage}>Copied to clipboard!</div>
           )}
         </div>
