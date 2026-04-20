@@ -10,11 +10,12 @@ import {
 } from "@tabler/icons-react";
 
 import styles from "./ResultsPopup.module.scss";
-import { formatTimeInSeconds } from "../hooks/formatTimeInSeconds";
+import { formatTimeInSeconds } from "../lib/time";
 import { useCountdownToMidnight } from "../hooks/useCountdownToMidnight";
 import { useShareResult } from "../hooks/useShareResult";
-import supabase from "../app/supabaseClient";
+import supabase from "../lib/supabase";
 import { useUser } from "../providers/UserProvider";
+import { Popup } from "./ui/Popup";
 
 const SHOP_URL = "https://inkling-puzzle.printify.me/";
 
@@ -50,94 +51,76 @@ export const ResultsPopup = React.memo(function ResultsPopup({
     });
   }, [share, gameNumber, timeInSeconds, guessCount, hintCount, user?.id]);
 
-  const handleBackdropClick = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      if (e.target === e.currentTarget) close();
-    },
-    [close]
-  );
-
   return (
-    <div className={styles.backdrop} onClick={handleBackdropClick}>
-      <div className={styles.popup}>
-        <button
-          className={styles.closeButton}
-          onClick={close}
-          aria-label="Close"
-        >
-          ×
-        </button>
-
-        <h2 className={styles.title}>You got it!</h2>
-        <div className={styles.nextInklingLabel}>
-          Next Inkling in {timeUntilMidnight}
-        </div>
-
-        <div className={styles.personalMessage}>
-          <p>
-            Hi 👋 I&apos;m Owen. This game was inspired from countless
-            late-night Pictionary games. I hope you are enjoying it! If you are,
-            it would mean a lot if helped spread the word by sharing it with
-            your friends!
-          </p>
-        </div>
-
-        <hr className={styles.divider} />
-
-        <div className={styles.stats}>
-          <StatItem value={gameNumber} label="Game" />
-          <StatItem value={`${minutes}:${seconds}`} label="Time" />
-          <StatItem value={guessCount} label="Guesses" />
-          <StatItem value={hintCount} label="Hints" />
-        </div>
-        <div className={styles.shareSection}>
-          <button
-            className={styles.shareButton}
-            onClick={handleShare}
-            aria-label="Share your result"
-            type="button"
-          >
-            <span>Share</span>
-            <IconShare size={20} />
-          </button>
-          {hasCopiedFor(gameNumber) && (
-            <div className={styles.copiedMessage}>Copied to clipboard!</div>
-          )}
-        </div>
-
-        <hr className={styles.divider} />
-
-        <button
-          type="button"
-          className={classNames(styles.button, styles.stats_button)}
-          onClick={onShowStats}
-        >
-          <IconChartBar size={18} />
-          <span>View today&apos;s stats</span>
-        </button>
-
-        <hr className={styles.divider} />
-
-        {/* key={gameNumber} resets internal form state whenever the game changes. */}
-        <RatingForm key={`rating-${gameNumber}`} gameNumber={gameNumber} />
-
-        <hr className={styles.divider} />
-
-        <SuggestForm key={`suggest-${gameNumber}`} />
-
-        <hr className={styles.divider} />
-
-        <a
-          className={classNames(styles.button, styles.shop_button)}
-          href={SHOP_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <IconShirt size={18} />
-          <span>Shop Inkling swag</span>
-        </a>
+    <Popup onClose={close} ariaLabel="Results" size="sm">
+      <h2 className={styles.title}>You got it!</h2>
+      <div className={styles.nextInklingLabel}>
+        Next Inkling in {timeUntilMidnight}
       </div>
-    </div>
+
+      <div className={styles.personalMessage}>
+        <p>
+          Hi 👋 I&apos;m Owen. This game was inspired from countless late-night
+          Pictionary games. I hope you are enjoying it! If you are, it would
+          mean a lot if helped spread the word by sharing it with your friends!
+        </p>
+      </div>
+
+      <hr className={styles.divider} />
+
+      <div className={styles.stats}>
+        <StatItem value={gameNumber} label="Game" />
+        <StatItem value={`${minutes}:${seconds}`} label="Time" />
+        <StatItem value={guessCount} label="Guesses" />
+        <StatItem value={hintCount} label="Hints" />
+      </div>
+      <div className={styles.shareSection}>
+        <button
+          className={styles.shareButton}
+          onClick={handleShare}
+          aria-label="Share your result"
+          type="button"
+        >
+          <span>Share</span>
+          <IconShare size={20} />
+        </button>
+        {hasCopiedFor(gameNumber) && (
+          <div className={styles.copiedMessage}>Copied to clipboard!</div>
+        )}
+      </div>
+
+      <hr className={styles.divider} />
+
+      <button
+        type="button"
+        className={classNames(styles.button, styles.statsButton)}
+        onClick={onShowStats}
+      >
+        <IconChartBar size={18} />
+        <span>View today&apos;s stats</span>
+      </button>
+
+      <hr className={styles.divider} />
+
+      {/* key={gameNumber} resets internal form state whenever the game changes. */}
+      <RatingForm key={`rating-${gameNumber}`} gameNumber={gameNumber} />
+
+      <hr className={styles.divider} />
+
+      <SuggestForm key={`suggest-${gameNumber}`} />
+
+      <hr className={styles.divider} />
+
+      <a
+        className={classNames(styles.button, styles.shopButton)}
+        href={SHOP_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <IconShirt size={18} />
+        <span>Shop Inkling swag</span>
+      </a>
+    </Popup>
   );
 });
 
@@ -211,7 +194,7 @@ function RatingForm({ gameNumber }: { gameNumber: number }) {
     return (
       <button
         type="button"
-        className={classNames(styles.button, styles.rate_button)}
+        className={classNames(styles.button, styles.rateButton)}
         onClick={() => setIsOpen(true)}
       >
         <IconStar size={18} />
@@ -261,7 +244,7 @@ function RatingForm({ gameNumber }: { gameNumber: number }) {
         type="submit"
         className={classNames(
           styles.button,
-          canSubmit && styles.primary_button
+          canSubmit && styles.primaryButton
         )}
         disabled={!canSubmit}
       >
@@ -337,7 +320,7 @@ function SuggestForm() {
     return (
       <button
         type="button"
-        className={classNames(styles.button, styles.suggest_button)}
+        className={classNames(styles.button, styles.suggestButton)}
         onClick={() => setIsOpen(true)}
       >
         <IconPencil size={18} />
@@ -378,7 +361,7 @@ function SuggestForm() {
         type="submit"
         className={classNames(
           styles.button,
-          canSubmit && styles.primary_button
+          canSubmit && styles.primaryButton
         )}
         disabled={!canSubmit}
       >

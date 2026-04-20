@@ -7,25 +7,16 @@
   max-width: 100%;
 }
 
-.keyboardRow {
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-  width: 100%;
-  max-width: 600px;
-  flex-wrap: nowrap;
-}
-
-.keyWide {
-  width: 80px;
-}
-
 .line {
   display: flex;
   justify-content: center;
   gap: 6px;
   min-width: 0;
-} 
+}
+
+.keyWide {
+  width: 80px;
+}
 
 /* Large screens - over 500px */
 @media (min-width: 501px) {
@@ -33,12 +24,7 @@
     gap: 8px;
     padding: 16px;
   }
-  
-  .keyboardRow {
-    gap: 8px;
-    max-width: 750px;
-  }
-  
+
   .keyWide {
     width: 110px;
   }

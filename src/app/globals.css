@@ -1,6 +1,27 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+:root {
+  --color-bg: #ffffff;
+  --color-surface: #fefefe;
+  --color-surface-muted: #f5f5f5;
+  --color-text: #000000;
+  --color-text-muted: #333333;
+  --color-text-subtle: #666666;
+  --color-border: #e0e0e0;
+
+  --color-primary: #1976d2;
+  --color-primary-dark: #104570;
+  --color-accent-green: #4caf50;
+  --color-accent-green-dark: #2e7d32;
+  --color-share: #6b9660;
+  --color-share-dark: #5a7f50;
+  --color-warn: #d32f2f;
+  --color-ok-bg: rgba(76, 175, 80, 0.1);
+  --color-ok-border: rgba(76, 175, 80, 0.3);
+
+  --font-sans: "Inter", "Segoe UI", Arial, sans-serif;
+
+  --popup-radius: 8px;
+  --z-popup: 1000;
+}
 
 html,
 body {
@@ -8,41 +29,31 @@ body {
 }
 
 body {
-  background: #ffffff;
-  color: #000;
+  background: var(--color-bg);
+  color: var(--color-text);
   margin: 0;
   display: flex;
   flex-direction: column;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  font-family: var(--font-sans);
 }
 
 /* On mobile, use dynamic viewport height to avoid issues with address bars */
 @supports (height: 100dvh) {
-  html, body {
+  html,
+  body {
     height: 100dvh;
   }
 }
 
-/* Remove blue focus borders from all elements */
-*:focus {
-  outline: none !important;
+/* Hide focus outline only when focus came from a pointer; keep it for keyboard users. */
+:focus:not(:focus-visible) {
+  outline: none;
 }
 
-*:focus-visible {
-  outline: none !important;
-}
-
-/* Remove blue borders from buttons and interactive elements */
-button:focus,
-button:focus-visible,
-input:focus,
-input:focus-visible,
-textarea:focus,
-textarea:focus-visible,
-dialog:focus,
-dialog:focus-visible {
-  outline: none !important;
-  box-shadow: none !important;
+button:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+textarea:focus:not(:focus-visible) {
+  box-shadow: none;
 }

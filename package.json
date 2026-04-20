@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "compound-model": "node google-finetuned-model.mjs"
+    "compound-model": "node generate-inklings/google-finetuned-model.mjs"
   },
   "dependencies": {
     "@google/genai": "^1.50.1",
@@ -26,15 +26,11 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@tailwindcss/postcss": "^4.1.8",
     "@types/node": "^20",
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18",
-    "autoprefixer": "^10.4.21",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
-    "postcss": "^8.5.4",
-    "tailwindcss": "^4.1.8",
     "typescript": "^5"
   }
 }

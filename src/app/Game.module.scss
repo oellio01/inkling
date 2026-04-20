@@ -2,19 +2,19 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100dvh; 
-  overflow: hidden; 
+  height: 100dvh;
+  overflow: hidden;
   padding: 5px;
 }
 
 .header {
   width: 100%;
-  flex-shrink: 0; 
+  flex-shrink: 0;
 }
 
 .imageWrapper {
-  flex: 1 1 0; 
-  position: relative; 
+  flex: 1 1 0;
+  position: relative;
   width: 100%;
 }
 
@@ -29,7 +29,7 @@
   align-items: center;
   font-size: 32px;
   flex-shrink: 0;
-  min-height: 40px; 
+  min-height: 40px;
   margin-top: 15px;
   margin-bottom: 5px;
 }
@@ -39,10 +39,6 @@
   align-items: center;
   justify-content: center;
   font-family: monospace;
-}
-
-.guessWithDashesSide {
-  width: 70px;
 }
 
 .guessWithDashesContent {
@@ -81,22 +77,7 @@
 }
 
 .dash {
-  color: #000000;
-}
-
-.spaceSeparator {
-  position: relative;
-  width: 12px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.spaceChar {
-  font-size: 24px;
-  color: #666;
-  font-weight: normal;
+  color: var(--color-text);
 }
 
 .keyboard {
@@ -104,33 +85,10 @@
   padding-bottom: 10px;
 }
 
-.incorrectGuess {
-  color: #d32f2f;
-}
-
 .correctLetter {
-  color: #2e7d32;
+  color: var(--color-accent-green-dark);
 }
 
 .incorrectLetter {
-  color: #d32f2f;
+  color: var(--color-warn);
 }
-
-.hintButton {
-  background: none;
-  border: none;
-  margin-left: 12px;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-.hintButton:disabled {
-  cursor: not-allowed;
-}
-
-.keyWide {
-  margin-left: 20px;
-  min-width: 70px;
-} 

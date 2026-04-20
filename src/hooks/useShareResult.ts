@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import supabase from "../app/supabaseClient";
-import { formatTimeInSeconds } from "./formatTimeInSeconds";
+import supabase from "../lib/supabase";
+import { formatTimeInSeconds } from "../lib/time";
 
 const COPY_FEEDBACK_DURATION_MS = 2000;
 

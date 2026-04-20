@@ -3,7 +3,7 @@
   align-items: center;
   padding-bottom: 5px;
   font-size: 16px;
-  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  font-family: var(--font-sans);
   background: inherit;
 }
 
@@ -11,6 +11,11 @@
 .center,
 .right {
   flex: 1;
+}
+
+.left {
+  display: flex;
+  flex-direction: row;
 }
 
 .center {
@@ -31,7 +36,7 @@
 }
 
 .headerButton {
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--color-border);
   width: 32px;
   height: 32px;
   display: flex;
@@ -39,61 +44,28 @@
   align-items: center;
   cursor: pointer;
   background-color: transparent;
-  color: #333;
+  color: var(--color-text-muted);
   border-radius: 4px;
   font-size: 20px;
-}
 
-.headerButton:hover {
-  background-color: #f5f5f5;
-}
+  &:hover {
+    background-color: var(--color-surface-muted);
+  }
 
-.headerButton:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.leftDropdownWrapper {
-  position: relative;
-  margin-left: 8px;
-  margin-right: 8px;
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
 .gameNumberButton {
   background: none;
   border: none;
-  color: #000;
+  color: var(--color-text);
   font-size: inherit;
+  cursor: pointer;
 }
 
 .gameNumberButtonDropdownIcon {
   margin-left: 4px;
 }
-
-.dropdownMenu {
-  position: absolute;
-  background: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  z-index: 10;
-  max-height: 400px;
-  overflow-y: auto;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.dropdownMenuItem {
-  padding: 6px 12px;
-  background: #ffffff;
-  color: #333;
-  cursor: pointer;
-}
-
-.dropdownMenuItemActive {
-  background: #f0f0f0;
-  color: #000;
-}
-
-.left {
-  display: flex;
-  flex-direction: row;
-} 

@@ -1,52 +1,78 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { Header, HeaderRef } from "../components/Header";
+import { Header } from "../components/Header";
 import { Keyboard } from "../components/Keyboard";
 import { GuessDisplay } from "../components/GuessDisplay";
-import { getTodaysGameIndex } from "../hooks/game-logic";
+import { InfoPopup } from "../components/InfoPopup";
+import { ArchivePopup } from "../components/ArchivePopup";
+import { ResultsPopup } from "../components/ResultsPopup";
+import { GameStats } from "../components/GameStats";
+import { getTodaysGameIndex } from "../lib/gameDate";
 import { useGameTimer } from "../hooks/useGameTimer";
-import { GAMES } from "../../public/game_data";
+import { GAMES } from "../data/games";
 import styles from "./Game.module.scss";
 import { useUser } from "../providers/UserProvider";
-import supabase from "./supabaseClient";
+import supabase from "../lib/supabase";
+
+type ActivePopup = "info" | "archive" | "stats" | "results" | null;
+
+interface ResultsData {
+  gameNumber: number;
+  timeInSeconds: number;
+  guessCount: number;
+  hintCount: number;
+}
+
+const normalizeText = (text: string): string =>
+  text.replaceAll(" ", "").toLowerCase();
 
 export default function Game() {
   const [gameIndex, setGameIndex] = useState(getTodaysGameIndex);
   const game = GAMES[gameIndex];
-  const { user } = useUser();
+  const { user, firstTimeUser } = useUser();
   const [isDone, setIsDone] = useState(false);
   const [currentGuess, setCurrentGuess] = useState("");
   const [hintCount, setHintCount] = useState(0);
   const [guessCount, setGuessCount] = useState(0);
-  const [isPausedByPopup, setIsPausedByPopup] = useState(false);
   const [showLetterFeedback, setShowLetterFeedback] = useState(false);
-  const headerRef = useRef<HeaderRef>(null);
-  const gameAnswer = game?.answer.replace(" ", "");
-  const isPaused = isDone || isPausedByPopup;
-  const normalizeText = useCallback((text: string) => {
-    return text.replaceAll(" ", "").toLowerCase();
-  }, []);
 
-  // Timer logic
+  const [activePopup, setActivePopup] = useState<ActivePopup>(
+    firstTimeUser ? "info" : null
+  );
+  const [cameFromResults, setCameFromResults] = useState(false);
+  const [resultsData, setResultsData] = useState<ResultsData | null>(null);
+
+  // Auto-open the info popup the very first time the anon user is created.
+  useEffect(() => {
+    if (firstTimeUser) setActivePopup("info");
+  }, [firstTimeUser]);
+
+  const gameAnswer = game?.answer.replaceAll(" ", "") ?? "";
+  const isPausedByPopup = activePopup !== null;
+  const isPaused = isDone || isPausedByPopup;
+
   const { timeInSeconds, timeRef, resetTimer, addTime } = useGameTimer(
     gameIndex,
     isPaused
   );
 
+  const maxGameIndex = useMemo(
+    () => Math.min(getTodaysGameIndex() + 1, GAMES.length),
+    []
+  );
+
   const isCorrectSolution = useCallback(
     (guess: string) => {
-      if (!game) {
-        return false;
-      }
+      if (!game) return false;
       return normalizeText(guess) === normalizeText(game.answer);
     },
-    [game, normalizeText]
+    [game]
   );
 
   const getLetterStatus = useCallback(
-    (letterIndex: number) => {
+    (letterIndex: number): "normal" | "correct" | "incorrect" => {
       if (!game || !showLetterFeedback) return "normal";
 
       const answer = normalizeText(game.answer);
@@ -54,23 +80,17 @@ export default function Game() {
 
       if (letterIndex >= guessLetters.length) return "normal";
 
-      const guessLetter = guessLetters[letterIndex];
-      const answerLetter = answer[letterIndex];
-
-      return guessLetter === answerLetter ? "correct" : "incorrect";
+      return guessLetters[letterIndex] === answer[letterIndex]
+        ? "correct"
+        : "incorrect";
     },
-    [game, showLetterFeedback, currentGuess, normalizeText]
+    [game, showLetterFeedback, currentGuess]
   );
 
   const onPressLetter = useCallback(
     (letter: string) => {
       setCurrentGuess((prev) => {
-        if (!game) {
-          return prev;
-        }
-        if (hintCount === undefined) {
-          return prev + letter;
-        }
+        if (!game) return prev;
         const safePrefix = prev.slice(0, hintCount);
         const rest = prev.slice(hintCount);
         if (safePrefix.length < hintCount) {
@@ -87,9 +107,6 @@ export default function Game() {
 
   const onPressBackspace = useCallback(() => {
     setCurrentGuess((prev) => {
-      if (hintCount === undefined) {
-        return prev.slice(0, -1);
-      }
       if (prev.length > hintCount) {
         return prev.slice(0, -1);
       }
@@ -98,21 +115,19 @@ export default function Game() {
   }, [hintCount]);
 
   const commitGuess = useCallback(async () => {
-    if (isDone || isPaused) {
-      return;
-    }
+    if (isDone || isPaused) return;
     const newCount = guessCount + 1;
 
     if (isCorrectSolution(currentGuess)) {
       setGuessCount(newCount);
       setIsDone(true);
-
-      headerRef.current?.showResults(
-        game.id,
-        timeRef.current,
-        newCount,
-        hintCount
-      );
+      setResultsData({
+        gameNumber: game.id,
+        timeInSeconds: timeRef.current,
+        guessCount: newCount,
+        hintCount,
+      });
+      setActivePopup("results");
 
       supabase
         .from("game_results")
@@ -143,7 +158,7 @@ export default function Game() {
     isCorrectSolution,
     currentGuess,
     guessCount,
-    game.id,
+    game,
     timeRef,
     hintCount,
     user,
@@ -160,13 +175,10 @@ export default function Game() {
   }, [game, hintCount, gameAnswer, addTime]);
 
   useEffect(() => {
-    if (isDone) {
-      return;
-    }
+    if (isDone) return;
+
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (isPaused) {
-        return;
-      }
+      if (isPaused) return;
       const key = event.key;
       if (/^[a-zA-Z]$/.test(key)) {
         onPressLetter(key.toUpperCase());
@@ -194,9 +206,34 @@ export default function Game() {
     [resetTimer]
   );
 
-  const handlePausedChange = useCallback((isPaused: boolean) => {
-    setIsPausedByPopup(isPaused);
+  const handleCloseResults = useCallback(() => setActivePopup(null), []);
+  const handleCloseInfo = useCallback(() => setActivePopup(null), []);
+  const handleCloseArchive = useCallback(() => setActivePopup(null), []);
+
+  const handleOpenArchive = useCallback(() => setActivePopup("archive"), []);
+  const handleOpenInfo = useCallback(() => setActivePopup("info"), []);
+
+  const handleOpenStats = useCallback(() => {
+    setCameFromResults(false);
+    setActivePopup("stats");
   }, []);
+
+  const handleShowStatsFromResults = useCallback(() => {
+    setCameFromResults(true);
+    setActivePopup("stats");
+  }, []);
+
+  const handleCloseGameStats = useCallback(
+    (reason?: "back") => {
+      if (reason === "back" && cameFromResults) {
+        setActivePopup("results");
+      } else {
+        setActivePopup(null);
+      }
+      setCameFromResults(false);
+    },
+    [cameFromResults]
+  );
 
   if (!game) {
     return (
@@ -209,15 +246,14 @@ export default function Game() {
   return (
     <div className={styles.game}>
       <Header
-        ref={headerRef}
         timerInSeconds={timeInSeconds}
         className={styles.header}
         gameIndex={game.id}
-        gameAnswerLength={gameAnswer.length}
-        onSelectGame={handleSelectGame}
+        onOpenArchive={handleOpenArchive}
+        onOpenInfo={handleOpenInfo}
+        onOpenStats={handleOpenStats}
         onHint={onHint}
         hintDisabled={hintCount >= gameAnswer.length}
-        onPausedChange={handlePausedChange}
       />
       <div className={styles.imageWrapper}>
         <Image
@@ -242,6 +278,35 @@ export default function Game() {
         onPressEnter={commitGuess}
         className={styles.keyboard}
       />
+
+      {activePopup === "info" && <InfoPopup close={handleCloseInfo} />}
+      {activePopup === "archive" && (
+        <ArchivePopup
+          close={handleCloseArchive}
+          currentGameIndex={game.id - 1}
+          maxGameIndex={maxGameIndex}
+          onSelectGame={handleSelectGame}
+        />
+      )}
+      {activePopup === "results" && resultsData && (
+        <ResultsPopup
+          close={handleCloseResults}
+          gameNumber={resultsData.gameNumber}
+          timeInSeconds={resultsData.timeInSeconds}
+          guessCount={resultsData.guessCount}
+          hintCount={resultsData.hintCount}
+          onShowStats={handleShowStatsFromResults}
+        />
+      )}
+      {activePopup === "stats" && (
+        <GameStats
+          gameId={game.id}
+          answerLength={gameAnswer.length}
+          showBackButton={cameFromResults}
+          onClose={handleCloseGameStats}
+          onSelectGame={handleSelectGame}
+        />
+      )}
     </div>
   );
 }

@@ -11,13 +11,14 @@ import {
 } from "recharts";
 import { IconShare } from "@tabler/icons-react";
 
-import supabase from "../app/supabaseClient";
+import supabase from "../lib/supabase";
 import styles from "./GameStats.module.scss";
-import { formatTimeInSeconds } from "../hooks/formatTimeInSeconds";
+import { formatTimeInSeconds } from "../lib/time";
 import { useShareResult } from "../hooks/useShareResult";
 import { useUser } from "../providers/UserProvider";
-import { GAMES } from "../../public/game_data";
-import { EPOCH_DATE, getTodaysGameIndex } from "../hooks/game-logic";
+import { GAMES } from "../data/games";
+import { EPOCH_DATE, getTodaysGameIndex } from "../lib/gameDate";
+import { Popup } from "./ui/Popup";
 
 /* ------------------------------------------------------------------ */
 /* Types                                                                */
@@ -349,13 +350,6 @@ export const GameStats = React.memo(function GameStats({
     };
   }, [results]);
 
-  const handleBackdropClick = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      if (e.target === e.currentTarget) onClose();
-    },
-    [onClose]
-  );
-
   const handleSelectBoardGame = useCallback(
     (selectedGameId: number) => {
       if (!onSelectGame) return;
@@ -377,25 +371,14 @@ export const GameStats = React.memo(function GameStats({
   }, [share, gameId, user?.id, userGameResult]);
 
   return (
-    <div className={styles.backdrop} onClick={handleBackdropClick}>
-      <div className={styles.popup}>
-        {showBackButton ? (
-          <button
-            className={styles.back_button}
-            onClick={() => onClose("back")}
-          >
-            Back
-          </button>
-        ) : (
-          <button
-            className={styles.closeButton}
-            onClick={() => onClose()}
-            aria-label="Close"
-          >
-            ×
-          </button>
-        )}
-
+    <Popup
+      onClose={() => onClose()}
+      ariaLabel={`Inkling ${gameId} stats`}
+      size="lg"
+      onBack={showBackButton ? () => onClose("back") : undefined}
+      className={styles.popupContent}
+    >
+      <>
         {loading ? (
           <div>Loading...</div>
         ) : error ? (
@@ -505,7 +488,7 @@ export const GameStats = React.memo(function GameStats({
             </section>
           </>
         )}
-      </div>
-    </div>
+      </>
+    </Popup>
   );
 });

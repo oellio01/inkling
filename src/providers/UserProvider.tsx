@@ -7,7 +7,7 @@ import {
   useState,
   ReactNode,
 } from "react";
-import supabase from "../app/supabaseClient";
+import supabase from "../lib/supabase";
 import type { User } from "@supabase/supabase-js";
 
 interface UserContextType {
@@ -24,20 +24,22 @@ const UserContext = createContext<UserContextType>({
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [firstTimeUser, setFirstTimeUser] = useState(true);
+  const [firstTimeUser, setFirstTimeUser] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let mounted = true;
     async function ensureAnonUser() {
       const { data } = await supabase.auth.getUser();
+      let isFirstTime = false;
       if (!data.user) {
         await supabase.auth.signInAnonymously();
-        setFirstTimeUser(true);
+        isFirstTime = true;
       }
       const { data: userData } = await supabase.auth.getUser();
       if (mounted) {
         setUser(userData.user);
+        setFirstTimeUser(isFirstTime);
         setLoading(false);
       }
     }

@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Fraunces } from "next/font/google";
 import "./globals.css";
 import { UserProvider } from "../providers/UserProvider";
-import { getTodaysGameIndex } from "../hooks/game-logic";
-import { GAMES } from "../../public/game_data";
+import { getTodaysGameIndex } from "../lib/gameDate";
+import { GAMES } from "../data/games";
 import { PostHogProvider } from "@/providers/PostHogProvider";
 
 const fraunces = Fraunces({

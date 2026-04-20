@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Inkling
 
-## Getting Started
+A daily visual word puzzle inspired by pictionary. Each image represents one or more concepts which, when combined, spell the answer.
 
-First, run the development server:
+Built with [Next.js](https://nextjs.org) (App Router), TypeScript, CSS modules, Supabase (anonymous auth + results), and PostHog (analytics).
+
+## Getting started
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create `.env.local`:
 
-## Learn More
+```
+NEXT_PUBLIC_SUPABASE_URL=<supabase project url>
+NEXT_PUBLIC_SUPABASE_KEY=<supabase anon key>
+NEXT_PUBLIC_POSTHOG_KEY=<posthog public key>            # optional
+NEXT_PUBLIC_SITE_URL=http://localhost:3000              # optional, used for canonical/OG URLs
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Scripts
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `npm run dev` — start the dev server with Turbopack
+- `npm run build` — production build
+- `npm run start` — run the production build
+- `npm run lint` — ESLint
+- `npm run compound-model` — run the tuned Vertex Gemini script in `generate-inklings/`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project layout
 
-## Deploy on Vercel
+```
+src/
+  app/            Next.js App Router entry (layout, page, globals)
+  components/     React components (popups, keyboard, header, stats)
+  hooks/          Custom React hooks
+  lib/            Non-React utilities (supabase client, date + time helpers)
+  data/           Static game data (images + answers)
+  providers/      React context providers (user, posthog)
+public/           Static assets (images, favicon, manifest)
+generate-inklings/  Offline tooling for generating/evaluating puzzle ideas
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Supabase tables (reference)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `game_results` — `(user_id, game_id, time_seconds, guesses, hints)`
+- `game_rating` — `(user_id, game_id, rating, comment)`
+- `game_suggestion` — `(user_id, suggested_word, description)`
+- `share_events` — `(user_id, game_id, share_method)`
+
+A unique index on `game_results (user_id, game_id)` is recommended so `insert` can be replaced with `upsert`.

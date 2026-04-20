@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useUser } from "../providers/UserProvider";
-import supabase from "../app/supabaseClient";
+import supabase from "../lib/supabase";
 
 export function useCompletedGames() {
   const { user } = useUser();

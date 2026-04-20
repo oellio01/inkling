@@ -1,25 +1,6 @@
-.backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.popup {
-  background: rgb(0, 0, 0);
-  border-radius: 8px;
-  padding: 24px;
-  max-width: 90vw;
-  max-height: 90vh;
-  width: 800px;
-  overflow-y: auto;
-  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+.popupContent.popupContent {
+  background: #000;
+  color: #fff;
 }
 
 .title {
@@ -27,7 +8,7 @@
   font-weight: 600;
   margin: 0 0 20px 0;
   text-align: center;
-  color: #000;
+  color: #fff;
 }
 
 .grid {
@@ -45,28 +26,28 @@
   transition: transform 0.2s ease, opacity 0.2s ease;
   border-radius: 8px;
   padding: 8px;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.05);
   border: 2px solid transparent;
+
+  &:hover {
+    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
 }
 
-.gameItem:hover {
-  transform: scale(1.05);
-  background: rgba(0, 0, 0, 0.1);
-  border-color: rgba(0, 0, 0, 0.2);
+.currentGame {
+  background: rgba(25, 118, 210, 0.2);
 }
 
-.gameItem.currentGame {
-  background: rgba(25, 118, 210, 0.1);
-}
+.completed {
+  background: var(--color-ok-bg);
+  border-color: var(--color-ok-border);
 
-.gameItem.completed {
-  background: rgba(76, 175, 80, 0.1);
-  border-color: rgba(76, 175, 80, 0.3);
-}
-
-.gameItem.completed:hover {
-  background: rgba(76, 175, 80, 0.15);
-  border-color: rgba(76, 175, 80, 0.4);
+  &:hover {
+    background: rgba(76, 175, 80, 0.15);
+    border-color: rgba(76, 175, 80, 0.4);
+  }
 }
 
 .imageContainer {
@@ -87,7 +68,7 @@
   position: absolute;
   top: 8px;
   right: 8px;
-  background: #4caf50;
+  background: var(--color-accent-green);
   color: white;
   border-radius: 50%;
   width: 24px;
@@ -101,47 +82,40 @@
 .gameNumber {
   font-size: 14px;
   font-weight: 500;
-  color: #666;
+  color: var(--color-text-subtle);
   text-align: center;
 }
 
 .currentGame .gameNumber {
-  color: #1976d2;
+  color: var(--color-primary);
   font-weight: 600;
 }
 
 .completed .gameNumber {
-  color: #4caf50;
+  color: var(--color-accent-green);
   font-weight: 600;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
-  .popup {
-    width: 95vw;
-    max-width: 95vw;
-    padding: 16px;
-  }
-  
   .grid {
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     gap: 12px;
   }
-  
+
   .imageContainer {
     width: 80px;
     height: 80px;
   }
-  
+
   .completionBadge {
     width: 20px;
     height: 20px;
     top: 6px;
     right: 6px;
   }
-  
+
   .title {
     font-size: 20px;
     margin-bottom: 16px;
   }
-} 
+}
