@@ -83,14 +83,17 @@ function buildHistogram(values: number[]): Record<number, number> {
   return hist;
 }
 
-function computeUserStats(rows: UserResultRow[]): UserStats {
+function computeUserStats(
+  rows: UserResultRow[],
+  totalReleased: number
+): UserStats {
   const gamesCompleted = rows.length;
   const gamesWithoutHints = rows.filter((r) => r.hints === 0).length;
   const validTimes = rows.map((r) => r.time_seconds).filter((t) => t > 0);
 
   return {
     gamesCompleted,
-    totalGames: GAMES.length,
+    totalGames: totalReleased,
     percentWithoutHints:
       gamesCompleted > 0
         ? Math.round((gamesWithoutHints / gamesCompleted) * 100)
@@ -307,7 +310,11 @@ export const GameStats = React.memo(function GameStats({
         if (cancelled) return;
 
         const rows = (userResults ?? []) as UserResultRow[];
-        setUserStats(computeUserStats(rows));
+        const totalReleased = Math.min(
+          Math.max(todayGameIndex + 1, 0),
+          GAMES.length
+        );
+        setUserStats(computeUserStats(rows, totalReleased));
         setPlayedGameIds(new Set(rows.map((r) => r.game_id)));
       } catch (err: unknown) {
         if (cancelled) return;
@@ -321,7 +328,7 @@ export const GameStats = React.memo(function GameStats({
     return () => {
       cancelled = true;
     };
-  }, [gameId, user]);
+  }, [gameId, user, todayGameIndex]);
 
   // Reset "Copied!" feedback whenever the user navigates to a different game.
   useEffect(() => {
