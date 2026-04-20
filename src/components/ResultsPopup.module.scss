@@ -1,9 +1,10 @@
+/* ------------------------------------------------------------------ */
+/* Layout                                                               */
+/* ------------------------------------------------------------------ */
+
 .backdrop {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
@@ -13,11 +14,13 @@
 
 .popup {
   background-color: #fefefe;
-  color: rgb(0, 0, 0);
+  color: #000;
   border-radius: 8px;
   text-align: center;
   width: 90%;
   max-width: 300px;
+  max-height: 90vh;
+  overflow-y: auto;
   padding: 24px;
   position: relative;
 }
@@ -38,7 +41,7 @@
   align-items: center;
   justify-content: center;
   z-index: 10;
-  
+
   &:hover {
     background: #f0f0f0;
   }
@@ -47,15 +50,46 @@
 .title {
   font-size: 28px;
   font-weight: bold;
-  margin: 0;
-  margin-bottom: 24px;
+  margin: 0 0 4px;
 }
+
+.nextInklingLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: #5e807f;
+  margin-bottom: 16px;
+}
+
+.personalMessage {
+  margin: 8px 0;
+  padding: 12px;
+  background-color: #e1e3e4;
+  border-radius: 8px;
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+    text-align: left;
+  }
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid #e0e0e0;
+  margin: 10px 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* Stats grid + share pill                                              */
+/* ------------------------------------------------------------------ */
 
 .stats {
   display: flex;
   justify-content: center;
   gap: 32px;
-  margin-bottom: 24px;
+  margin-bottom: 12px;
 }
 
 .statItem {
@@ -74,6 +108,76 @@
   color: #555;
 }
 
+.shareSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.shareButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background-color: #6b9660;
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  span,
+  svg {
+    color: white;
+  }
+
+  &:hover {
+    background-color: #95e47f;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(181, 242, 165, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(107, 150, 96, 0.2);
+  }
+}
+
+.copiedMessage {
+  font-size: 14px;
+  color: #4caf50;
+  font-weight: 500;
+  animation: fadeInOut 2s ease-in-out;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  85% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Generic button + variants                                            */
+/* ------------------------------------------------------------------ */
+
 .button {
   width: 100%;
   padding: 12px;
@@ -82,7 +186,18 @@
   font-weight: bold;
   cursor: pointer;
   border: none;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   transition: background-color 0.2s;
+
+  &:disabled {
+    background-color: #bdbdbd;
+    color: white;
+    cursor: not-allowed;
+  }
 }
 
 .primary_button {
@@ -90,47 +205,66 @@
   color: white;
 }
 
-.button:disabled {
-  background-color: #bdbdbd;
-  color: white;
-  cursor: not-allowed;
-}
+.stats_button {
+  background-color: #9dc5bb;
+  color: #000;
 
-.share_button {
-  background-color: #2F6239;
-  color: white;
-}
-
-.share_button:hover {
-  background-color: #0e4417;
-}
-
-.divider {
-  border: none;
-  border-top: 1px solid #e0e0e0;
-  margin: 24px 0 16px 0;
-}
-
-.personalMessage {
-  margin: 16px 0;
-  padding: 16px;
-  background-color: #e1e3e4;
-  border-radius: 8px;
-  
-  p {
-    margin: 0;
-    font-size: 14px;
-    line-height: 1.5;
-    color: #333;
-    text-align: left;
+  &:hover {
+    background-color: #80b0a4;
   }
+}
+
+.rate_button {
+  background-color: #e0e0e0;
+  color: #333;
+
+  &:hover {
+    background-color: #cfcfcf;
+  }
+}
+
+.suggest_button {
+  background-color: #f1d990;
+  color: #333;
+
+  &:hover {
+    background-color: #e6c970;
+  }
+}
+
+.shop_button {
+  background-color: #5aa3d0;
+  color: white;
+  text-decoration: none;
+
+  &:hover {
+    background-color: #4a8db8;
+    color: white;
+  }
+
+  svg {
+    color: white;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Collapsible forms (rating + suggest)                                 */
+/* ------------------------------------------------------------------ */
+
+%formField {
+  width: 100%;
+  font-size: 15px;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  font-family: inherit;
 }
 
 .ratingForm {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 0;
   width: 100%;
 }
 
@@ -139,6 +273,24 @@
   font-weight: 500;
   margin-bottom: 10px;
   color: #104570;
+}
+
+.ratingError {
+  font-size: 14px;
+  color: #d32f2f;
+  margin-top: 8px;
+}
+
+.ratingTextarea {
+  @extend %formField;
+  min-height: 48px;
+  margin-bottom: 12px;
+  resize: none;
+}
+
+.suggestInput {
+  @extend %formField;
+  margin-bottom: 8px;
 }
 
 .starsRow {
@@ -160,52 +312,19 @@
   cursor: pointer;
   transition: background 0.15s, box-shadow 0.15s;
   outline: none;
-}
 
-.starButton:hover:not(:disabled) {
-  background: #f0f4ff;
-}
+  &:hover:not(:disabled) {
+    background: #f0f4ff;
+  }
 
-.starButton:active {
-  background: #e3eaff;
-}
+  &:active {
+    background: #e3eaff;
+  }
 
-.starButton:disabled {
-  cursor: default;
-  opacity: 0.6;
-}
-
-.ratingTextarea {
-  width: 100%;
-  min-height: 48px;
-  font-size: 15px;
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  margin-bottom: 12px;
-  box-sizing: border-box;
-  resize: none;
-  font-family: inherit;
-}
-
-.stats_button {
-  background-color: #9DC5BB; /* pastel orange */
-  color: #000000;
-  transition: background 0.2s;
-}
-
-.stats_button:hover {
-  background-color: #80b0a4;
-}
-
-.back_button {
-  background-color: #e0e0e0; /* light grey */
-  color: #333;
-  transition: background 0.2s;
-}
-
-.back_button:hover {
-  background-color: #bdbdbd;
+  &:disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
 }
 
 .thankYouMessage {
@@ -220,71 +339,6 @@
 .thankYouText {
   font-size: 18px;
   font-weight: 500;
-  color: #5E807F;
+  color: #5e807f;
   margin: 0;
 }
-
-.shareSection {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
-}
-
-.nextInklingLabel {
-  font-size: 14px;
-  font-weight: 500;
-  color: #5E807F;
-  margin-bottom: 4px;
-}
-
-.shareButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px 24px;
-  background-color: #6b9660;
-  color: white;
-  border: none;
-  border-radius: 9999px;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  span {
-    color: white;
-  }
-
-  svg {
-    color: white;
-  }
-
-  &:hover {
-    background-color: #5a7f50;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(107, 150, 96, 0.3);
-  }
-
-  &:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 6px rgba(107, 150, 96, 0.2);
-  }
-}
-
-.copiedMessage {
-  font-size: 14px;
-  color: #4caf50;
-  font-weight: 500;
-  animation: fadeInOut 2s ease-in-out;
-}
-
-
-@keyframes fadeInOut {
-  0% { opacity: 0; transform: translateY(10px); }
-  15% { opacity: 1; transform: translateY(0); }
-  85% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(-10px); }
-} 

@@ -11,11 +11,9 @@ import styles from "./Header.module.scss";
 import { InfoPopup } from "./InfoPopup";
 import { ArchivePopup } from "./ArchivePopup";
 import classNames from "classnames";
-import { SuggestPopup } from "./SuggestPopup";
 import { GameStats } from "./GameStats";
 import { ResultsPopup } from "./ResultsPopup";
 import {
-  IconBulb,
   IconInfoCircle,
   IconEye,
   IconChartBar,
@@ -63,7 +61,6 @@ export const Header = React.memo(
     ref
   ) {
     const [isArchiveOpen, setIsArchiveOpen] = useState(false);
-    const [isSuggestOpen, setIsSuggestOpen] = useState(false);
     const [isInfoOpen, setIsInfoOpen] = useState(false);
     const [isTodaysStatsOpen, setIsTodaysStatsOpen] = useState(false);
     const [isResultsOpen, setIsResultsOpen] = useState(false);
@@ -80,11 +77,7 @@ export const Header = React.memo(
 
     // Notify parent whenever any popup state changes
     const anyPopupOpen =
-      isArchiveOpen ||
-      isSuggestOpen ||
-      isInfoOpen ||
-      isTodaysStatsOpen ||
-      isResultsOpen;
+      isArchiveOpen || isInfoOpen || isTodaysStatsOpen || isResultsOpen;
 
     useEffect(() => {
       if (firstTimeUser) {
@@ -102,20 +95,12 @@ export const Header = React.memo(
       setIsArchiveOpen(true);
     }, []);
 
-    const handleSuggestClick = useCallback(() => {
-      setIsSuggestOpen(true);
-    }, []);
-
     const handleInfoClick = useCallback(() => {
       setIsInfoOpen(true);
     }, []);
 
     const handleCloseInfo = useCallback(() => {
       setIsInfoOpen(false);
-    }, []);
-
-    const handleCloseSuggest = useCallback(() => {
-      setIsSuggestOpen(false);
     }, []);
 
     const handleCloseArchive = useCallback(() => {
@@ -213,14 +198,6 @@ export const Header = React.memo(
             >
               <IconChartBar size={24} color="#333" stroke={2} />
             </button>
-            <button
-              className={styles.headerButton}
-              onClick={handleSuggestClick}
-              aria-label="Suggest an Inkling"
-              type="button"
-            >
-              <IconBulb size={22} color="#333" stroke={2} />
-            </button>
             <a
               className={styles.headerButton}
               type="button"
@@ -235,9 +212,6 @@ export const Header = React.memo(
           </div>
         </div>
         {isInfoOpen ? <InfoPopup close={handleCloseInfo} /> : undefined}
-        {isSuggestOpen ? (
-          <SuggestPopup close={handleCloseSuggest} />
-        ) : undefined}
         {isArchiveOpen ? (
           <ArchivePopup
             close={handleCloseArchive}
@@ -262,6 +236,7 @@ export const Header = React.memo(
             answerLength={gameAnswerLength}
             showBackButton={cameFromResults}
             onClose={handleCloseGameStats}
+            onSelectGame={onSelectGame}
           />
         ) : undefined}
       </>

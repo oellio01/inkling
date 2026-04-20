@@ -1,9 +1,10 @@
+/* ------------------------------------------------------------------ */
+/* Layout                                                               */
+/* ------------------------------------------------------------------ */
+
 .backdrop {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
@@ -39,73 +40,13 @@
   align-items: center;
   justify-content: center;
   z-index: 10;
-  
+
   &:hover {
     background: #f0f0f0;
   }
 }
 
-.sectionTitle {
-  font-size: 18px;
-  font-weight: 600;
-  margin: 16px 0 12px 0;
-  color: #333;
-}
-
-.subSectionTitle {
-  font-size: 14px;
-  font-weight: 600;
-  margin: 12px 0 8px 0;
-  color: #666;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.userStatsSection {
-  border: 2px solid #f0f0f0;
-  border-radius: 12px;
-  padding: 12px;
-  margin: 12px 0;
-  background: rgba(248, 248, 248, 0.5);
-}
-
-.gameStatsSection {
-  border: 2px solid #f0f0f0;
-  border-radius: 12px;
-  padding: 12px;
-  margin: 12px 0;
-  background: rgba(248, 248, 248, 0.5);
-}
-
-.statsRow {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.statsCard {
-  background: #eff0f0;
-  border-radius: 10px;
-  padding: 12px;
-  flex: 1;
-  max-width: 120px;
-}
-
-.statsLabel {
-  font-size: 12px;
-  color: #666;
-  margin-bottom: 6px;
-  text-transform: uppercase;
-}
-
-.statsValue {
-  font-size: 20px;
-  font-weight: bold;
-  color: #1976d2;
-}
-
-.button, .back_button {
+.back_button {
   width: 100%;
   padding: 12px;
   border-radius: 6px;
@@ -113,29 +54,207 @@
   border: none;
   cursor: pointer;
   margin-bottom: 16px;
+  background: #f5f5f5;
+
+  &:hover {
+    background: #e0e0e0;
+  }
 }
 
-.back_button {
-  background: #f5f5f5;
-  &:hover { background: #e0e0e0; }
+/* ------------------------------------------------------------------ */
+/* Sections (cards)                                                     */
+/* ------------------------------------------------------------------ */
+
+.gameStatsSection,
+.allTimeSection {
+  border: 2px solid #f0f0f0;
+  border-radius: 12px;
+  padding: 8px 10px;
+  margin: 8px 0;
+  background: rgba(248, 248, 248, 0.5);
 }
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 4px 0 8px;
+  color: #333;
+}
+
+.subSectionTitle {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 8px 0 6px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.innerDivider {
+  border: none;
+  border-top: 1px solid #e0e0e0;
+  margin: 10px 0 4px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Contribution board                                                   */
+/* ------------------------------------------------------------------ */
+
+.boardWrapper {
+  padding: 2px 0 6px;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 14px);
+  justify-content: space-between;
+  gap: 3px;
+  width: 100%;
+}
+
+.boardTile {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  border: none;
+  padding: 0;
+}
+
+.boardTileEmpty {
+  background: #e0e0e0;
+}
+
+.boardTilePlayed {
+  background: #4caf50;
+}
+
+.boardTileCurrent {
+  outline: 2px solid #1976d2;
+  outline-offset: 1px;
+}
+
+.boardTileClickable {
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+
+  &:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #1976d2;
+    outline-offset: 1px;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Stat cards                                                           */
+/* ------------------------------------------------------------------ */
+
+.statsRow {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.statsCard {
+  background: #eff0f0;
+  border-radius: 8px;
+  padding: 8px 6px;
+  flex: 1;
+  max-width: 120px;
+}
+
+.statsLabel {
+  font-size: 11px;
+  color: #666;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.statsValue {
+  font-size: 18px;
+  font-weight: bold;
+  color: #1976d2;
+}
+
+/* ------------------------------------------------------------------ */
+/* Share pill + copied feedback                                         */
+/* ------------------------------------------------------------------ */
+
+.shareButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background-color: #6b9660;
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  margin: 4px auto 0;
+  transition: all 0.2s ease;
+
+  span,
+  svg {
+    color: white;
+  }
+
+  &:hover {
+    background-color: #5a7f50;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(107, 150, 96, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(107, 150, 96, 0.2);
+  }
+}
+
+.copiedMessage {
+  font-size: 14px;
+  color: #4caf50;
+  font-weight: 500;
+  margin-top: 8px;
+  animation: fadeInOut 2s ease-in-out;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  85% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Charts + messages                                                    */
+/* ------------------------------------------------------------------ */
 
 .barChart {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 12px;
-  
-  // Chart styling variables
-  --chart-label-color: #333;
-  --chart-label-font-size: 12px;
-  --chart-label-font-weight: 500;
-  --chart-tick-color: #666;
-  --chart-tick-font-size: 12px;
-  --chart-bar-radius: 4px;
-  --chart-user-color: #4caf50;
-  --chart-default-color: #9e9e9e;
-  --chart-empty-color: #e0e0e0;
+  margin-bottom: 4px;
 }
 
 .chartLabel {
@@ -144,8 +263,8 @@
   text-align: center;
 }
 
-
-.ratingError, .noResultsMsg {
+.ratingError,
+.noResultsMsg {
   padding: 20px;
   border-radius: 6px;
   margin: 16px 0;

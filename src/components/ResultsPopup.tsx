@@ -1,13 +1,22 @@
-import { useState, useEffect, useCallback } from "react";
-import React from "react";
+import React, { useCallback, useState } from "react";
+import classNames from "classnames";
+import {
+  IconStar,
+  IconStarFilled,
+  IconShare,
+  IconShirt,
+  IconChartBar,
+  IconPencil,
+} from "@tabler/icons-react";
+
 import styles from "./ResultsPopup.module.scss";
 import { formatTimeInSeconds } from "../hooks/formatTimeInSeconds";
-import classNames from "classnames";
-import { IconStar, IconStarFilled, IconShare } from "@tabler/icons-react";
+import { useCountdownToMidnight } from "../hooks/useCountdownToMidnight";
+import { useShareResult } from "../hooks/useShareResult";
 import supabase from "../app/supabaseClient";
 import { useUser } from "../providers/UserProvider";
 
-const COPY_FEEDBACK_DURATION = 2000;
+const SHOP_URL = "https://inkling-puzzle.printify.me/";
 
 export interface ResultsPopupProps {
   close: () => void;
@@ -26,95 +35,26 @@ export const ResultsPopup = React.memo(function ResultsPopup({
   hintCount,
   onShowStats,
 }: ResultsPopupProps) {
-  const [hasCopied, setHasCopied] = useState(false);
-  const { minutes, seconds } = formatTimeInSeconds(timeInSeconds);
-  const [rating, setRating] = useState<number | null>(null);
-  const [hoverRating, setHoverRating] = useState<number | null>(null);
-  const [comment, setComment] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [timeUntilMidnight, setTimeUntilMidnight] = useState("");
   const { user } = useUser();
-
-  // Reset state when game changes
-  useEffect(() => {
-    setRating(null);
-    setHoverRating(null);
-    setComment("");
-    setSubmitted(false);
-    setError(null);
-    setHasCopied(false);
-  }, [gameNumber]);
-
-  // Countdown to midnight
-  useEffect(() => {
-    const updateCountdown = () => {
-      const now = new Date();
-      const tomorrow = new Date(now);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      tomorrow.setHours(0, 0, 0, 0);
-
-      const diff = Math.max(0, tomorrow.getTime() - now.getTime());
-      const hours = Math.floor(diff / 3600000);
-      const minutes = Math.floor((diff % 3600000) / 60000);
-      const seconds = Math.floor((diff % 60000) / 1000);
-
-      const format = (n: number) => String(n).padStart(2, "0");
-      setTimeUntilMidnight(
-        `${format(hours)}:${format(minutes)}:${format(seconds)}`
-      );
-    };
-
-    updateCountdown();
-    const interval = setInterval(updateCountdown, 1000);
-    return () => clearInterval(interval);
-  }, []);
+  const { minutes, seconds } = formatTimeInSeconds(timeInSeconds);
+  const timeUntilMidnight = useCountdownToMidnight();
+  const { hasCopied, share } = useShareResult();
 
   const handleShare = useCallback(() => {
-    const shareText = `Inkling #${gameNumber} - ${minutes}:${seconds} - ${guessCount} guesses - ${hintCount} hints\n${window.location.href}`;
-    navigator.clipboard.writeText(shareText);
-    setHasCopied(true);
-    setTimeout(() => setHasCopied(false), COPY_FEEDBACK_DURATION);
+    share({
+      gameId: gameNumber,
+      timeInSeconds,
+      guessCount,
+      hintCount,
+      userId: user?.id,
+    });
+  }, [share, gameNumber, timeInSeconds, guessCount, hintCount, user?.id]);
 
-    supabase
-      .from("share_events")
-      .insert([
-        {
-          game_id: gameNumber,
-          user_id: user?.id || null,
-          share_method: "copy",
-        },
-      ])
-      .then(({ error }) => {
-        if (error) console.log("Share event insert error:", error.message);
-      });
-  }, [gameNumber, guessCount, hintCount, minutes, seconds, user?.id]);
-
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) close();
-  };
-
-  const handleSubmitRating = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
-      if (!rating) {
-        return;
-      }
-      setSubmitting(true);
-      setError(null);
-      const { error } = await supabase
-        .from("game_rating")
-        .insert([{ game_id: gameNumber, rating, comment, user_id: user?.id }])
-        .select();
-      setSubmitting(false);
-      if (error) {
-        setError(error.message);
-        return;
-      }
-      setSubmitted(true);
+  const handleBackdropClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (e.target === e.currentTarget) close();
     },
-    [rating, comment, gameNumber, user?.id]
+    [close]
   );
 
   return (
@@ -127,35 +67,12 @@ export const ResultsPopup = React.memo(function ResultsPopup({
         >
           ×
         </button>
-        <h2 className={styles.title}>You got it!</h2>
 
-        <div className={styles.stats}>
-          <div className={styles.statItem}>
-            <div className={styles.statValue}>{gameNumber}</div>
-            <div className={styles.statLabel}>Game</div>
-          </div>
-          <div className={styles.statItem}>
-            <div className={styles.statValue}>
-              {minutes}:{seconds}
-            </div>
-            <div className={styles.statLabel}>Time</div>
-          </div>
-          <div className={styles.statItem}>
-            <div className={styles.statValue}>{guessCount}</div>
-            <div className={styles.statLabel}>Guesses</div>
-          </div>
-          <div className={styles.statItem}>
-            <div className={styles.statValue}>{hintCount}</div>
-            <div className={styles.statLabel}>Hints</div>
-          </div>
+        <h2 className={styles.title}>You got it!</h2>
+        <div className={styles.nextInklingLabel}>
+          Next Inkling in {timeUntilMidnight}
         </div>
-        <button
-          className={classNames(styles.button, styles.stats_button)}
-          onClick={onShowStats}
-        >
-          View today&apos;s stats
-        </button>
-        <hr className={styles.divider} />
+
         <div className={styles.personalMessage}>
           <p>
             Hi 👋 I&apos;m Owen. This game was inspired from countless
@@ -164,14 +81,21 @@ export const ResultsPopup = React.memo(function ResultsPopup({
             your friends!
           </p>
         </div>
+
+        <hr className={styles.divider} />
+
+        <div className={styles.stats}>
+          <StatItem value={gameNumber} label="Game" />
+          <StatItem value={`${minutes}:${seconds}`} label="Time" />
+          <StatItem value={guessCount} label="Guesses" />
+          <StatItem value={hintCount} label="Hints" />
+        </div>
         <div className={styles.shareSection}>
-          <div className={styles.nextInklingLabel}>
-            Next Inkling in {timeUntilMidnight}
-          </div>
           <button
             className={styles.shareButton}
             onClick={handleShare}
             aria-label="Share your result"
+            type="button"
           >
             <span>Share</span>
             <IconShare size={20} />
@@ -180,62 +104,287 @@ export const ResultsPopup = React.memo(function ResultsPopup({
             <div className={styles.copiedMessage}>Copied to clipboard!</div>
           )}
         </div>
+
         <hr className={styles.divider} />
-        {submitted ? (
-          <div className={styles.thankYouMessage}>
-            <div className={styles.thankYouText}>
-              Thanks so much for your feedback! I really appreciate it 🎉
-            </div>
-          </div>
-        ) : (
-          <form
-            onSubmit={handleSubmitRating}
-            className={styles.ratingForm}
-            method="dialog"
-          >
-            <div className={styles.ratingLabel}>
-              What did you think of today&apos;s inkling?
-            </div>
-            <div className={styles.starsRow}>
-              {[1, 2, 3, 4, 5].map((star) => {
-                const isFilled = (hoverRating ?? rating ?? 0) >= star;
-                const StarIcon = isFilled ? IconStarFilled : IconStar;
-                return (
-                  <button
-                    key={star}
-                    type="button"
-                    className={styles.starButton}
-                    aria-label={`Rate ${star} star${star > 1 ? "s" : ""}`}
-                    onClick={() => setRating(star)}
-                    onMouseEnter={() => setHoverRating(star)}
-                    onMouseLeave={() => setHoverRating(null)}
-                  >
-                    <StarIcon size={28} color="#FFD700" />
-                  </button>
-                );
-              })}
-            </div>
-            <textarea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="I'd love to hear your thoughts or suggestions!"
-              disabled={submitting}
-              className={styles.ratingTextarea}
-            />
-            <button
-              type="submit"
-              className={classNames(
-                styles.button,
-                rating && !submitting ? styles.primary_button : undefined
-              )}
-              disabled={submitting || !rating}
-            >
-              {submitting ? "Sending..." : "Send Feedback"}
-            </button>
-            {error && <div className={styles.ratingError}>{error}</div>}
-          </form>
-        )}
+
+        <button
+          type="button"
+          className={classNames(styles.button, styles.stats_button)}
+          onClick={onShowStats}
+        >
+          <IconChartBar size={18} />
+          <span>View today&apos;s stats</span>
+        </button>
+
+        <hr className={styles.divider} />
+
+        {/* key={gameNumber} resets internal form state whenever the game changes. */}
+        <RatingForm key={`rating-${gameNumber}`} gameNumber={gameNumber} />
+
+        <hr className={styles.divider} />
+
+        <SuggestForm key={`suggest-${gameNumber}`} />
+
+        <hr className={styles.divider} />
+
+        <a
+          className={classNames(styles.button, styles.shop_button)}
+          href={SHOP_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <IconShirt size={18} />
+          <span>Shop Inkling swag</span>
+        </a>
       </div>
     </div>
   );
 });
+
+function StatItem({
+  value,
+  label,
+}: {
+  value: string | number;
+  label: string;
+}) {
+  return (
+    <div className={styles.statItem}>
+      <div className={styles.statValue}>{value}</div>
+      <div className={styles.statLabel}>{label}</div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Rate today's game                                                   */
+/* ------------------------------------------------------------------ */
+
+const MAX_RATING = 5;
+
+function RatingForm({ gameNumber }: { gameNumber: number }) {
+  const { user } = useUser();
+  const [isOpen, setIsOpen] = useState(false);
+  const [rating, setRating] = useState<number | null>(null);
+  const [hoverRating, setHoverRating] = useState<number | null>(null);
+  const [comment, setComment] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!rating) return;
+
+      setSubmitting(true);
+      setError(null);
+
+      const { error: insertError } = await supabase
+        .from("game_rating")
+        .insert([
+          { game_id: gameNumber, rating, comment, user_id: user?.id },
+        ])
+        .select();
+
+      setSubmitting(false);
+      if (insertError) {
+        setError(insertError.message);
+        return;
+      }
+      setSubmitted(true);
+    },
+    [rating, comment, gameNumber, user?.id]
+  );
+
+  if (submitted) {
+    return (
+      <div className={styles.thankYouMessage}>
+        <div className={styles.thankYouText}>
+          Thanks so much for your feedback! I really appreciate it 🎉
+        </div>
+      </div>
+    );
+  }
+
+  if (!isOpen) {
+    return (
+      <button
+        type="button"
+        className={classNames(styles.button, styles.rate_button)}
+        onClick={() => setIsOpen(true)}
+      >
+        <IconStar size={18} />
+        <span>Rate today&apos;s game</span>
+      </button>
+    );
+  }
+
+  const displayedRating = hoverRating ?? rating ?? 0;
+  const canSubmit = Boolean(rating) && !submitting;
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className={styles.ratingForm}
+      method="dialog"
+    >
+      <div className={styles.ratingLabel}>
+        What did you think of today&apos;s inkling?
+      </div>
+      <div className={styles.starsRow}>
+        {Array.from({ length: MAX_RATING }, (_, i) => i + 1).map((star) => {
+          const StarIcon = displayedRating >= star ? IconStarFilled : IconStar;
+          return (
+            <button
+              key={star}
+              type="button"
+              className={styles.starButton}
+              aria-label={`Rate ${star} star${star > 1 ? "s" : ""}`}
+              onClick={() => setRating(star)}
+              onMouseEnter={() => setHoverRating(star)}
+              onMouseLeave={() => setHoverRating(null)}
+            >
+              <StarIcon size={28} color="#FFD700" />
+            </button>
+          );
+        })}
+      </div>
+      <textarea
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+        placeholder="I'd love to hear your thoughts or suggestions!"
+        disabled={submitting}
+        className={styles.ratingTextarea}
+      />
+      <button
+        type="submit"
+        className={classNames(
+          styles.button,
+          canSubmit && styles.primary_button
+        )}
+        disabled={!canSubmit}
+      >
+        {submitting ? "Sending..." : "Send Feedback"}
+      </button>
+      {error && <div className={styles.ratingError}>{error}</div>}
+    </form>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Suggest an Inkling                                                  */
+/* ------------------------------------------------------------------ */
+
+const MIN_WORD_LENGTH = 2;
+const MAX_WORD_LENGTH = 50;
+const MIN_DESCRIPTION_LENGTH = 3;
+const MAX_DESCRIPTION_LENGTH = 500;
+
+function SuggestForm() {
+  const { user } = useUser();
+  const [isOpen, setIsOpen] = useState(false);
+  const [word, setWord] = useState("");
+  const [description, setDescription] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const canSubmit =
+    !submitting &&
+    word.length >= MIN_WORD_LENGTH &&
+    description.length >= MIN_DESCRIPTION_LENGTH;
+
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!canSubmit) return;
+
+      setSubmitting(true);
+      setError(null);
+
+      const { error: insertError } = await supabase
+        .from("game_suggestion")
+        .insert([
+          {
+            suggested_word: word,
+            description,
+            user_id: user?.id,
+          },
+        ]);
+
+      setSubmitting(false);
+      if (insertError) {
+        setError(insertError.message);
+        return;
+      }
+      setSubmitted(true);
+    },
+    [word, description, user?.id, canSubmit]
+  );
+
+  if (submitted) {
+    return (
+      <div className={styles.thankYouMessage}>
+        <div className={styles.thankYouText}>
+          Thanks for the suggestion! I&apos;ll take a look 🙌
+        </div>
+      </div>
+    );
+  }
+
+  if (!isOpen) {
+    return (
+      <button
+        type="button"
+        className={classNames(styles.button, styles.suggest_button)}
+        onClick={() => setIsOpen(true)}
+      >
+        <IconPencil size={18} />
+        <span>Suggest an Inkling</span>
+      </button>
+    );
+  }
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className={styles.ratingForm}
+      method="dialog"
+    >
+      <div className={styles.ratingLabel}>Suggest an Inkling</div>
+      <input
+        type="text"
+        value={word}
+        onChange={(e) => setWord(e.target.value)}
+        placeholder="Suggested word (e.g. CENTURY)"
+        required
+        minLength={MIN_WORD_LENGTH}
+        maxLength={MAX_WORD_LENGTH}
+        disabled={submitting}
+        className={styles.suggestInput}
+      />
+      <textarea
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        placeholder="How should it be drawn..."
+        required
+        minLength={MIN_DESCRIPTION_LENGTH}
+        maxLength={MAX_DESCRIPTION_LENGTH}
+        disabled={submitting}
+        className={styles.ratingTextarea}
+      />
+      <button
+        type="submit"
+        className={classNames(
+          styles.button,
+          canSubmit && styles.primary_button
+        )}
+        disabled={!canSubmit}
+      >
+        {submitting ? "Submitting..." : "Submit suggestion"}
+      </button>
+      {error && <div className={styles.ratingError}>{error}</div>}
+    </form>
+  );
+}
