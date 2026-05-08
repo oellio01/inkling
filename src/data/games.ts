@@ -1625,4 +1625,44 @@ export const GAMES: GameData[] = [
     image: "/games/324.jpeg",
     answer: "ROCKSLIDE",
   },
+  {
+    id: 325,
+    image: "/games/325.jpeg",
+    answer: "SPACECRAFT",
+  },
+  {
+    id: 326,
+    image: "/games/326.jpeg",
+    answer: "FLASHLIGHT",
+  },
+  {
+    id: 327,
+    image: "/games/327.jpeg",
+    answer: "SHORTBREAD",
+  },
+  {
+    id: 328,
+    image: "/games/328.jpeg",
+    answer: "DECKHAND",
+  },
+  {
+    id: 329,
+    image: "/games/329.jpeg",
+    answer: "SEAWEED",
+  },
+  {
+    id: 330,
+    image: "/games/330.jpeg",
+    answer: "SLIPKNOT",
+  },
+  {
+    id: 331,
+    image: "/games/331.jpeg",
+    answer: "TUGBOAT",
+  },
+  {
+    id: 332,
+    image: "/games/332.jpeg",
+    answer: "BOWSPRIT",
+  },
 ];
