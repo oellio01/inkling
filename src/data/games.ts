@@ -1608,7 +1608,7 @@ export const GAMES: GameData[] = [
   {
     id: 321,
     image: "/games/321.jpeg",
-    answer: "NIGHTHOOD",
+    answer: "KNIGHTHOOD",
   },
   {
     id: 322,
@@ -1653,16 +1653,46 @@ export const GAMES: GameData[] = [
   {
     id: 330,
     image: "/games/330.jpeg",
-    answer: "SLIPKNOT",
+    answer: "TAPEWORM",
   },
   {
     id: 331,
     image: "/games/331.jpeg",
-    answer: "TUGBOAT",
+    answer: "LIMESTONE",
   },
   {
     id: 332,
     image: "/games/332.jpeg",
+    answer: "DESKTOP",
+  },
+  {
+    id: 333,
+    image: "/games/333.jpeg",
+    answer: "PILLOWCASE",
+  },
+  {
+    id: 334,
+    image: "/games/334.jpeg",
+    answer: "UPSWING",
+  },
+  {
+    id: 335,
+    image: "/games/335.jpeg",
+    answer: "SEASHORE",
+  },
+  {
+    id: 340,
+    image: "/games/340.jpeg",
+    answer: "SLIPKNOT",
+  },
+  {
+    id: 341,
+    image: "/games/341.jpeg",
+    answer: "TUGBOAT",
+  },
+  {
+    id: 342,
+    image: "/games/342.jpeg",
     answer: "BOWSPRIT",
   },
 ];
