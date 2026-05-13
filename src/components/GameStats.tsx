@@ -417,7 +417,8 @@ export const GameStats = React.memo(function GameStats({
               <h3 className={styles.sectionTitle}>Inkling {gameId}</h3>
 
               {userGameResult ? (
-                <>
+                <div className={styles.yourResultSection}>
+                  <h4 className={styles.subSectionTitle}>Your result</h4>
                   <div className={styles.statsRow}>
                     <StatsCard
                       label="Your time"
@@ -429,21 +430,23 @@ export const GameStats = React.memo(function GameStats({
                     />
                     <StatsCard label="Hints" value={userGameResult.hints} />
                   </div>
-                  <button
-                    className={styles.shareButton}
-                    onClick={handleShare}
-                    aria-label="Share your result"
-                    type="button"
-                  >
-                    <span>Share</span>
-                    <IconShare size={20} />
-                  </button>
-                  {hasCopiedFor(gameId) && (
-                    <div className={styles.copiedMessage}>
-                      Copied to clipboard!
-                    </div>
-                  )}
-                </>
+                  <div className={styles.shareAction}>
+                    <button
+                      className={styles.shareButton}
+                      onClick={handleShare}
+                      aria-label="Share your result for this game"
+                      type="button"
+                    >
+                      <span>Share</span>
+                      <IconShare size={20} />
+                    </button>
+                    {hasCopiedFor(gameId) && (
+                      <div className={styles.copiedMessage}>
+                        Copied to clipboard!
+                      </div>
+                    )}
+                  </div>
+                </div>
               ) : (
                 <div className={styles.noResultsMsg}>
                   You haven&apos;t played this inkling yet.
