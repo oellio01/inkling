@@ -1686,6 +1686,26 @@ export const GAMES: GameData[] = [
     answer: "SLIPKNOT",
   },
   {
+    id: 337,
+    image: "/games/337.jpeg",
+    answer: "SUNSET",
+  },
+  {
+    id: 338,
+    image: "/games/338.jpeg",
+    answer: "SUPERCONDUCTOR",
+  },
+  {
+    id: 339,
+    image: "/games/339.jpeg",
+    answer: "KNAPSACK",
+  },
+  {
+    id: 340,
+    image: "/games/340.jpeg",
+    answer: "ROSEMARY",
+  },
+  {
     id: 341,
     image: "/games/341.jpeg",
     answer: "TUGBOAT",
@@ -1694,5 +1714,15 @@ export const GAMES: GameData[] = [
     id: 342,
     image: "/games/342.jpeg",
     answer: "BOWSPRIT",
+  },
+  {
+    id: 343,
+    image: "/games/343.jpeg",
+    answer: "DRUMROLL",
+  },
+  {
+    id: 344,
+    image: "/games/344.jpeg",
+    answer: "SUPERUSER",
   },
 ];
