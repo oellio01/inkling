@@ -16,6 +16,7 @@ import { useShareResult } from "../hooks/useShareResult";
 import supabase from "../lib/supabase";
 import { useUser } from "../providers/UserProvider";
 import { Popup } from "./ui/Popup";
+import { getTodaysGameIndex } from "../lib/gameDate";
 
 const SHOP_URL = "https://inkling-puzzle.printify.me/";
 
@@ -60,9 +61,7 @@ export const ResultsPopup = React.memo(function ResultsPopup({
 
       <div className={styles.personalMessage}>
         <p>
-          Hi 👋 I&apos;m Owen. This game was inspired from countless late-night
-          Pictionary games. I hope you are enjoying it! If you are, it would
-          mean a lot if helped spread the word by sharing it with your friends!
+          Thank you for playing Inkling! It has been a labor of love and I hope you are enjoying it! It is a time investment though, and I plan to take a break at the end of the year. {365 - getTodaysGameIndex()} inklings left.
         </p>
       </div>
 
