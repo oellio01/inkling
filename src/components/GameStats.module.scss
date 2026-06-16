@@ -15,6 +15,163 @@
   background: rgba(248, 248, 248, 0.5);
 }
 
+.postGameActionsSection {
+  margin-top: 8px;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.actionButton {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color 0.2s;
+
+  &:disabled {
+    background-color: #bdbdbd;
+    color: white;
+    cursor: not-allowed;
+  }
+}
+
+.primaryButton {
+  background-color: #2172a7;
+  color: white;
+}
+
+.rateButton {
+  background-color: var(--color-border);
+  color: var(--color-text-muted);
+
+  &:hover {
+    background-color: #cfcfcf;
+  }
+}
+
+.suggestButton {
+  background-color: #f1d990;
+  color: var(--color-text-muted);
+
+  &:hover {
+    background-color: #e6c970;
+  }
+}
+
+.shopButton {
+  background-color: #5aa3d0;
+  color: white;
+  text-decoration: none;
+
+  &:hover {
+    background-color: #4a8db8;
+    color: white;
+  }
+
+  svg {
+    color: white;
+  }
+}
+
+%formField {
+  width: 100%;
+  font-size: 15px;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.ratingForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.ratingLabel {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  color: var(--color-primary-dark);
+}
+
+.feedbackTextarea {
+  @extend %formField;
+  min-height: 48px;
+  margin-bottom: 12px;
+  resize: none;
+}
+
+.suggestInput {
+  @extend %formField;
+  margin-bottom: 8px;
+}
+
+.starsRow {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.starButton {
+  background: none;
+  border: none;
+  padding: 4px;
+  margin: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+  outline: none;
+
+  &:hover:not(:disabled) {
+    background: #f0f4ff;
+  }
+
+  &:active {
+    background: #e3eaff;
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
+}
+
+.thankYouMessage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+}
+
+.thankYouText {
+  font-size: 18px;
+  font-weight: 500;
+  color: #5e807f;
+  margin: 0;
+}
+
 .sectionTitle {
   font-size: 16px;
   font-weight: 600;

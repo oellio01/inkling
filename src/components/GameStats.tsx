@@ -9,7 +9,13 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { IconShare } from "@tabler/icons-react";
+import {
+  IconPencil,
+  IconShare,
+  IconShirt,
+  IconStar,
+  IconStarFilled,
+} from "@tabler/icons-react";
 
 import supabase from "../lib/supabase";
 import styles from "./GameStats.module.scss";
@@ -19,6 +25,13 @@ import { useUser } from "../providers/UserProvider";
 import { GAMES } from "../data/games";
 import { EPOCH_DATE, getTodaysGameIndex } from "../lib/gameDate";
 import { Popup } from "./ui/Popup";
+
+const SHOP_URL = "https://inkling-puzzle.printify.me/";
+const MAX_RATING = 5;
+const MIN_WORD_LENGTH = 2;
+const MAX_WORD_LENGTH = 50;
+const MIN_DESCRIPTION_LENGTH = 3;
+const MAX_DESCRIPTION_LENGTH = 500;
 
 /* ------------------------------------------------------------------ */
 /* Types                                                                */
@@ -50,6 +63,7 @@ interface UserStats {
   totalGames: number;
   percentWithoutHints: number;
   fastestTime: number;
+  averageTime: number;
 }
 
 /* ------------------------------------------------------------------ */
@@ -91,6 +105,10 @@ function computeUserStats(
   const gamesCompleted = rows.length;
   const gamesWithoutHints = rows.filter((r) => r.hints === 0).length;
   const validTimes = rows.map((r) => r.time_seconds).filter((t) => t > 0);
+  const averageTime =
+    validTimes.length > 0
+      ? Math.round(validTimes.reduce((sum, value) => sum + value, 0) / validTimes.length)
+      : 0;
 
   return {
     gamesCompleted,
@@ -100,6 +118,7 @@ function computeUserStats(
         ? Math.round((gamesWithoutHints / gamesCompleted) * 100)
         : 0,
     fastestTime: validTimes.length > 0 ? Math.min(...validTimes) : 0,
+    averageTime,
   };
 }
 
@@ -254,6 +273,220 @@ const ContributionBoard = React.memo(function ContributionBoard({
   );
 });
 
+function StatsFooterActions({ gameNumber }: { gameNumber: number }) {
+  return (
+    <div className={styles.actions}>
+      <RatingForm key={`rating-${gameNumber}`} gameNumber={gameNumber} />
+      <SuggestForm key={`suggest-${gameNumber}`} />
+      <a
+        className={classNames(styles.actionButton, styles.shopButton)}
+        href={SHOP_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <IconShirt size={18} />
+        <span>Shop Inkling swag</span>
+      </a>
+    </div>
+  );
+}
+
+function RatingForm({ gameNumber }: { gameNumber: number }) {
+  const { user } = useUser();
+  const [isOpen, setIsOpen] = useState(false);
+  const [rating, setRating] = useState<number | null>(null);
+  const [hoverRating, setHoverRating] = useState<number | null>(null);
+  const [comment, setComment] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!rating) return;
+
+      setSubmitting(true);
+      setError(null);
+
+      const { error: insertError } = await supabase
+        .from("game_rating")
+        .insert([{ game_id: gameNumber, rating, comment, user_id: user?.id }])
+        .select();
+
+      setSubmitting(false);
+      if (insertError) {
+        setError(insertError.message);
+        return;
+      }
+      setSubmitted(true);
+    },
+    [rating, comment, gameNumber, user?.id]
+  );
+
+  if (submitted) {
+    return (
+      <div className={styles.thankYouMessage}>
+        <div className={styles.thankYouText}>
+          Thanks so much for your feedback! I really appreciate it.
+        </div>
+      </div>
+    );
+  }
+
+  if (!isOpen) {
+    return (
+      <button
+        type="button"
+        className={classNames(styles.actionButton, styles.rateButton)}
+        onClick={() => setIsOpen(true)}
+      >
+        <IconStar size={18} />
+        <span>Rate Inkling {gameNumber}</span>
+      </button>
+    );
+  }
+
+  const displayedRating = hoverRating ?? rating ?? 0;
+  const canSubmit = Boolean(rating) && !submitting;
+
+  return (
+    <form onSubmit={handleSubmit} className={styles.ratingForm} method="dialog">
+      <div className={styles.ratingLabel}>
+        What did you think of Inkling {gameNumber}?
+      </div>
+      <div className={styles.starsRow}>
+        {Array.from({ length: MAX_RATING }, (_, i) => i + 1).map((star) => {
+          const StarIcon = displayedRating >= star ? IconStarFilled : IconStar;
+          return (
+            <button
+              key={star}
+              type="button"
+              className={styles.starButton}
+              aria-label={`Rate ${star} star${star > 1 ? "s" : ""}`}
+              onClick={() => setRating(star)}
+              onMouseEnter={() => setHoverRating(star)}
+              onMouseLeave={() => setHoverRating(null)}
+            >
+              <StarIcon size={28} color="#FFD700" />
+            </button>
+          );
+        })}
+      </div>
+      <textarea
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+        placeholder="I'd love to hear your thoughts or suggestions!"
+        disabled={submitting}
+        className={styles.feedbackTextarea}
+      />
+      <button
+        type="submit"
+        className={classNames(styles.actionButton, canSubmit && styles.primaryButton)}
+        disabled={!canSubmit}
+      >
+        {submitting ? "Sending..." : "Send Feedback"}
+      </button>
+      {error && <div className={styles.ratingError}>{error}</div>}
+    </form>
+  );
+}
+
+function SuggestForm() {
+  const { user } = useUser();
+  const [isOpen, setIsOpen] = useState(false);
+  const [word, setWord] = useState("");
+  const [description, setDescription] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const canSubmit =
+    !submitting &&
+    word.length >= MIN_WORD_LENGTH &&
+    description.length >= MIN_DESCRIPTION_LENGTH;
+
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!canSubmit) return;
+
+      setSubmitting(true);
+      setError(null);
+
+      const { error: insertError } = await supabase
+        .from("game_suggestion")
+        .insert([{ suggested_word: word, description, user_id: user?.id }]);
+
+      setSubmitting(false);
+      if (insertError) {
+        setError(insertError.message);
+        return;
+      }
+      setSubmitted(true);
+    },
+    [word, description, user?.id, canSubmit]
+  );
+
+  if (submitted) {
+    return (
+      <div className={styles.thankYouMessage}>
+        <div className={styles.thankYouText}>
+          Thanks for the suggestion! I&apos;ll take a look.
+        </div>
+      </div>
+    );
+  }
+
+  if (!isOpen) {
+    return (
+      <button
+        type="button"
+        className={classNames(styles.actionButton, styles.suggestButton)}
+        onClick={() => setIsOpen(true)}
+      >
+        <IconPencil size={18} />
+        <span>Suggest an Inkling</span>
+      </button>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className={styles.ratingForm} method="dialog">
+      <div className={styles.ratingLabel}>Suggest an Inkling</div>
+      <input
+        type="text"
+        value={word}
+        onChange={(e) => setWord(e.target.value)}
+        placeholder="Suggested word (e.g. CENTURY)"
+        required
+        minLength={MIN_WORD_LENGTH}
+        maxLength={MAX_WORD_LENGTH}
+        disabled={submitting}
+        className={styles.suggestInput}
+      />
+      <textarea
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        placeholder="How should it be drawn..."
+        required
+        minLength={MIN_DESCRIPTION_LENGTH}
+        maxLength={MAX_DESCRIPTION_LENGTH}
+        disabled={submitting}
+        className={styles.feedbackTextarea}
+      />
+      <button
+        type="submit"
+        className={classNames(styles.actionButton, canSubmit && styles.primaryButton)}
+        disabled={!canSubmit}
+      >
+        {submitting ? "Submitting..." : "Submit suggestion"}
+      </button>
+      {error && <div className={styles.ratingError}>{error}</div>}
+    </form>
+  );
+}
+
 /* ------------------------------------------------------------------ */
 /* Main component                                                       */
 /* ------------------------------------------------------------------ */
@@ -406,6 +639,10 @@ export const GameStats = React.memo(function GameStats({
                     value={formatTimeDisplay(userStats.fastestTime)}
                   />
                   <StatsCard
+                    label="Average time"
+                    value={formatTimeDisplay(userStats.averageTime)}
+                  />
+                  <StatsCard
                     label="Without hints"
                     value={`${userStats.percentWithoutHints}%`}
                   />
@@ -488,6 +725,9 @@ export const GameStats = React.memo(function GameStats({
                   />
                 </>
               )}
+            </section>
+            <section className={styles.postGameActionsSection}>
+              <StatsFooterActions gameNumber={gameId} />
             </section>
           </>
         )}

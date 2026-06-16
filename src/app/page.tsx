@@ -7,7 +7,6 @@ import { Keyboard } from "../components/Keyboard";
 import { GuessDisplay } from "../components/GuessDisplay";
 import { InfoPopup } from "../components/InfoPopup";
 import { ArchivePopup } from "../components/ArchivePopup";
-import { ResultsPopup } from "../components/ResultsPopup";
 import { GameStats } from "../components/GameStats";
 import { getTodaysGameIndex } from "../lib/gameDate";
 import { useGameTimer } from "../hooks/useGameTimer";
@@ -16,14 +15,7 @@ import styles from "./Game.module.scss";
 import { useUser } from "../providers/UserProvider";
 import supabase from "../lib/supabase";
 
-type ActivePopup = "info" | "archive" | "stats" | "results" | null;
-
-interface ResultsData {
-  gameNumber: number;
-  timeInSeconds: number;
-  guessCount: number;
-  hintCount: number;
-}
+type ActivePopup = "info" | "archive" | "stats" | null;
 
 const normalizeText = (text: string): string =>
   text.replaceAll(" ", "").toLowerCase();
@@ -41,8 +33,6 @@ export default function Game() {
   const [activePopup, setActivePopup] = useState<ActivePopup>(
     firstTimeUser ? "info" : null
   );
-  const [cameFromResults, setCameFromResults] = useState(false);
-  const [resultsData, setResultsData] = useState<ResultsData | null>(null);
 
   // Auto-open the info popup the very first time the anon user is created.
   useEffect(() => {
@@ -121,13 +111,7 @@ export default function Game() {
     if (isCorrectSolution(currentGuess)) {
       setGuessCount(newCount);
       setIsDone(true);
-      setResultsData({
-        gameNumber: game.id,
-        timeInSeconds: timeRef.current,
-        guessCount: newCount,
-        hintCount,
-      });
-      setActivePopup("results");
+      setActivePopup("stats");
 
       supabase
         .from("game_results")
@@ -206,34 +190,14 @@ export default function Game() {
     [resetTimer]
   );
 
-  const handleCloseResults = useCallback(() => setActivePopup(null), []);
   const handleCloseInfo = useCallback(() => setActivePopup(null), []);
   const handleCloseArchive = useCallback(() => setActivePopup(null), []);
 
   const handleOpenArchive = useCallback(() => setActivePopup("archive"), []);
   const handleOpenInfo = useCallback(() => setActivePopup("info"), []);
 
-  const handleOpenStats = useCallback(() => {
-    setCameFromResults(false);
-    setActivePopup("stats");
-  }, []);
-
-  const handleShowStatsFromResults = useCallback(() => {
-    setCameFromResults(true);
-    setActivePopup("stats");
-  }, []);
-
-  const handleCloseGameStats = useCallback(
-    (reason?: "back") => {
-      if (reason === "back" && cameFromResults) {
-        setActivePopup("results");
-      } else {
-        setActivePopup(null);
-      }
-      setCameFromResults(false);
-    },
-    [cameFromResults]
-  );
+  const handleOpenStats = useCallback(() => setActivePopup("stats"), []);
+  const handleCloseGameStats = useCallback(() => setActivePopup(null), []);
 
   if (!game) {
     return (
@@ -288,21 +252,10 @@ export default function Game() {
           onSelectGame={handleSelectGame}
         />
       )}
-      {activePopup === "results" && resultsData && (
-        <ResultsPopup
-          close={handleCloseResults}
-          gameNumber={resultsData.gameNumber}
-          timeInSeconds={resultsData.timeInSeconds}
-          guessCount={resultsData.guessCount}
-          hintCount={resultsData.hintCount}
-          onShowStats={handleShowStatsFromResults}
-        />
-      )}
       {activePopup === "stats" && (
         <GameStats
           gameId={game.id}
           answerLength={gameAnswer.length}
-          showBackButton={cameFromResults}
           onClose={handleCloseGameStats}
           onSelectGame={handleSelectGame}
         />
