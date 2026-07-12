@@ -1945,4 +1945,9 @@ export const GAMES: GameData[] = [
     image: "/games/388.jpeg",
     answer: "TAPEWORM",
   },
+  {
+    id: 389,
+    image: "/games/389.jpeg",
+    answer: "SUNDIAL",
+  },
 ];
