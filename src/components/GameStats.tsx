@@ -43,6 +43,11 @@ interface GameStatsProps {
   onClose: (reason?: "back") => void;
   showBackButton?: boolean;
   onSelectGame?: (index: number) => void;
+  justFinishedResult?: {
+    time_seconds: number;
+    guesses: number;
+    hints: number;
+  } | null;
 }
 
 interface GameResult {
@@ -497,6 +502,7 @@ export const GameStats = React.memo(function GameStats({
   onClose,
   showBackButton = false,
   onSelectGame,
+  justFinishedResult = null,
 }: GameStatsProps) {
   const { user } = useUser();
   const [results, setResults] = useState<GameResult[]>([]);
@@ -564,10 +570,16 @@ export const GameStats = React.memo(function GameStats({
     };
   }, [gameId, user, todayGameIndex]);
 
-  const userGameResult = useMemo(
-    () => (user ? results.find((r) => r.user_id === user.id) ?? null : null),
-    [results, user]
-  );
+  const userGameResult = useMemo(() => {
+    // Prefer the result the player just achieved. It's the freshest, most
+    // accurate record of this session's finish, and it avoids both the
+    // insert/fetch race (the DB row often isn't returned yet on the win screen)
+    // and stale rows from a previous replay of the same game.
+    if (justFinishedResult) {
+      return { ...justFinishedResult, user_id: user?.id ?? "" };
+    }
+    return user ? results.find((r) => r.user_id === user.id) ?? null : null;
+  }, [results, user, justFinishedResult]);
 
   const globalStats = useMemo(() => {
     const times = results.map((r) => r.time_seconds).filter((t) => t > 0);

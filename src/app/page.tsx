@@ -29,6 +29,12 @@ export default function Game() {
   const [hintCount, setHintCount] = useState(0);
   const [guessCount, setGuessCount] = useState(0);
   const [showLetterFeedback, setShowLetterFeedback] = useState(false);
+  const [finishedResult, setFinishedResult] = useState<{
+    gameId: number;
+    time_seconds: number;
+    guesses: number;
+    hints: number;
+  } | null>(null);
 
   const [activePopup, setActivePopup] = useState<ActivePopup>(
     firstTimeUser ? "info" : null
@@ -111,6 +117,12 @@ export default function Game() {
     if (isCorrectSolution(currentGuess)) {
       setGuessCount(newCount);
       setIsDone(true);
+      setFinishedResult({
+        gameId: game.id,
+        time_seconds: timeRef.current,
+        guesses: newCount,
+        hints: hintCount,
+      });
       setActivePopup("stats");
 
       supabase
@@ -258,6 +270,9 @@ export default function Game() {
           answerLength={gameAnswer.length}
           onClose={handleCloseGameStats}
           onSelectGame={handleSelectGame}
+          justFinishedResult={
+            finishedResult?.gameId === game.id ? finishedResult : null
+          }
         />
       )}
     </div>
