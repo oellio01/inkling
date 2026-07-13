@@ -571,10 +571,6 @@ export const GameStats = React.memo(function GameStats({
   }, [gameId, user, todayGameIndex]);
 
   const userGameResult = useMemo(() => {
-    // Prefer the result the player just achieved. It's the freshest, most
-    // accurate record of this session's finish, and it avoids both the
-    // insert/fetch race (the DB row often isn't returned yet on the win screen)
-    // and stale rows from a previous replay of the same game.
     if (justFinishedResult) {
       return { ...justFinishedResult, user_id: user?.id ?? "" };
     }
