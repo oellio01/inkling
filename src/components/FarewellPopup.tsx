@@ -22,7 +22,7 @@ export const FarewellPopup = ({ close, onPlayArchive }: FarewellPopupProps) => {
       </p>
       <p className={styles.description}>
         The good news: every puzzle ever made is still here. Jump into the
-        archive and play through them all at your own pace, any time you like.
+        archive and play through them all at your own pace.
       </p>
 
       <div className={styles.buttonContainer}>
