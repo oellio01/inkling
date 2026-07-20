@@ -23,7 +23,7 @@ import { formatTimeInSeconds } from "../lib/time";
 import { useShareResult } from "../hooks/useShareResult";
 import { useUser } from "../providers/UserProvider";
 import { GAMES } from "../data/games";
-import { EPOCH_DATE, getTodaysGameIndex } from "../lib/gameDate";
+import { EPOCH_DATE, getReleasedGameCount } from "../lib/gameDate";
 import { Popup } from "./ui/Popup";
 
 const SHOP_URL = "https://inkling-puzzle.printify.me/";
@@ -211,23 +211,19 @@ const UserBarChart = React.memo(function UserBarChart({
 
 interface ContributionBoardProps {
   playedGameIds: Set<number>;
-  todayGameIndex: number;
+  releasedCount: number;
   currentGameId: number;
   onSelectGame?: (gameId: number) => void;
 }
 
 const ContributionBoard = React.memo(function ContributionBoard({
   playedGameIds,
-  todayGameIndex,
+  releasedCount,
   currentGameId,
   onSelectGame,
 }: ContributionBoardProps) {
   const cells = useMemo(() => {
-    // todayGameIndex is 0-based, so `todayGameIndex + 1` games are released.
-    const totalGames = Math.min(
-      Math.max(todayGameIndex + 1, 0),
-      GAMES.length
-    );
+    const totalGames = Math.min(Math.max(releasedCount, 0), GAMES.length);
     const out: { gameId: number; date: Date; played: boolean }[] = [];
     for (let g = 1; g <= totalGames; g++) {
       out.push({
@@ -237,7 +233,7 @@ const ContributionBoard = React.memo(function ContributionBoard({
       });
     }
     return out;
-  }, [playedGameIds, todayGameIndex]);
+  }, [playedGameIds, releasedCount]);
 
   return (
     <div className={styles.boardWrapper}>
@@ -513,7 +509,7 @@ export const GameStats = React.memo(function GameStats({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const todayGameIndex = useMemo(() => getTodaysGameIndex(), []);
+  const releasedCount = useMemo(() => getReleasedGameCount(), []);
   const { hasCopiedFor, share } = useShareResult();
 
   // Fetch current-game and user-aggregate data whenever game or user changes.
@@ -550,11 +546,7 @@ export const GameStats = React.memo(function GameStats({
         if (cancelled) return;
 
         const rows = (userResults ?? []) as UserResultRow[];
-        const totalReleased = Math.min(
-          Math.max(todayGameIndex + 1, 0),
-          GAMES.length
-        );
-        setUserStats(computeUserStats(rows, totalReleased));
+        setUserStats(computeUserStats(rows, releasedCount));
         setPlayedGameIds(new Set(rows.map((r) => r.game_id)));
       } catch (err: unknown) {
         if (cancelled) return;
@@ -568,7 +560,7 @@ export const GameStats = React.memo(function GameStats({
     return () => {
       cancelled = true;
     };
-  }, [gameId, user, todayGameIndex]);
+  }, [gameId, user, releasedCount]);
 
   const userGameResult = useMemo(() => {
     if (justFinishedResult) {
@@ -631,7 +623,7 @@ export const GameStats = React.memo(function GameStats({
                 <h3 className={styles.sectionTitle}>All-time stats</h3>
                 <ContributionBoard
                   playedGameIds={playedGameIds}
-                  todayGameIndex={todayGameIndex}
+                  releasedCount={releasedCount}
                   currentGameId={gameId}
                   onSelectGame={
                     onSelectGame ? handleSelectBoardGame : undefined

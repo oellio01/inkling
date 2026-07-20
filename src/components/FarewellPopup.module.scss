@@ -1,0 +1,68 @@
+.title {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0 0 12px;
+}
+
+.description {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--color-text-muted);
+  margin: 0 0 12px;
+  text-align: left;
+}
+
+.link {
+  color: #227838;
+  font-weight: 600;
+  text-decoration: underline;
+
+  &:hover {
+    color: #1a5f2e;
+  }
+}
+
+.buttonContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.playButton {
+  width: 100%;
+  padding: 10px;
+  background-color: #227838;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #1a5f2e;
+  }
+}
+
+.laterButton {
+  width: 100%;
+  padding: 10px;
+  background-color: #f0f0f0;
+  color: var(--color-text-muted);
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+
+  &:hover {
+    background-color: #e0e0e0;
+    border-color: #ccc;
+  }
+}

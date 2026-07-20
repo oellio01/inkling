@@ -6,24 +6,25 @@ import { Header } from "../components/Header";
 import { Keyboard } from "../components/Keyboard";
 import { GuessDisplay } from "../components/GuessDisplay";
 import { InfoPopup } from "../components/InfoPopup";
+import { FarewellPopup } from "../components/FarewellPopup";
 import { ArchivePopup } from "../components/ArchivePopup";
 import { GameStats } from "../components/GameStats";
-import { getTodaysGameIndex } from "../lib/gameDate";
+import { getLatestGameIndex, getReleasedGameCount } from "../lib/gameDate";
 import { useGameTimer } from "../hooks/useGameTimer";
 import { GAMES } from "../data/games";
 import styles from "./Game.module.scss";
 import { useUser } from "../providers/UserProvider";
 import supabase from "../lib/supabase";
 
-type ActivePopup = "info" | "archive" | "stats" | null;
+type ActivePopup = "info" | "farewell" | "archive" | "stats" | null;
 
 const normalizeText = (text: string): string =>
   text.replaceAll(" ", "").toLowerCase();
 
 export default function Game() {
-  const [gameIndex, setGameIndex] = useState(getTodaysGameIndex);
+  const [gameIndex, setGameIndex] = useState(getLatestGameIndex);
   const game = GAMES[gameIndex];
-  const { user, firstTimeUser } = useUser();
+  const { user } = useUser();
   const [isDone, setIsDone] = useState(false);
   const [currentGuess, setCurrentGuess] = useState("");
   const [hintCount, setHintCount] = useState(0);
@@ -36,14 +37,8 @@ export default function Game() {
     hints: number;
   } | null>(null);
 
-  const [activePopup, setActivePopup] = useState<ActivePopup>(
-    firstTimeUser ? "info" : null
-  );
-
-  // Auto-open the info popup the very first time the anon user is created.
-  useEffect(() => {
-    if (firstTimeUser) setActivePopup("info");
-  }, [firstTimeUser]);
+  // Greet everyone with the thank-you message each time they open the page.
+  const [activePopup, setActivePopup] = useState<ActivePopup>("farewell");
 
   const gameAnswer = game?.answer.replaceAll(" ", "") ?? "";
   const isPausedByPopup = activePopup !== null;
@@ -54,10 +49,7 @@ export default function Game() {
     isPaused
   );
 
-  const maxGameIndex = useMemo(
-    () => Math.min(getTodaysGameIndex() + 1, GAMES.length),
-    []
-  );
+  const maxGameIndex = useMemo(() => getReleasedGameCount(), []);
 
   const isCorrectSolution = useCallback(
     (guess: string) => {
@@ -202,19 +194,15 @@ export default function Game() {
     [resetTimer]
   );
 
-  const handleCloseInfo = useCallback(() => setActivePopup(null), []);
-  const handleCloseArchive = useCallback(() => setActivePopup(null), []);
-
+  const closePopup = useCallback(() => setActivePopup(null), []);
   const handleOpenArchive = useCallback(() => setActivePopup("archive"), []);
   const handleOpenInfo = useCallback(() => setActivePopup("info"), []);
-
   const handleOpenStats = useCallback(() => setActivePopup("stats"), []);
-  const handleCloseGameStats = useCallback(() => setActivePopup(null), []);
 
   if (!game) {
     return (
       <div className={styles.game}>
-        <p>Come back tomorrow for a new puzzle!</p>
+        <p>This puzzle isn&apos;t available. Try another from the archive!</p>
       </div>
     );
   }
@@ -255,10 +243,13 @@ export default function Game() {
         className={styles.keyboard}
       />
 
-      {activePopup === "info" && <InfoPopup close={handleCloseInfo} />}
+      {activePopup === "info" && <InfoPopup close={closePopup} />}
+      {activePopup === "farewell" && (
+        <FarewellPopup close={closePopup} onPlayArchive={handleOpenArchive} />
+      )}
       {activePopup === "archive" && (
         <ArchivePopup
-          close={handleCloseArchive}
+          close={closePopup}
           currentGameIndex={game.id - 1}
           maxGameIndex={maxGameIndex}
           onSelectGame={handleSelectGame}
@@ -268,7 +259,7 @@ export default function Game() {
         <GameStats
           gameId={game.id}
           answerLength={gameAnswer.length}
-          onClose={handleCloseGameStats}
+          onClose={closePopup}
           onSelectGame={handleSelectGame}
           justFinishedResult={
             finishedResult?.gameId === game.id ? finishedResult : null

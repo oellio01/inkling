@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Fraunces } from "next/font/google";
 import "./globals.css";
 import { UserProvider } from "../providers/UserProvider";
-import { getTodaysGameIndex } from "../lib/gameDate";
+import { getLatestGameIndex } from "../lib/gameDate";
 import { GAMES } from "../data/games";
 import { PostHogProvider } from "@/providers/PostHogProvider";
 
@@ -13,10 +13,10 @@ const fraunces = Fraunces({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const game = GAMES[getTodaysGameIndex()];
+  const game = GAMES[getLatestGameIndex()];
   const imageUrl = `https://inkling-puzzle.com${game.image}`;
   const title = `Inkling`;
-  const description = `Can you guess today's word? Each image represents one or more concepts, which when combined form the answer.`;
+  const description = `Can you guess the word? Each image represents one or more concepts, which when combined form the answer.`;
 
   return {
     title,
@@ -38,7 +38,7 @@ export async function generateMetadata(): Promise<Metadata> {
           url: imageUrl,
           width: 1200,
           height: 630,
-          alt: `Inkling #${game.id} - Can you guess today's word?`,
+          alt: `Inkling #${game.id} - Can you guess the word?`,
         },
       ],
       locale: "en_US",
@@ -96,7 +96,7 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "WebApplication",
               name: "Inkling",
-              description: "Daily visual word puzzles inspired by pictionary",
+              description: "Visual word puzzles inspired by pictionary",
               url: "https://inkling-puzzle.com",
               applicationCategory: "Game",
               operatingSystem: "Web Browser",

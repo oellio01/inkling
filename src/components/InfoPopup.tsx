@@ -22,7 +22,7 @@ export const InfoPopup = ({ close }: InfoPopupProps) => {
     <Popup onClose={close} ariaLabel="Welcome to Inkling" size="md">
       <h1 className={styles.title}>Welcome to Inkling</h1>
       <p className={styles.description}>
-        Inkling is a daily game where you have to guess the word depicted. Use
+        Inkling is a game where you have to guess the word depicted. Use
         the hint button if you get stuck.
       </p>
       <div className={styles.imageContainer}>
